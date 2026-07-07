@@ -3,43 +3,48 @@
 @section('title', 'Create Division')
 
 @section('content')
-<div class="py-12">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6">Create Division</h2>
-
-                <form action="{{ route('hr.divisions.store') }}" method="POST">
-                    @csrf
-
-                    <div class="mb-4">
-                        <label for="name" class="block text-sm font-medium text-gray-700">Division Name</label>
-                        <input type="text" name="name" id="name" value="{{ old('name') }}" required
-                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        @error('name')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div class="mb-6">
-                        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-                        <textarea name="description" id="description" rows="3"
-                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('description') }}</textarea>
-                        @error('description')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div class="flex justify-end space-x-3">
-                        <a href="{{ route('hr.divisions.index') }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition">
-                            Cancel
-                        </a>
-                        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
-                            Create Division
-                        </button>
-                    </div>
-                </form>
+<div class="py-8">
+    <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-8 py-6 bg-gradient-to-r from-indigo-600 to-purple-600">
+                <h2 class="text-2xl font-bold text-white">Create New Division</h2>
+                <p class="text-indigo-100 mt-1">Add a new department to your organization</p>
             </div>
+
+            <form action="{{ route('hr.divisions.store') }}" method="POST" class="p-8 space-y-6">
+                @csrf
+
+                <div>
+                    <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">Division Name</label>
+                    <input type="text" name="name" id="name" value="{{ old('name') }}" required
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                        placeholder="e.g., Engineering, Marketing, HR">
+                    @error('name')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="description" class="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+                    <textarea name="description" id="description" rows="4"
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                        placeholder="Brief description of this division's responsibilities">{{ old('description') }}</textarea>
+                    @error('description')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="flex justify-end space-x-4 pt-4">
+                    <a href="{{ route('hr.divisions.index') }}"
+                       class="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition font-medium">
+                        Cancel
+                    </a>
+                    <button type="submit"
+                            class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 font-medium">
+                        Create Division
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
