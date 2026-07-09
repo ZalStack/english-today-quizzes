@@ -60,6 +60,7 @@ Route::middleware(['auth', 'role:hr'])->prefix('hr')->name('hr.')->group(functio
 });
 
 // Employee Routes
+// Employee Routes
 Route::middleware(['auth', 'role:employee'])->prefix('employee')->name('employee.')->group(function () {
     Route::get('/dashboard', [EmployeeDashboardController::class, 'index'])->name('dashboard');
 
@@ -69,7 +70,7 @@ Route::middleware(['auth', 'role:employee'])->prefix('employee')->name('employee
 
     // Quiz Taking
     Route::get('/quizzes/{quiz}/preview', [EmployeeQuizController::class, 'preview'])->name('quizzes.preview');
-    Route::post('/quizzes/{quiz}/start', [EmployeeQuizController::class, 'start'])->name('quizzes.start');
+    Route::post('/quizzes/{quiz}/start', [EmployeeQuizController::class, 'start'])->name('quizzes.start'); // ✅ KEMBALIKAN KE POST
     Route::get('/quizzes/take/{attempt}', [EmployeeQuizController::class, 'take'])->name('quizzes.take');
     Route::post('/quizzes/take/{attempt}/save', [EmployeeQuizController::class, 'saveAnswer'])->name('quizzes.save');
     Route::post('/quizzes/take/{attempt}/submit', [EmployeeQuizController::class, 'submit'])->name('quizzes.submit');
@@ -81,6 +82,10 @@ Route::middleware(['auth', 'role:employee'])->prefix('employee')->name('employee
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    Route::get('/quizzes/{quiz}/start', function (\App\Models\Quiz $quiz) {
+    return redirect()->route('employee.quizzes.preview', $quiz);
+    })->name('quizzes.start.redirect');
 });
 
 // Redirect to appropriate dashboard after login

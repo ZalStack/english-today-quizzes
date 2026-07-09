@@ -145,24 +145,43 @@
 <script>
     let currentQuestion = 1;
     const totalQuestions = {{ $questions->count() }};
-    let timeLeft = {{ $remainingSeconds }};
+    // ✅ PERBAIKAN: Paksa jadi integer dengan Math.floor
+    let timeLeft = Math.floor({{ (int) $remainingSeconds }});
     const attemptId = {{ $attempt->id }};
 
     function updateTimer() {
         if (timeLeft <= 0) {
-            submitQuiz();
+            timeLeft = 0;
+            updateTimerDisplay();
+            // Auto submit setelah 1 detik
+            setTimeout(() => {
+                document.getElementById('quizForm').submit();
+            }, 1000);
             return;
         }
         timeLeft--;
+        updateTimerDisplay();
+    }
+
+    function updateTimerDisplay() {
         const minutes = Math.floor(timeLeft / 60);
         const seconds = timeLeft % 60;
+        
+        // ✅ Tampilkan dengan format yang benar
         document.getElementById('minutes').textContent = minutes;
         document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
-        if (timeLeft <= 60) {
-            document.getElementById('timer').classList.add('text-red-300');
+        
+        // Efek merah saat waktu hampir habis
+        const timerEl = document.getElementById('timer');
+        if (timeLeft <= 60 && timeLeft > 0) {
+            timerEl.classList.add('text-red-300');
+            timerEl.classList.remove('text-white');
+        } else if (timeLeft <= 0) {
+            timerEl.classList.add('text-red-500');
         }
     }
 
+    // Jalankan timer setiap 1 detik
     setInterval(updateTimer, 1000);
 
     function navigateQuestion(direction) {
@@ -228,7 +247,8 @@
         }
     }
 
+    // Inisialisasi tampilan pertama
     showQuestion(1);
+    updateTimerDisplay();
 </script>
 @endpush
-@endsection

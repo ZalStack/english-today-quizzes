@@ -111,7 +111,7 @@
                     </ul>
                 </div>
 
-                {{-- ✅ PERBAIKAN: Form POST dengan konfirmasi JavaScript --}}
+                {{-- ✅ PERBAIKAN: Form POST (bukan <a href>) --}}
                 <form id="startQuizForm" action="{{ route('employee.quizzes.start', $quiz) }}" method="POST" class="text-center space-y-4">
                     @csrf
                     <button type="submit"

@@ -17,58 +17,62 @@ class QuizController extends Controller
         return view('employee.quizzes.join');
     }
 
-    public function enroll(Request $request)
-    {
-        $request->validate([
-            'enroll_key' => 'required|string',
-        ]);
+public function enroll(Request $request)
+{
+    $request->validate([
+        'enroll_key' => 'required|string',
+    ]);
 
-        $quiz = Quiz::where('enroll_key', $request->enroll_key)
-            ->where('status', 'active')
-            ->first();
+    $quiz = Quiz::where('enroll_key', $request->enroll_key)
+        ->where('status', 'active')
+        ->first();
 
-        if (!$quiz) {
-            return back()->with('error', 'Invalid enrollment key or quiz is not available.');
-        }
-
-        // Check if already enrolled
-        $existingAttempt = UserQuizAttempt::where('user_id', auth()->id())
-            ->where('quiz_id', $quiz->id)
-            ->where('status', 'in_progress')
-            ->first();
-
-        if ($existingAttempt) {
-            return redirect()->route('employee.quizzes.start', $existingAttempt->id);
-        }
-
-        return redirect()->route('employee.quizzes.preview', $quiz->id);
+    if (!$quiz) {
+        return back()->with('error', 'Invalid enrollment key or quiz is not available.');
     }
 
-    public function preview(Quiz $quiz)
-    {
-        return view('employee.quizzes.preview', compact('quiz'));
+    // Check if already enrolled (attempt in progress)
+    $existingAttempt = UserQuizAttempt::where('user_id', auth()->id())
+        ->where('quiz_id', $quiz->id)
+        ->where('status', 'in_progress')
+        ->first();
+
+    if ($existingAttempt) {
+        // ✅ PERBAIKAN: Redirect ke take, bukan start
+        return redirect()->route('employee.quizzes.take', $existingAttempt->id);
     }
 
-    public function start(Quiz $quiz)
-    {
-        // Check for existing in-progress attempt
-        $attempt = UserQuizAttempt::where('user_id', auth()->id())
-            ->where('quiz_id', $quiz->id)
-            ->where('status', 'in_progress')
-            ->first();
+    return redirect()->route('employee.quizzes.preview', $quiz->id);
+}
 
-        if (!$attempt) {
-            $attempt = UserQuizAttempt::create([
-                'user_id' => auth()->id(),
-                'quiz_id' => $quiz->id,
-                'started_at' => now(),
-                'status' => 'in_progress',
-            ]);
-        }
+public function preview(Quiz $quiz)
+{
+    return view('employee.quizzes.preview', compact('quiz'));
+}
 
-        return redirect()->route('employee.quizzes.take', $attempt->id);
+public function start(Quiz $quiz)
+{
+    // ✅ PERBAIKAN: Gunakan UserQuizAttempt, bukan QuizAttempt
+    $existingAttempt = UserQuizAttempt::where('user_id', auth()->id())
+        ->where('quiz_id', $quiz->id)
+        ->whereIn('status', ['in_progress', 'pending_review'])
+        ->first();
+
+    if ($existingAttempt) {
+        return redirect()->route('employee.quizzes.take', $existingAttempt->id);
     }
 
+    // ✅ Buat attempt baru dengan field yang sesuai
+    $attempt = UserQuizAttempt::create([
+        'user_id' => auth()->id(),
+        'quiz_id' => $quiz->id,
+        'started_at' => now(),
+        'ends_at' => now()->addMinutes($quiz->duration),
+        'status' => 'in_progress',
+    ]);
+
+    return redirect()->route('employee.quizzes.take', $attempt->id);
+}
     public function take(UserQuizAttempt $attempt)
     {
         if ($attempt->user_id !== auth()->id()) {
@@ -84,7 +88,7 @@ class QuizController extends Controller
 
         // Check if time is up
         $startTime = Carbon::parse($attempt->started_at);
-        $endTime = $startTime->addMinutes($quiz->duration);
+        $endTime = $startTime->copy()->addMinutes($quiz->duration);
 
         if (now()->greaterThan($endTime)) {
             $this->submitQuiz($attempt);
@@ -92,7 +96,8 @@ class QuizController extends Controller
                 ->with('info', 'Time is up! Your quiz has been submitted automatically.');
         }
 
-        $remainingSeconds = now()->diffInSeconds($endTime, false);
+        // ✅ PERBAIKAN: Cast ke integer dan pastikan tidak negatif
+        $remainingSeconds = max(0, (int) now()->diffInSeconds($endTime, false));
 
         return view('employee.quizzes.take', compact('attempt', 'quiz', 'questions', 'remainingSeconds'));
     }
