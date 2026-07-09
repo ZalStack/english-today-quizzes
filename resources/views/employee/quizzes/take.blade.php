@@ -55,18 +55,25 @@
                                     <img src="{{ asset('storage/' . $question->question_image) }}" alt="Question" class="mb-4 rounded-xl max-w-full">
                                 @endif
 
+                                {{-- ✅ PERBAIKAN: Null-safe untuk options --}}
                                 @if($question->question_type === 'multiple_choice')
-                                    <div class="space-y-3">
-                                        @foreach($question->options as $key => $option)
-                                            <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-indigo-400 hover:bg-indigo-50 transition-all duration-200">
-                                                <input type="radio" name="answers[{{ $question->id }}]" value="{{ $option }}"
-                                                    class="w-5 h-5 text-indigo-600 focus:ring-indigo-500"
-                                                    onchange="saveAnswer({{ $question->id }}, '{{ $option }}')">
-                                                <span class="ml-3 font-semibold text-gray-500 mr-2">{{ chr(65 + $key) }}.</span>
-                                                <span class="text-gray-700">{{ $option }}</span>
-                                            </label>
-                                        @endforeach
-                                    </div>
+                                    @if(!empty($question->options) && is_array($question->options))
+                                        <div class="space-y-3">
+                                            @foreach($question->options as $key => $option)
+                                                <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-indigo-400 hover:bg-indigo-50 transition-all duration-200">
+                                                    <input type="radio" name="answers[{{ $question->id }}]" value="{{ $option }}"
+                                                        class="w-5 h-5 text-indigo-600 focus:ring-indigo-500"
+                                                        onchange="saveAnswer({{ $question->id }}, '{{ addslashes($option) }}')">
+                                                    <span class="ml-3 font-semibold text-gray-500 mr-2">{{ chr(65 + $key) }}.</span>
+                                                    <span class="text-gray-700">{{ $option }}</span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 text-yellow-800 text-sm">
+                                            <strong>⚠️ Warning:</strong> Soal ini tidak memiliki pilihan jawaban. Silakan hubungi admin.
+                                        </div>
+                                    @endif
                                 @elseif($question->question_type === 'true_false')
                                     <div class="space-y-3">
                                         <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-green-400 hover:bg-green-50 transition-all duration-200">
@@ -224,3 +231,4 @@
     showQuestion(1);
 </script>
 @endpush
+@endsection

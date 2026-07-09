@@ -41,9 +41,16 @@ Route::middleware(['auth', 'role:hr'])->prefix('hr')->name('hr.')->group(functio
         Route::get('/', [QuestionController::class, 'index'])->name('index');
         Route::get('/create', [QuestionController::class, 'create'])->name('create');
         Route::post('/', [QuestionController::class, 'store'])->name('store');
+        
+        Route::post('/import', [QuestionController::class, 'importFromPdf'])->name('import');
+        Route::post('/import/confirm', [QuestionController::class, 'confirmImport'])->name('import.confirm');
+        Route::get('/import/cancel', [QuestionController::class, 'cancelImport'])->name('import.cancel');
+
+
         Route::get('/{question}/edit', [QuestionController::class, 'edit'])->name('edit');
         Route::put('/{question}', [QuestionController::class, 'update'])->name('update');
         Route::delete('/{question}', [QuestionController::class, 'destroy'])->name('destroy');
+        
     });
 
     // Reports
@@ -62,7 +69,7 @@ Route::middleware(['auth', 'role:employee'])->prefix('employee')->name('employee
 
     // Quiz Taking
     Route::get('/quizzes/{quiz}/preview', [EmployeeQuizController::class, 'preview'])->name('quizzes.preview');
-    Route::get('/quizzes/{quiz}/start', [EmployeeQuizController::class, 'start'])->name('quizzes.start');
+    Route::post('/quizzes/{quiz}/start', [EmployeeQuizController::class, 'start'])->name('quizzes.start');
     Route::get('/quizzes/take/{attempt}', [EmployeeQuizController::class, 'take'])->name('quizzes.take');
     Route::post('/quizzes/take/{attempt}/save', [EmployeeQuizController::class, 'saveAnswer'])->name('quizzes.save');
     Route::post('/quizzes/take/{attempt}/submit', [EmployeeQuizController::class, 'submit'])->name('quizzes.submit');
