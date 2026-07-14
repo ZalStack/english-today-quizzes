@@ -21,14 +21,18 @@ require __DIR__.'/auth.php';
 
 // HR Routes
 Route::middleware(['auth', 'role:hr'])->prefix('hr')->name('hr.')->group(function () {
-    Route::get('/dashboard', [HRDashboardController::class, 'index'])->name('dashboard');
+   Route::get('/dashboard', [HRDashboardController::class, 'index'])->name('dashboard');
 
     // Division Management
     Route::resource('divisions', DivisionController::class);
 
     // Employee Management
     Route::resource('employees', EmployeeController::class);
-    Route::post('employees/{employee}/reset-password', [EmployeeController::class, 'resetPassword'])->name('employees.reset-password');
+
+    // Profile Management untuk HR
+    Route::get('/profile', [App\Http\Controllers\HR\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [App\Http\Controllers\HR\ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [App\Http\Controllers\HR\ProfileController::class, 'updatePassword'])->name('profile.password');
 
     // Quiz Categories
     Route::resource('categories', QuizCategoryController::class);
@@ -41,16 +45,14 @@ Route::middleware(['auth', 'role:hr'])->prefix('hr')->name('hr.')->group(functio
         Route::get('/', [QuestionController::class, 'index'])->name('index');
         Route::get('/create', [QuestionController::class, 'create'])->name('create');
         Route::post('/', [QuestionController::class, 'store'])->name('store');
-        
+
         Route::post('/import', [QuestionController::class, 'importFromPdf'])->name('import');
         Route::post('/import/confirm', [QuestionController::class, 'confirmImport'])->name('import.confirm');
         Route::get('/import/cancel', [QuestionController::class, 'cancelImport'])->name('import.cancel');
 
-
         Route::get('/{question}/edit', [QuestionController::class, 'edit'])->name('edit');
         Route::put('/{question}', [QuestionController::class, 'update'])->name('update');
         Route::delete('/{question}', [QuestionController::class, 'destroy'])->name('destroy');
-        
     });
 
     // Reports
@@ -59,7 +61,6 @@ Route::middleware(['auth', 'role:hr'])->prefix('hr')->name('hr.')->group(functio
     Route::get('/reports/{quiz}/export', [ReportController::class, 'export'])->name('reports.export');
 });
 
-// Employee Routes
 // Employee Routes
 Route::middleware(['auth', 'role:employee'])->prefix('employee')->name('employee.')->group(function () {
     Route::get('/dashboard', [EmployeeDashboardController::class, 'index'])->name('dashboard');
@@ -70,7 +71,7 @@ Route::middleware(['auth', 'role:employee'])->prefix('employee')->name('employee
 
     // Quiz Taking
     Route::get('/quizzes/{quiz}/preview', [EmployeeQuizController::class, 'preview'])->name('quizzes.preview');
-    Route::post('/quizzes/{quiz}/start', [EmployeeQuizController::class, 'start'])->name('quizzes.start'); // ✅ KEMBALIKAN KE POST
+    Route::post('/quizzes/{quiz}/start', [EmployeeQuizController::class, 'start'])->name('quizzes.start');
     Route::get('/quizzes/take/{attempt}', [EmployeeQuizController::class, 'take'])->name('quizzes.take');
     Route::post('/quizzes/take/{attempt}/save', [EmployeeQuizController::class, 'saveAnswer'])->name('quizzes.save');
     Route::post('/quizzes/take/{attempt}/submit', [EmployeeQuizController::class, 'submit'])->name('quizzes.submit');
@@ -82,9 +83,10 @@ Route::middleware(['auth', 'role:employee'])->prefix('employee')->name('employee
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
     Route::get('/quizzes/{quiz}/start', function (\App\Models\Quiz $quiz) {
-    return redirect()->route('employee.quizzes.preview', $quiz);
+        return redirect()->route('employee.quizzes.preview', $quiz);
     })->name('quizzes.start.redirect');
 });
 

@@ -1,6 +1,7 @@
 <?php
+// app/Http/Controllers/HR/ProfileController.php
 
-namespace App\Http\Controllers\Employee;
+namespace App\Http\Controllers\HR;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -12,7 +13,7 @@ class ProfileController extends Controller
     public function edit()
     {
         $user = auth()->user();
-        return view('employee.profile.edit', compact('user'));
+        return view('hr.profile.edit', compact('user'));
     }
 
     public function update(Request $request)
@@ -29,7 +30,7 @@ class ProfileController extends Controller
         $validated['name'] = $validated['full_name'];
         $user->update($validated);
 
-        return redirect()->route('employee.profile.edit')
+        return redirect()->route('hr.profile.edit')
             ->with('success', 'Profile updated successfully.');
     }
 
@@ -44,7 +45,7 @@ class ProfileController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return redirect()->route('employee.profile.edit')
+        return redirect()->route('hr.profile.edit')
             ->with('success', 'Password updated successfully.');
     }
 }

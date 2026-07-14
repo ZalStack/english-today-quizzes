@@ -12,7 +12,7 @@
             </div>
 
             <!-- Profile Update -->
-            <form action="{{ route('employee.profile.update') }}" method="POST" class="p-8 space-y-6 border-b border-gray-200">
+            <form action="{{ route('hr.profile.update') }}" method="POST" class="p-8 space-y-6 border-b border-gray-200">
                 @csrf
                 @method('PUT')
 
@@ -65,7 +65,7 @@
             </form>
 
             <!-- Password Update -->
-            <form action="{{ route('employee.profile.password') }}" method="POST" class="p-8 space-y-6">
+            <form action="{{ route('hr.profile.password') }}" method="POST" class="p-8 space-y-6">
                 @csrf
                 @method('PUT')
 

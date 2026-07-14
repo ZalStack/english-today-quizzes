@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('phone')->nullable()->after('status');
             $table->text('address')->nullable()->after('phone');
             $table->string('avatar')->nullable()->after('address');
+            $table->string('name')->nullable()->change();
         });
     }
 
@@ -32,6 +33,7 @@ return new class extends Migration
                 'address',
                 'avatar'
             ]);
+            $table->string('name')->nullable(false)->change();
         });
     }
 };

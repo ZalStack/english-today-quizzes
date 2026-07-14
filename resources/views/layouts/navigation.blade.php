@@ -1,3 +1,4 @@
+{{-- resources/views/layouts/app.blade.php --}}
 <nav x-data="{ open: false, scrolled: false }"
      @scroll.window="scrolled = window.pageYOffset > 20"
      :class="{'shadow-lg': scrolled}"
@@ -102,18 +103,28 @@
                         <div x-show="open" @click.away="open = false" x-cloak
                              class="absolute right-0 top-16 w-64 bg-white rounded-xl shadow-2xl border border-gray-100 py-2 z-50">
                             <div class="px-4 py-3 border-b border-gray-100">
-                                <p class="text-sm font-medium text-gray-900">{{ auth()->user()->full_name }}</p>
+                                <p class="text-sm font-medium text-gray-900">{{ auth()->user()->full_name ?? auth()->user()->name }}</p>
                                 <p class="text-xs text-gray-500">{{ auth()->user()->email }}</p>
                             </div>
 
-                            @if(auth()->user()->isEmployee())
-                                <a href="{{ route('employee.profile.edit') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
-                                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                    </svg>
-                                    Profile Settings
-                                </a>
-                            @endif
+                            <!-- Profile link untuk SEMUA user (HR dan Employee) -->
+                            @auth
+                                @if(auth()->user()->isHR())
+                                    <a href="{{ route('hr.profile.edit') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
+                                        <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                        </svg>
+                                        Profile Settings
+                                    </a>
+                                @else
+                                    <a href="{{ route('employee.profile.edit') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
+                                        <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                        </svg>
+                                        Profile Settings
+                                    </a>
+                                @endif
+                            @endauth
 
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
@@ -175,7 +186,12 @@
             </div>
 
             <div class="px-4 py-3 border-t border-gray-100">
-                @if(auth()->user()->isEmployee())
+                <!-- Profile link untuk mobile -->
+                @if(auth()->user()->isHR())
+                    <x-responsive-nav-link :href="route('hr.profile.edit')">
+                        ⚙️ Profile Settings
+                    </x-responsive-nav-link>
+                @else
                     <x-responsive-nav-link :href="route('employee.profile.edit')">
                         ⚙️ Profile Settings
                     </x-responsive-nav-link>

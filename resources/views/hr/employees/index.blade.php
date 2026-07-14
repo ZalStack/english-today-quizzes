@@ -1,3 +1,4 @@
+{{-- resources/views/hr/employees/index.blade.php --}}
 @extends('layouts.app')
 
 @section('title', 'Manage Employees')
@@ -70,13 +71,6 @@
                            class="flex-1 px-3 py-2 text-sm bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition text-center font-medium">
                             Edit
                         </a>
-                        <form action="{{ route('hr.employees.reset-password', $employee) }}" method="POST" class="flex-1">
-                            @csrf
-                            <button type="submit"
-                                    class="w-full px-3 py-2 text-sm bg-yellow-50 text-yellow-600 rounded-lg hover:bg-yellow-100 transition font-medium">
-                                Reset PW
-                            </button>
-                        </form>
                         <form action="{{ route('hr.employees.destroy', $employee) }}" method="POST" class="flex-1">
                             @csrf
                             @method('DELETE')

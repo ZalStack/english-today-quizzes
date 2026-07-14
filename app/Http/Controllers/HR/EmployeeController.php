@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Models\Division;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class EmployeeController extends Controller
 {
@@ -44,7 +43,7 @@ class EmployeeController extends Controller
         User::create($validated);
 
         return redirect()->route('hr.employees.index')
-            ->with('success', 'Employee created successfully.');
+            ->with('success', 'Employee created successfully. They can now login with their credentials.');
     }
 
     public function edit(User $employee)
@@ -97,19 +96,5 @@ class EmployeeController extends Controller
 
         return redirect()->route('hr.employees.index')
             ->with('success', 'Employee deleted successfully.');
-    }
-
-    public function resetPassword(Request $request, User $employee)
-    {
-        if ($employee->role !== 'employee') {
-            abort(404);
-        }
-
-        $newPassword = Str::random(10);
-        $employee->update([
-            'password' => Hash::make($newPassword)
-        ]);
-
-        return back()->with('success', "Password has been reset. New password: $newPassword");
     }
 }
