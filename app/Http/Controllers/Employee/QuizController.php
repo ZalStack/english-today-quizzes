@@ -1,4 +1,5 @@
 <?php
+// app/Http/Controllers/Employee/QuizController.php
 
 namespace App\Http\Controllers\Employee;
 
@@ -17,62 +18,115 @@ class QuizController extends Controller
         return view('employee.quizzes.join');
     }
 
-public function enroll(Request $request)
-{
-    $request->validate([
-        'enroll_key' => 'required|string',
-    ]);
+    public function enroll(Request $request)
+    {
+        $request->validate([
+            'enroll_key' => 'required|string',
+        ]);
 
-    $quiz = Quiz::where('enroll_key', $request->enroll_key)
-        ->where('status', 'active')
-        ->first();
+        // ✅ PERBAIKAN: Cari quiz dengan enroll_key yang sesuai DAN status active
+        $quiz = Quiz::where('enroll_key', $request->enroll_key)
+            ->where('status', 'active')
+            ->first();
 
-    if (!$quiz) {
-        return back()->with('error', 'Invalid enrollment key or quiz is not available.');
+        if (!$quiz) {
+            return back()->with('error', 'Invalid enrollment key or quiz is not available.');
+        }
+
+        // ✅ PERBAIKAN: Cek apakah employee sudah pernah mengikuti quiz ini (completed)
+        $completedAttempt = UserQuizAttempt::where('user_id', auth()->id())
+            ->where('quiz_id', $quiz->id)
+            ->where('status', 'completed')
+            ->first();
+
+        if ($completedAttempt) {
+            return redirect()->route('employee.quizzes.result', $completedAttempt->id)
+                ->with('info', 'You have already completed this quiz.');
+        }
+
+        // Check if already enrolled (attempt in progress)
+        $existingAttempt = UserQuizAttempt::where('user_id', auth()->id())
+            ->where('quiz_id', $quiz->id)
+            ->where('status', 'in_progress')
+            ->first();
+
+        if ($existingAttempt) {
+            return redirect()->route('employee.quizzes.take', $existingAttempt->id);
+        }
+
+        // ✅ PERBAIKAN: Redirect ke preview dengan quiz
+        return redirect()->route('employee.quizzes.preview', $quiz->id);
     }
 
-    // Check if already enrolled (attempt in progress)
-    $existingAttempt = UserQuizAttempt::where('user_id', auth()->id())
-        ->where('quiz_id', $quiz->id)
-        ->where('status', 'in_progress')
-        ->first();
+    public function preview(Quiz $quiz)
+    {
+        // ✅ PERBAIKAN: Cek apakah quiz active
+        if ($quiz->status !== 'active') {
+            return redirect()->route('employee.quizzes.join')
+                ->with('error', 'This quiz is not available.');
+        }
 
-    if ($existingAttempt) {
-        // ✅ PERBAIKAN: Redirect ke take, bukan start
-        return redirect()->route('employee.quizzes.take', $existingAttempt->id);
+        // Check if user already completed this quiz
+        $completedAttempt = UserQuizAttempt::where('user_id', auth()->id())
+            ->where('quiz_id', $quiz->id)
+            ->where('status', 'completed')
+            ->first();
+
+        if ($completedAttempt) {
+            return redirect()->route('employee.quizzes.result', $completedAttempt->id)
+                ->with('info', 'You have already completed this quiz.');
+        }
+
+        return view('employee.quizzes.preview', compact('quiz'));
     }
 
-    return redirect()->route('employee.quizzes.preview', $quiz->id);
-}
+    public function start(Quiz $quiz)
+    {
+        // ✅ PERBAIKAN: Cek apakah quiz active
+        if ($quiz->status !== 'active') {
+            return redirect()->route('employee.quizzes.join')
+                ->with('error', 'This quiz is not available.');
+        }
 
-public function preview(Quiz $quiz)
-{
-    return view('employee.quizzes.preview', compact('quiz'));
-}
+        // Check if user already completed this quiz
+        $completedAttempt = UserQuizAttempt::where('user_id', auth()->id())
+            ->where('quiz_id', $quiz->id)
+            ->where('status', 'completed')
+            ->first();
 
-public function start(Quiz $quiz)
-{
-    // ✅ PERBAIKAN: Gunakan UserQuizAttempt, bukan QuizAttempt
-    $existingAttempt = UserQuizAttempt::where('user_id', auth()->id())
-        ->where('quiz_id', $quiz->id)
-        ->whereIn('status', ['in_progress', 'pending_review'])
-        ->first();
+        if ($completedAttempt) {
+            return redirect()->route('employee.quizzes.result', $completedAttempt->id)
+                ->with('info', 'You have already completed this quiz.');
+        }
 
-    if ($existingAttempt) {
-        return redirect()->route('employee.quizzes.take', $existingAttempt->id);
+        // Cek attempt yang sedang berjalan
+        $existingAttempt = UserQuizAttempt::where('user_id', auth()->id())
+            ->where('quiz_id', $quiz->id)
+            ->whereIn('status', ['in_progress', 'pending_review'])
+            ->first();
+
+        if ($existingAttempt) {
+            return redirect()->route('employee.quizzes.take', $existingAttempt->id);
+        }
+
+        // ✅ PERBAIKAN: Cek apakah quiz memiliki questions
+        if ($quiz->questions()->count() === 0) {
+            return redirect()->route('employee.quizzes.join')
+                ->with('error', 'This quiz has no questions yet.');
+        }
+
+        // Buat attempt baru
+        $attempt = UserQuizAttempt::create([
+            'user_id' => auth()->id(),
+            'quiz_id' => $quiz->id,
+            'started_at' => now(),
+            'ends_at' => now()->addMinutes($quiz->duration),
+            'status' => 'in_progress',
+        ]);
+
+        return redirect()->route('employee.quizzes.take', $attempt->id);
     }
 
-    // ✅ Buat attempt baru dengan field yang sesuai
-    $attempt = UserQuizAttempt::create([
-        'user_id' => auth()->id(),
-        'quiz_id' => $quiz->id,
-        'started_at' => now(),
-        'ends_at' => now()->addMinutes($quiz->duration),
-        'status' => 'in_progress',
-    ]);
-
-    return redirect()->route('employee.quizzes.take', $attempt->id);
-}
     public function take(UserQuizAttempt $attempt)
     {
         if ($attempt->user_id !== auth()->id()) {
@@ -96,7 +150,6 @@ public function start(Quiz $quiz)
                 ->with('info', 'Time is up! Your quiz has been submitted automatically.');
         }
 
-        // ✅ PERBAIKAN: Cast ke integer dan pastikan tidak negatif
         $remainingSeconds = max(0, (int) now()->diffInSeconds($endTime, false));
 
         return view('employee.quizzes.take', compact('attempt', 'quiz', 'questions', 'remainingSeconds'));
@@ -120,6 +173,9 @@ public function start(Quiz $quiz)
             $isCorrect = strtolower(trim($request->answer)) === strtolower(trim($question->correct_answer));
         } elseif ($question->question_type === 'short_answer') {
             $isCorrect = strtolower(trim($request->answer)) === strtolower(trim($question->correct_answer));
+        } elseif ($question->question_type === 'essay') {
+            // Essay always not automatically correct
+            $isCorrect = false;
         }
 
         UserAnswer::updateOrCreate(

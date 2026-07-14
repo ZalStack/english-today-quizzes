@@ -1,13 +1,14 @@
+{{-- resources/views/employee/quizzes/take.blade.php --}}
 @extends('layouts.app')
 
 @section('title', 'Taking: ' . $quiz->title)
 
 @section('content')
-<div class="py-4">
+<div class="py-0">
     <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <!-- Quiz Header -->
-            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white">
+            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white sticky top-0 z-10">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
                     <div>
                         <h2 class="text-xl font-bold">{{ $quiz->title }}</h2>
@@ -55,7 +56,7 @@
                                     <img src="{{ asset('storage/' . $question->question_image) }}" alt="Question" class="mb-4 rounded-xl max-w-full">
                                 @endif
 
-                                {{-- ✅ PERBAIKAN: Null-safe untuk options --}}
+                                {{-- Question options --}}
                                 @if($question->question_type === 'multiple_choice')
                                     @if(!empty($question->options) && is_array($question->options))
                                         <div class="space-y-3">
@@ -145,7 +146,6 @@
 <script>
     let currentQuestion = 1;
     const totalQuestions = {{ $questions->count() }};
-    // ✅ PERBAIKAN: Paksa jadi integer dengan Math.floor
     let timeLeft = Math.floor({{ (int) $remainingSeconds }});
     const attemptId = {{ $attempt->id }};
 
@@ -153,7 +153,6 @@
         if (timeLeft <= 0) {
             timeLeft = 0;
             updateTimerDisplay();
-            // Auto submit setelah 1 detik
             setTimeout(() => {
                 document.getElementById('quizForm').submit();
             }, 1000);
@@ -166,12 +165,10 @@
     function updateTimerDisplay() {
         const minutes = Math.floor(timeLeft / 60);
         const seconds = timeLeft % 60;
-        
-        // ✅ Tampilkan dengan format yang benar
+
         document.getElementById('minutes').textContent = minutes;
         document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
-        
-        // Efek merah saat waktu hampir habis
+
         const timerEl = document.getElementById('timer');
         if (timeLeft <= 60 && timeLeft > 0) {
             timerEl.classList.add('text-red-300');
@@ -181,7 +178,6 @@
         }
     }
 
-    // Jalankan timer setiap 1 detik
     setInterval(updateTimer, 1000);
 
     function navigateQuestion(direction) {
@@ -247,8 +243,8 @@
         }
     }
 
-    // Inisialisasi tampilan pertama
     showQuestion(1);
     updateTimerDisplay();
 </script>
 @endpush
+@endsection

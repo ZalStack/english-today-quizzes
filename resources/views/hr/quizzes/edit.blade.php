@@ -1,5 +1,3 @@
-**resources/views/hr/quizzes/edit.blade.php**
-```html
 @extends('layouts.app')
 
 @section('title', 'Edit Quiz')

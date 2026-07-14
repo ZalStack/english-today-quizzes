@@ -1,3 +1,4 @@
+{{-- resources/views/employee/dashboard.blade.php --}}
 @extends('layouts.app')
 
 @section('title', 'Employee Dashboard')
@@ -74,7 +75,7 @@
                     <div class="p-6">
                         @if($availableQuizzes->count() > 0)
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                @foreach($availableQuizzes->take(4) as $quiz)
+                                @foreach($availableQuizzes as $quiz)
                                     <div class="border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-all duration-300 hover:border-indigo-300">
                                         <div class="flex items-start justify-between mb-3">
                                             <div class="flex-1">
@@ -90,9 +91,16 @@
                                                 </svg>
                                                 {{ $quiz->duration }} min
                                             </div>
-                                            <a href="{{ route('employee.quizzes.preview', $quiz) }}" class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm rounded-lg hover:shadow-lg transition-all duration-300">
-                                                Start Quiz
-                                            </a>
+                                            <div class="flex items-center space-x-2">
+                                                @if($quiz->enroll_key)
+                                                    <span class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">Key: {{ $quiz->enroll_key }}</span>
+                                                @endif
+                                                {{-- ✅ PERBAIKAN: Ganti Start Quiz dengan tombol Join --}}
+                                                <a href="{{ route('employee.quizzes.join') }}"
+                                                   class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm rounded-lg hover:shadow-lg transition-all duration-300">
+                                                    Join
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 @endforeach
@@ -106,6 +114,9 @@
                                 </div>
                                 <p class="text-gray-500 text-lg font-medium">No quizzes available</p>
                                 <p class="text-gray-400 text-sm mt-1">Join a quiz using an enrollment key</p>
+                                <a href="{{ route('employee.quizzes.join') }}" class="mt-4 inline-block px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300">
+                                    Join with Key
+                                </a>
                             </div>
                         @endif
                     </div>
@@ -138,8 +149,9 @@
                 @endif
             </div>
 
-            <!-- Recent Scores -->
+            <!-- Right Sidebar -->
             <div class="space-y-8">
+                <!-- Recent Scores -->
                 @if($recentScores->count() > 0)
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
                         <div class="px-6 py-4 border-b border-gray-100">
@@ -148,7 +160,7 @@
                         <div class="p-6">
                             <div class="space-y-4">
                                 @foreach($recentScores as $attempt)
-                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition">
                                         <div class="flex-1">
                                             <p class="font-medium text-gray-900 text-sm">{{ $attempt->quiz->title }}</p>
                                             <p class="text-xs text-gray-400">{{ $attempt->completed_at?->diffForHumans() }}</p>
@@ -158,6 +170,11 @@
                                         </span>
                                     </div>
                                 @endforeach
+                            </div>
+                            <div class="mt-4 text-center">
+                                <a href="{{ route('employee.quizzes.history') }}" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
+                                    View All History →
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -169,24 +186,24 @@
                         <h3 class="text-lg font-bold text-gray-900">Quick Links</h3>
                     </div>
                     <div class="p-6 space-y-3">
-                        <a href="{{ route('employee.quizzes.join') }}" class="flex items-center p-3 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition">
+                        <a href="{{ route('employee.quizzes.join') }}" class="flex items-center p-3 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition group">
                             <span class="text-2xl mr-3">🔑</span>
                             <div>
-                                <p class="font-medium text-gray-900">Join Quiz</p>
+                                <p class="font-medium text-gray-900 group-hover:text-indigo-700">Join Quiz</p>
                                 <p class="text-sm text-gray-500">Use enrollment key</p>
                             </div>
                         </a>
-                        <a href="{{ route('employee.quizzes.history') }}" class="flex items-center p-3 bg-purple-50 rounded-xl hover:bg-purple-100 transition">
+                        <a href="{{ route('employee.quizzes.history') }}" class="flex items-center p-3 bg-purple-50 rounded-xl hover:bg-purple-100 transition group">
                             <span class="text-2xl mr-3">📜</span>
                             <div>
-                                <p class="font-medium text-gray-900">View History</p>
+                                <p class="font-medium text-gray-900 group-hover:text-purple-700">View History</p>
                                 <p class="text-sm text-gray-500">Past assessments</p>
                             </div>
                         </a>
-                        <a href="{{ route('employee.profile.edit') }}" class="flex items-center p-3 bg-green-50 rounded-xl hover:bg-green-100 transition">
+                        <a href="{{ route('employee.profile.edit') }}" class="flex items-center p-3 bg-green-50 rounded-xl hover:bg-green-100 transition group">
                             <span class="text-2xl mr-3">⚙️</span>
                             <div>
-                                <p class="font-medium text-gray-900">Edit Profile</p>
+                                <p class="font-medium text-gray-900 group-hover:text-green-700">Edit Profile</p>
                                 <p class="text-sm text-gray-500">Update information</p>
                             </div>
                         </a>

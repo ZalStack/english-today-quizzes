@@ -71,7 +71,7 @@ Route::middleware(['auth', 'role:employee'])->prefix('employee')->name('employee
 
     // Quiz Taking
     Route::get('/quizzes/{quiz}/preview', [EmployeeQuizController::class, 'preview'])->name('quizzes.preview');
-    Route::post('/quizzes/{quiz}/start', [EmployeeQuizController::class, 'start'])->name('quizzes.start');
+    Route::post('/quizzes/{quiz}/start', [EmployeeQuizController::class, 'start'])->name('quizzes.start'); 
     Route::get('/quizzes/take/{attempt}', [EmployeeQuizController::class, 'take'])->name('quizzes.take');
     Route::post('/quizzes/take/{attempt}/save', [EmployeeQuizController::class, 'saveAnswer'])->name('quizzes.save');
     Route::post('/quizzes/take/{attempt}/submit', [EmployeeQuizController::class, 'submit'])->name('quizzes.submit');

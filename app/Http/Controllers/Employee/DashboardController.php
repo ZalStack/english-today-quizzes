@@ -13,34 +13,32 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
+        // Get available quizzes (active and not attempted by user)
         $availableQuizzes = Quiz::where('status', 'active')
             ->whereDoesntHave('attempts', function($query) use ($user) {
-                $query->where('user_id', $user->id)
-                    ->where('status', 'completed');
+                $query->where('user_id', $user->id);
             })
-            ->with('category')
             ->get();
 
+        // Get ongoing quizzes (in progress)
         $ongoingQuizzes = UserQuizAttempt::where('user_id', $user->id)
             ->where('status', 'in_progress')
-            ->with('quiz.category')
+            ->with('quiz')
             ->get();
 
-        $completedQuizzes = UserQuizAttempt::where('user_id', $user->id)
-            ->where('status', 'completed')
-            ->with('quiz.category')
-            ->latest('completed_at')
-            ->take(10)
-            ->get();
-
+        // Get recent scores (completed)
         $recentScores = UserQuizAttempt::where('user_id', $user->id)
             ->where('status', 'completed')
+            ->with('quiz')
             ->latest('completed_at')
             ->take(5)
             ->get();
 
+        // Statistics
         $statistics = [
-            'total_quizzes_taken' => UserQuizAttempt::where('user_id', $user->id)->count(),
+            'total_quizzes_taken' => UserQuizAttempt::where('user_id', $user->id)
+                ->where('status', 'completed')
+                ->count(),
             'average_score' => UserQuizAttempt::where('user_id', $user->id)
                 ->where('status', 'completed')
                 ->avg('score') ?? 0,
@@ -52,7 +50,6 @@ class DashboardController extends Controller
         return view('employee.dashboard', compact(
             'availableQuizzes',
             'ongoingQuizzes',
-            'completedQuizzes',
             'recentScores',
             'statistics'
         ));

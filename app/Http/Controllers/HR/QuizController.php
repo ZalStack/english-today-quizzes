@@ -50,15 +50,18 @@ class QuizController extends Controller
 
         Quiz::create($validated);
 
-        return redirect()->route('hr.quizzes.index')
-            ->with('success', 'Quiz created successfully.');
+        return redirect()->route('hr.quizzes.index')->with('success', 'Quiz created successfully.');
     }
 
     public function show(Quiz $quiz)
     {
-        $quiz->load(['category', 'questions' => function($query) {
-            $query->orderBy('order_number');
-        }, 'attempts.user']);
+        $quiz->load([
+            'category',
+            'questions' => function ($query) {
+                $query->orderBy('order_number');
+            },
+            'attempts.user',
+        ]);
 
         return view('hr.quizzes.show', compact('quiz'));
     }
@@ -80,11 +83,17 @@ class QuizController extends Controller
             'status' => 'required|in:draft,active,completed',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after:start_date',
-            'show_score' => 'boolean',
-            'show_correct_answer' => 'boolean',
-            'show_wrong_answer' => 'boolean',
-            'show_explanation' => 'boolean',
+            'show_score' => 'nullable|boolean',
+            'show_correct_answer' => 'nullable|boolean',
+            'show_wrong_answer' => 'nullable|boolean',
+            'show_explanation' => 'nullable|boolean',
         ]);
+
+        // ✅ PERBAIKAN: Set default value untuk checkbox yang tidak terkirim
+        $validated['show_score'] = $request->has('show_score') ? 1 : 0;
+        $validated['show_correct_answer'] = $request->has('show_correct_answer') ? 1 : 0;
+        $validated['show_wrong_answer'] = $request->has('show_wrong_answer') ? 1 : 0;
+        $validated['show_explanation'] = $request->has('show_explanation') ? 1 : 0;
 
         if ($request->hasFile('thumbnail')) {
             if ($quiz->thumbnail) {
@@ -95,8 +104,7 @@ class QuizController extends Controller
 
         $quiz->update($validated);
 
-        return redirect()->route('hr.quizzes.index')
-            ->with('success', 'Quiz updated successfully.');
+        return redirect()->route('hr.quizzes.index')->with('success', 'Quiz updated successfully.');
     }
 
     public function destroy(Quiz $quiz)
@@ -111,7 +119,6 @@ class QuizController extends Controller
 
         $quiz->delete();
 
-        return redirect()->route('hr.quizzes.index')
-            ->with('success', 'Quiz deleted successfully.');
+        return redirect()->route('hr.quizzes.index')->with('success', 'Quiz deleted successfully.');
     }
 }
