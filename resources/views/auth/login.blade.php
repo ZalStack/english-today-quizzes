@@ -130,13 +130,6 @@
                                    class="w-4 h-4 rounded border-gray-300 text-[#161758] focus:ring-[#00A2E9]">
                             <span class="text-sm text-[#3a3a55]/80">Remember me</span>
                         </label>
-
-                        @if (Route::has('password.request'))
-                            <a href="{{ route('password.request') }}"
-                               class="text-sm font-medium text-[#27438D] hover:text-[#161758] underline underline-offset-2">
-                                Forgot password?
-                            </a>
-                        @endif
                     </div>
 
                     <button type="submit"
