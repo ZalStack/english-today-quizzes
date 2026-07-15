@@ -1,4 +1,3 @@
-{{-- resources/views/employee/dashboard.blade.php --}}
 @extends('layouts.app')
 
 @section('title', 'Employee Dashboard')
@@ -180,33 +179,83 @@
                     </div>
                 @endif
 
-                <!-- Quick Links -->
+                <!-- Leaderboard -->
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
-                    <div class="px-6 py-4 border-b border-gray-100">
-                        <h3 class="text-lg font-bold text-gray-900">Quick Links</h3>
+                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                        <h3 class="text-lg font-bold text-gray-900 flex items-center">
+                            <span class="mr-2">🏆</span> Leaderboard
+                        </h3>
+                        <span class="text-xs text-gray-400 font-medium">Top 5</span>
                     </div>
-                    <div class="p-6 space-y-3">
-                        <a href="{{ route('employee.quizzes.join') }}" class="flex items-center p-3 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition group">
-                            <span class="text-2xl mr-3">🔑</span>
-                            <div>
-                                <p class="font-medium text-gray-900 group-hover:text-indigo-700">Join Quiz</p>
-                                <p class="text-sm text-gray-500">Use enrollment key</p>
+                    <div class="p-6">
+                        @if(isset($leaderboard) && $leaderboard->count() > 0)
+                            <div class="space-y-3">
+                                @foreach($leaderboard as $index => $entry)
+                                    @php
+                                        $rank = $index + 1;
+                                        $isCurrentUser = $entry->id === auth()->id();
+                                        $medal = match($rank) {
+                                            1 => '🥇',
+                                            2 => '🥈',
+                                            3 => '🥉',
+                                            default => null,
+                                        };
+                                    @endphp
+                                    <div class="flex items-center justify-between p-3 rounded-xl transition {{ $isCurrentUser ? 'bg-indigo-50 border border-indigo-200' : 'bg-gray-50 hover:bg-gray-100' }}">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-8 h-8 flex-shrink-0 flex items-center justify-center font-bold text-sm rounded-full {{ $rank <= 3 ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-200 text-gray-500' }}">
+                                                {{ $medal ?? $rank }}
+                                            </div>
+                                            <div class="w-9 h-9 flex-shrink-0 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                                                {{ strtoupper(substr($entry->full_name, 0, 1)) }}
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-gray-900 text-sm">
+                                                    {{ $entry->full_name }}
+                                                    @if($isCurrentUser)
+                                                        <span class="text-xs text-indigo-500 font-normal">(You)</span>
+                                                    @endif
+                                                </p>
+                                                <p class="text-xs text-gray-400">{{ $entry->completed_quizzes_count ?? 0 }} quiz selesai</p>
+                                            </div>
+                                        </div>
+                                        <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-bold whitespace-nowrap">
+                                            {{ number_format($entry->total_score ?? 0) }} pts
+                                        </span>
+                                    </div>
+                                @endforeach
                             </div>
-                        </a>
-                        <a href="{{ route('employee.quizzes.history') }}" class="flex items-center p-3 bg-purple-50 rounded-xl hover:bg-purple-100 transition group">
-                            <span class="text-2xl mr-3">📜</span>
-                            <div>
-                                <p class="font-medium text-gray-900 group-hover:text-purple-700">View History</p>
-                                <p class="text-sm text-gray-500">Past assessments</p>
+
+                            @if(isset($currentUserRank) && $currentUserRank && $currentUserRank['rank'] > 5)
+                                <div class="mt-4 pt-4 border-t border-dashed border-gray-200">
+                                    <div class="flex items-center justify-between p-3 rounded-xl bg-indigo-50 border border-indigo-200">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-8 h-8 flex-shrink-0 flex items-center justify-center font-bold text-sm rounded-full bg-gray-200 text-gray-500">
+                                                {{ $currentUserRank['rank'] }}
+                                            </div>
+                                            <div class="w-9 h-9 flex-shrink-0 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                                                {{ strtoupper(substr(auth()->user()->full_name, 0, 1)) }}
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-gray-900 text-sm">{{ auth()->user()->full_name }} <span class="text-xs text-indigo-500 font-normal">(You)</span></p>
+                                                <p class="text-xs text-gray-400">Peringkat kamu saat ini</p>
+                                            </div>
+                                        </div>
+                                        <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-bold whitespace-nowrap">
+                                            {{ number_format($currentUserRank['total_score'] ?? 0) }} pts
+                                        </span>
+                                    </div>
+                                </div>
+                            @endif
+                        @else
+                            <div class="text-center py-8">
+                                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <span class="text-2xl">🏆</span>
+                                </div>
+                                <p class="text-gray-500 text-sm font-medium">Belum ada data leaderboard</p>
+                                <p class="text-gray-400 text-xs mt-1">Selesaikan quiz untuk masuk peringkat</p>
                             </div>
-                        </a>
-                        <a href="{{ route('employee.profile.edit') }}" class="flex items-center p-3 bg-green-50 rounded-xl hover:bg-green-100 transition group">
-                            <span class="text-2xl mr-3">⚙️</span>
-                            <div>
-                                <p class="font-medium text-gray-900 group-hover:text-green-700">Edit Profile</p>
-                                <p class="text-sm text-gray-500">Update information</p>
-                            </div>
-                        </a>
+                        @endif
                     </div>
                 </div>
             </div>

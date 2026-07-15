@@ -133,56 +133,56 @@
                 </div>
             </div>
 
-            <!-- Quick Actions -->
+            <!-- Leaderboard -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
-                <div class="px-6 py-4 border-b border-gray-100">
-                    <h3 class="text-lg font-bold text-gray-900">Quick Actions</h3>
+                <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                    <h3 class="text-lg font-bold text-gray-900 flex items-center">
+                        <span class="mr-2">🏆</span> Leaderboard
+                    </h3>
+                    <span class="text-xs text-gray-400 font-medium">Top 5</span>
                 </div>
-                <div class="p-6 space-y-3">
-                    <a href="{{ route('hr.quizzes.create') }}" class="flex items-center p-3 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition group">
-                        <div class="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                            </svg>
+                <div class="p-6">
+                    @if(isset($leaderboard) && $leaderboard->count() > 0)
+                        <div class="space-y-3">
+                            @foreach($leaderboard as $index => $entry)
+                                @php
+                                    $rank = $index + 1;
+                                    $medal = match($rank) {
+                                        1 => '🥇',
+                                        2 => '🥈',
+                                        3 => '🥉',
+                                        default => null,
+                                    };
+                                @endphp
+                                <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 flex-shrink-0 flex items-center justify-center font-bold text-sm rounded-full {{ $rank <= 3 ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-200 text-gray-500' }}">
+                                            {{ $medal ?? $rank }}
+                                        </div>
+                                        <div class="w-9 h-9 flex-shrink-0 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                                            {{ strtoupper(substr($entry->full_name, 0, 1)) }}
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900 text-sm">{{ $entry->full_name }}</p>
+                                            <p class="text-xs text-gray-400">
+                                                {{ $entry->division->name ?? '-' }} · {{ $entry->completed_quizzes_count ?? 0 }} quiz
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-bold whitespace-nowrap">
+                                        {{ number_format($entry->total_score ?? 0) }} pts
+                                    </span>
+                                </div>
+                            @endforeach
                         </div>
-                        <div class="ml-4">
-                            <p class="font-medium text-gray-900">Create New Quiz</p>
-                            <p class="text-sm text-gray-500">Start building assessment</p>
+                    @else
+                        <div class="text-center py-8">
+                            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <span class="text-2xl">🏆</span>
+                            </div>
+                            <p class="text-gray-500 text-sm">Belum ada data leaderboard</p>
                         </div>
-                    </a>
-                    <a href="{{ route('hr.employees.create') }}" class="flex items-center p-3 bg-green-50 rounded-xl hover:bg-green-100 transition group">
-                        <div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
-                            </svg>
-                        </div>
-                        <div class="ml-4">
-                            <p class="font-medium text-gray-900">Add Employee</p>
-                            <p class="text-sm text-gray-500">Register new user</p>
-                        </div>
-                    </a>
-                    <a href="{{ route('hr.categories.create') }}" class="flex items-center p-3 bg-purple-50 rounded-xl hover:bg-purple-100 transition group">
-                        <div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                            </svg>
-                        </div>
-                        <div class="ml-4">
-                            <p class="font-medium text-gray-900">Add Category</p>
-                            <p class="text-sm text-gray-500">Organize quizzes</p>
-                        </div>
-                    </a>
-                    <a href="{{ route('hr.reports.index') }}" class="flex items-center p-3 bg-yellow-50 rounded-xl hover:bg-yellow-100 transition group">
-                        <div class="w-10 h-10 bg-yellow-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                        </div>
-                        <div class="ml-4">
-                            <p class="font-medium text-gray-900">View Reports</p>
-                            <p class="text-sm text-gray-500">Analytics & insights</p>
-                        </div>
-                    </a>
+                    @endif
                 </div>
             </div>
         </div>

@@ -4,29 +4,41 @@ namespace App\Http\Controllers\Employee;
 
 use App\Http\Controllers\Controller;
 use App\Models\Quiz;
+use App\Models\User;
 use App\Models\UserQuizAttempt;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
-        // Get available quizzes (active and not attempted by user)
+        $completedAttempts = UserQuizAttempt::where('user_id', $user->id)
+            ->where('status', 'completed')
+            ->get();
+
+        $statistics = [
+            'total_quizzes_taken' => $completedAttempts->count(),
+            'average_score'       => $completedAttempts->avg('score') ?? 0,
+            'highest_score'       => $completedAttempts->max('score') ?? 0,
+        ];
+
+        $takenQuizIds = UserQuizAttempt::where('user_id', $user->id)->pluck('quiz_id');
+
         $availableQuizzes = Quiz::where('status', 'active')
-            ->whereDoesntHave('attempts', function($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
+            ->whereNotIn('id', $takenQuizIds)
+            ->with('category')
+            ->latest()
+            ->take(6)
             ->get();
 
-        // Get ongoing quizzes (in progress)
         $ongoingQuizzes = UserQuizAttempt::where('user_id', $user->id)
-            ->where('status', 'in_progress')
+            ->where('status', 'ongoing')
             ->with('quiz')
+            ->latest('started_at')
             ->get();
 
-        // Get recent scores (completed)
         $recentScores = UserQuizAttempt::where('user_id', $user->id)
             ->where('status', 'completed')
             ->with('quiz')
@@ -34,24 +46,47 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        // Statistics
-        $statistics = [
-            'total_quizzes_taken' => UserQuizAttempt::where('user_id', $user->id)
-                ->where('status', 'completed')
-                ->count(),
-            'average_score' => UserQuizAttempt::where('user_id', $user->id)
-                ->where('status', 'completed')
-                ->avg('score') ?? 0,
-            'highest_score' => UserQuizAttempt::where('user_id', $user->id)
-                ->where('status', 'completed')
-                ->max('score') ?? 0,
-        ];
+        $leaderboard = User::where('role', 'employee')
+            ->withCount(['quizAttempts as completed_quizzes_count' => function ($q) {
+                $q->where('status', 'completed');
+            }])
+            ->withSum(['quizAttempts as total_score' => function ($q) {
+                $q->where('status', 'completed');
+            }], 'score')
+            ->having('completed_quizzes_count', '>', 0)
+            ->orderByDesc('total_score')
+            ->take(5)
+            ->get();
+
+        $currentUserRank = null;
+
+        $allRanked = User::where('role', 'employee')
+            ->withCount(['quizAttempts as completed_quizzes_count' => function ($q) {
+                $q->where('status', 'completed');
+            }])
+            ->withSum(['quizAttempts as total_score' => function ($q) {
+                $q->where('status', 'completed');
+            }], 'score')
+            ->having('completed_quizzes_count', '>', 0)
+            ->orderByDesc('total_score')
+            ->get();
+
+        $position = $allRanked->search(fn ($u) => $u->id === $user->id);
+
+        if ($position !== false) {
+            $currentUserRank = [
+                'rank'        => $position + 1,
+                'total_score' => $allRanked[$position]->total_score ?? 0,
+            ];
+        }
 
         return view('employee.dashboard', compact(
+            'statistics',
             'availableQuizzes',
             'ongoingQuizzes',
             'recentScores',
-            'statistics'
+            'leaderboard',
+            'currentUserRank'
         ));
     }
 }

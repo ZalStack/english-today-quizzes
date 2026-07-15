@@ -3,12 +3,10 @@
 namespace App\Http\Controllers\HR;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Models\Quiz;
 use App\Models\Division;
+use App\Models\Quiz;
+use App\Models\User;
 use App\Models\UserQuizAttempt;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -16,18 +14,27 @@ class DashboardController extends Controller
     {
         $totalEmployees = User::where('role', 'employee')->count();
         $totalDivisions = Division::count();
-        $totalQuizzes = Quiz::count();
-        $activeQuizzes = Quiz::where('status', 'active')->count();
+        $totalQuizzes   = Quiz::count();
+        $activeQuizzes  = Quiz::where('status', 'active')->count();
         $completedQuizzes = Quiz::where('status', 'completed')->count();
-        $totalParticipants = UserQuizAttempt::distinct('user_id')->count();
+
+        $totalParticipants = UserQuizAttempt::distinct('user_id')->count('user_id');
 
         $recentAttempts = UserQuizAttempt::with(['user', 'quiz'])
-            ->latest()
-            ->take(10)
+            ->latest('created_at')
+            ->take(6)
             ->get();
 
-        $quizStats = Quiz::withCount(['attempts as total_attempts'])
-            ->withAvg('attempts as average_score', 'score')
+        $leaderboard = User::where('role', 'employee')
+            ->with('division')
+            ->withCount(['quizAttempts as completed_quizzes_count' => function ($q) {
+                $q->where('status', 'completed');
+            }])
+            ->withSum(['quizAttempts as total_score' => function ($q) {
+                $q->where('status', 'completed');
+            }], 'score')
+            ->having('completed_quizzes_count', '>', 0)
+            ->orderByDesc('total_score')
             ->take(5)
             ->get();
 
@@ -39,7 +46,7 @@ class DashboardController extends Controller
             'completedQuizzes',
             'totalParticipants',
             'recentAttempts',
-            'quizStats'
+            'leaderboard'
         ));
     }
 }
