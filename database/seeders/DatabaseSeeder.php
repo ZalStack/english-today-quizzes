@@ -57,168 +57,89 @@ class DatabaseSeeder extends Seeder
             'address' => 'HR Department, Main Office',
         ]);
 
-        // Create employees for each division
+        // Create employees
+        // Catatan: divisi tidak disebutkan untuk data ini, jadi division_id diset null.
+        // Email dibuat dari nama depan + nama belakang (gelar/inisial huruf tunggal diabaikan).
         $employees = [
-            // IT Division
-            [
-                'name' => 'Agus IT',
-                'full_name' => 'Agus Setiawan',
-                'email' => 'agus.it@etquizzes.com',
-                'division' => 'IT',
-                'phone' => '081234567891',
-                'address' => 'IT Department, Floor 3'
-            ],
-            [
-                'name' => 'Budi IT',
-                'full_name' => 'Budi Santoso',
-                'email' => 'budi.it@etquizzes.com',
-                'division' => 'IT',
-                'phone' => '081234567892',
-                'address' => 'IT Department, Floor 3'
-            ],
-
-            // KPJ Division
-            [
-                'name' => 'Citra KPJ',
-                'full_name' => 'Citra Rahayu',
-                'email' => 'citra.kpj@etquizzes.com',
-                'division' => 'KPJ',
-                'phone' => '081234567893',
-                'address' => 'KPJ Department, Floor 2'
-            ],
-            [
-                'name' => 'Dedi KPJ',
-                'full_name' => 'Dedi Purnomo',
-                'email' => 'dedi.kpj@etquizzes.com',
-                'division' => 'KPJ',
-                'phone' => '081234567894',
-                'address' => 'KPJ Department, Floor 2'
-            ],
-
-            // LPS Division
-            [
-                'name' => 'Eka LPS',
-                'full_name' => 'Eka Permata',
-                'email' => 'eka.lps@etquizzes.com',
-                'division' => 'LPS',
-                'phone' => '081234567895',
-                'address' => 'LPS Department, Floor 4'
-            ],
-            [
-                'name' => 'Fajar LPS',
-                'full_name' => 'Fajar Nugroho',
-                'email' => 'fajar.lps@etquizzes.com',
-                'division' => 'LPS',
-                'phone' => '081234567896',
-                'address' => 'LPS Department, Floor 4'
-            ],
-
-            // MEDIA Division
-            [
-                'name' => 'Gita MEDIA',
-                'full_name' => 'Gita Puspita',
-                'email' => 'gita.media@etquizzes.com',
-                'division' => 'MEDIA',
-                'phone' => '081234567897',
-                'address' => 'MEDIA Department, Floor 1'
-            ],
-            [
-                'name' => 'Hadi MEDIA',
-                'full_name' => 'Hadi Wijaya',
-                'email' => 'hadi.media@etquizzes.com',
-                'division' => 'MEDIA',
-                'phone' => '081234567898',
-                'address' => 'MEDIA Department, Floor 1'
-            ],
-
-            // PENDIDIKAN Division
-            [
-                'name' => 'Indah PENDIDIKAN',
-                'full_name' => 'Indah Sari',
-                'email' => 'indah.pendidikan@etquizzes.com',
-                'division' => 'PENDIDIKAN',
-                'phone' => '081234567899',
-                'address' => 'PENDIDIKAN Department, Floor 5'
-            ],
-            [
-                'name' => 'Joko PENDIDIKAN',
-                'full_name' => 'Joko Susilo',
-                'email' => 'joko.pendidikan@etquizzes.com',
-                'division' => 'PENDIDIKAN',
-                'phone' => '081234567900',
-                'address' => 'PENDIDIKAN Department, Floor 5'
-            ],
-
-            // PKA Division
-            [
-                'name' => 'Kartika PKA',
-                'full_name' => 'Kartika Dewi',
-                'email' => 'kartika.pka@etquizzes.com',
-                'division' => 'PKA',
-                'phone' => '081234567901',
-                'address' => 'PKA Department, Floor 6'
-            ],
-            [
-                'name' => 'Lukman PKA',
-                'full_name' => 'Lukman Hakim',
-                'email' => 'lukman.pka@etquizzes.com',
-                'division' => 'PKA',
-                'phone' => '081234567902',
-                'address' => 'PKA Department, Floor 6'
-            ],
-
-            // RG Division
-            [
-                'name' => 'Maya RG',
-                'full_name' => 'Maya Anggraini',
-                'email' => 'maya.rg@etquizzes.com',
-                'division' => 'RG',
-                'phone' => '081234567903',
-                'address' => 'RG Department, Floor 7'
-            ],
-            [
-                'name' => 'Nanda RG',
-                'full_name' => 'Nanda Pratama',
-                'email' => 'nanda.rg@etquizzes.com',
-                'division' => 'RG',
-                'phone' => '081234567904',
-                'address' => 'RG Department, Floor 7'
-            ],
-
-            // SAPRAS Division
-            [
-                'name' => 'Oktavia SAPRAS',
-                'full_name' => 'Oktavia Wulandari',
-                'email' => 'oktavia.sapras@etquizzes.com',
-                'division' => 'SAPRAS',
-                'phone' => '081234567905',
-                'address' => 'SAPRAS Department, Floor 8'
-            ],
-            [
-                'name' => 'Pramono SAPRAS',
-                'full_name' => 'Pramono Jati',
-                'email' => 'pramono.sapras@etquizzes.com',
-                'division' => 'SAPRAS',
-                'phone' => '081234567906',
-                'address' => 'SAPRAS Department, Floor 8'
-            ],
+            ['name' => 'Dr. R. Ridwan Hasan Saputra, M.Si.', 'email' => 'ridwan.saputra@etquizzes.com', 'password' => 'password123'],
+            ['name' => 'Anis Kurniasih', 'email' => 'anis.kurniasih@etquizzes.com', 'password' => 'password124'],
+            ['name' => 'Desi Kurnia Wati', 'email' => 'desi.wati@etquizzes.com', 'password' => 'password125'],
+            ['name' => 'Weni Wulan Sari', 'email' => 'weni.sari@etquizzes.com', 'password' => 'password126'],
+            ['name' => 'Siti Khoerunnisa', 'email' => 'siti.khoerunnisa@etquizzes.com', 'password' => 'password127'],
+            ['name' => 'Muchammad Fachri', 'email' => 'muchammad.fachri@etquizzes.com', 'password' => 'password128'],
+            ['name' => 'Sutriyati', 'email' => 'sutriyati@etquizzes.com', 'password' => 'password129'],
+            ['name' => 'Thyeadi Tungson', 'email' => 'thyeadi.tungson@etquizzes.com', 'password' => 'password130'],
+            ['name' => 'M Rijwan', 'email' => 'm.rijwan@etquizzes.com', 'password' => 'password131'],
+            ['name' => 'Tri Jumsari', 'email' => 'tri.jumsari@etquizzes.com', 'password' => 'password132'],
+            ['name' => 'Muhammad Ihsan', 'email' => 'muhammad.ihsan@etquizzes.com', 'password' => 'password133'],
+            ['name' => 'Ryky Tunggal Saputra Aji', 'email' => 'ryky.aji@etquizzes.com', 'password' => 'password134'],
+            ['name' => 'Muhamad Seis Kusumanegara', 'email' => 'muhamad.kusumanegara@etquizzes.com', 'password' => 'password135'],
+            ['name' => 'Nabila Nurhakimah', 'email' => 'nabila.nurhakimah@etquizzes.com', 'password' => 'password136'],
+            ['name' => 'Rheta Rezkianti', 'email' => 'rheta.rezkianti@etquizzes.com', 'password' => 'password137'],
+            ['name' => 'Lukmanul Hakim', 'email' => 'lukmanul.hakim@etquizzes.com', 'password' => 'password138'],
+            ['name' => 'Dwi Atika Permata Sari', 'email' => 'dwi.sari@etquizzes.com', 'password' => 'password139'],
+            ['name' => 'Ali Zulfikar', 'email' => 'ali.zulfikar@etquizzes.com', 'password' => 'password140'],
+            ['name' => 'Andri Imam Munandar', 'email' => 'andri.munandar@etquizzes.com', 'password' => 'password141'],
+            ['name' => 'Vega Oktaviana', 'email' => 'vega.oktaviana@etquizzes.com', 'password' => 'password142'],
+            ['name' => 'Ardianto', 'email' => 'ardianto@etquizzes.com', 'password' => 'password143'],
+            ['name' => 'Dedi Wahyudi', 'email' => 'dedi.wahyudi@etquizzes.com', 'password' => 'password144'],
+            ['name' => 'Hendra Minar', 'email' => 'hendra.minar@etquizzes.com', 'password' => 'password145'],
+            ['name' => 'Nanda Lindawati', 'email' => 'nanda.lindawati@etquizzes.com', 'password' => 'password146'],
+            ['name' => 'Agus Sutisna', 'email' => 'agus.sutisna@etquizzes.com', 'password' => 'password147'],
+            ['name' => 'Fikri Fauzi', 'email' => 'fikri.fauzi@etquizzes.com', 'password' => 'password148'],
+            ['name' => 'Devi Ariyanti', 'email' => 'devi.ariyanti@etquizzes.com', 'password' => 'password149'],
+            ['name' => 'Muhamad Rijal Apriansyah', 'email' => 'muhamad.apriansyah@etquizzes.com', 'password' => 'password150'],
+            ['name' => 'Siti Fatimah', 'email' => 'siti.fatimah@etquizzes.com', 'password' => 'password151'],
+            ['name' => 'Roy Yulio', 'email' => 'roy.yulio@etquizzes.com', 'password' => 'password152'],
+            ['name' => 'Siti Maesaroh', 'email' => 'siti.maesaroh@etquizzes.com', 'password' => 'password153'],
+            ['name' => 'Febriyana', 'email' => 'febriyana@etquizzes.com', 'password' => 'password154'],
+            ['name' => 'Moh. Napis Aropi', 'email' => 'moh.aropi@etquizzes.com', 'password' => 'password155'],
+            ['name' => 'Rully Dwiandika Yunus', 'email' => 'rully.yunus@etquizzes.com', 'password' => 'password156'],
+            ['name' => 'Mia Nur Aprilia', 'email' => 'mia.aprilia@etquizzes.com', 'password' => 'password157'],
+            ['name' => 'Siti Alpiah', 'email' => 'siti.alpiah@etquizzes.com', 'password' => 'password158'],
+            ['name' => 'Desi Dwi Ariyanti', 'email' => 'desi.ariyanti@etquizzes.com', 'password' => 'password159'],
+            ['name' => 'Ragil Agustian Alpiansyah', 'email' => 'ragil.alpiansyah@etquizzes.com', 'password' => 'password160'],
+            ['name' => 'Fajar Zulham Ibrahim', 'email' => 'fajar.ibrahim@etquizzes.com', 'password' => 'password161'],
+            ['name' => 'M Zidan Mahardika', 'email' => 'm.mahardika@etquizzes.com', 'password' => 'password162'],
+            ['name' => 'Moehammad Buchori', 'email' => 'moehammad.buchori@etquizzes.com', 'password' => 'password163'],
+            ['name' => 'Cahya Aditya', 'email' => 'cahya.aditya@etquizzes.com', 'password' => 'password164'],
+            ['name' => 'Rangga Pradana', 'email' => 'rangga.pradana@etquizzes.com', 'password' => 'password165'],
+            ['name' => 'Sang Baharsyah', 'email' => 'sang.baharsyah@etquizzes.com', 'password' => 'password166'],
+            ['name' => 'Khomsalia Denmasti Harun', 'email' => 'khomsalia.harun@etquizzes.com', 'password' => 'password167'],
+            ['name' => 'Ramadhan Setiawan', 'email' => 'ramadhan.setiawan@etquizzes.com', 'password' => 'password168'],
+            ['name' => 'Adinda Baby Cantika Dewi', 'email' => 'adinda.dewi@etquizzes.com', 'password' => 'password169'],
+            ['name' => 'Irvan Sanjaya', 'email' => 'irvan.sanjaya@etquizzes.com', 'password' => 'password170'],
+            ['name' => 'Deri Rahman', 'email' => 'deri.rahman@etquizzes.com', 'password' => 'password171'],
+            ['name' => 'Isna Nur Fajriah', 'email' => 'isna.fajriah@etquizzes.com', 'password' => 'password172'],
+            ['name' => 'Arisna Dwi Hapsari', 'email' => 'arisna.hapsari@etquizzes.com', 'password' => 'password173'],
+            ['name' => 'Suhardi Prayitno', 'email' => 'suhardi.prayitno@etquizzes.com', 'password' => 'password174'],
+            ['name' => 'Muhammad Rafiq Alfiansyah', 'email' => 'muhammad.alfiansyah@etquizzes.com', 'password' => 'password175'],
+            ['name' => 'Ayu Mandasari', 'email' => 'ayu.mandasari@etquizzes.com', 'password' => 'password176'],
+            ['name' => 'Selfia Annatasya', 'email' => 'selfia.annatasya@etquizzes.com', 'password' => 'password177'],
+            ['name' => 'Ferdianto', 'email' => 'ferdianto@etquizzes.com', 'password' => 'password178'],
+            ['name' => 'Siti Silvia Handayani', 'email' => 'siti.handayani@etquizzes.com', 'password' => 'password179'],
+            ['name' => 'Ziban Lesmana Sutiawan', 'email' => 'ziban.sutiawan@etquizzes.com', 'password' => 'password180'],
+            ['name' => 'Rathri Candra Dewi', 'email' => 'rathri.dewi@etquizzes.com', 'password' => 'password181'],
+            ['name' => 'M. Ariek Hidayat', 'email' => 'm.hidayat@etquizzes.com', 'password' => 'password182'],
+            ['name' => 'M Haikal Catur Saputra', 'email' => 'm.saputra@etquizzes.com', 'password' => 'password183'],
+            ['name' => 'Peggy Nurida Asri', 'email' => 'peggy.asri@etquizzes.com', 'password' => 'password184'],
+            ['name' => 'Jovita Anggraeni', 'email' => 'jovita.anggraeni@etquizzes.com', 'password' => 'password185'],
+            ['name' => 'Muhammad Fakhrizal Garnindyo', 'email' => 'muhammad.garnindyo@etquizzes.com', 'password' => 'password186'],
+            ['name' => 'Muhammad Burhanudin', 'email' => 'muhammad.burhanudin@etquizzes.com', 'password' => 'password187'],
         ];
 
         // Loop through employees and create them
         foreach ($employees as $employeeData) {
-            // Find division ID by name
-            $division = Division::where('name', $employeeData['division'])->first();
-
             User::create([
                 'name' => $employeeData['name'],
-                'full_name' => $employeeData['full_name'],
+                'full_name' => $employeeData['name'],
                 'email' => $employeeData['email'],
-                'password' => Hash::make('password123'), // Default password untuk semua user
+                'password' => Hash::make($employeeData['password']),
                 'role' => 'employee',
                 'status' => 'active',
-                'division_id' => $division ? $division->id : null,
-                'phone' => $employeeData['phone'],
-                'address' => $employeeData['address'],
+                'division_id' => null, // divisi tidak disebutkan, silakan sesuaikan jika perlu
+                'phone' => null,
+                'address' => null,
             ]);
         }
     }
