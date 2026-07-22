@@ -43,9 +43,18 @@ class VideoChallengeController extends Controller
 
     public function show(VideoChallenge $videoChallenge)
     {
+        $priorityEmails = [
+            'ridwan.saputra@etquizzes.com',
+            'anis.kurniasih@etquizzes.com',
+        ];
+
         $employees = User::where('role', 'employee')->where('status', 'active')
             ->with('division')
-            ->get();
+            ->get()
+            ->sortBy(function ($u) use ($priorityEmails) {
+                $pos = array_search($u->email, $priorityEmails);
+                return $pos === false ? 999 : $pos;
+            })->values();
 
         $submissions = VideoSubmission::where('challenge_id', $videoChallenge->id)
             ->with('user')
@@ -60,12 +69,17 @@ class VideoChallengeController extends Controller
 
         $grouped = $employees->groupBy(fn($u) => $u->division?->name ?? '__no_division');
 
-        $divisionData = $grouped->map(function ($emps, $divisionName) use ($submissions, &$stats) {
+        $allSubmitted = 0;
+        $allPending = 0;
+
+        $divisionData = $grouped->map(function ($emps, $divisionName) use ($submissions, &$stats, &$allSubmitted, &$allPending) {
             $submittedCount = $emps->filter(fn($u) => $submissions->has($u->id))->count();
             $pendingCount = $emps->count() - $submittedCount;
 
             $stats['submitted'] += $submittedCount;
             $stats['pending'] += $pendingCount;
+            $allSubmitted += $submittedCount;
+            $allPending += $pendingCount;
 
             return [
                 'division_name' => $divisionName === '__no_division' ? 'Tanpa Divisi' : $divisionName,
@@ -81,6 +95,20 @@ class VideoChallengeController extends Controller
                 'total' => $emps->count(),
             ];
         })->sortByDesc(fn($d) => $d['is_no_division']);
+
+        $divisionData->prepend([
+            'division_name' => 'ALL',
+            'is_no_division' => false,
+            'employees' => $employees->map(function ($user) use ($submissions) {
+                return [
+                    'user' => $user,
+                    'submission' => $submissions->get($user->id),
+                ];
+            }),
+            'submitted_count' => $allSubmitted,
+            'pending_count' => $allPending,
+            'total' => $employees->count(),
+        ]);
 
         return view('hr.video-challenges.show', compact('videoChallenge', 'divisionData', 'stats'));
     }

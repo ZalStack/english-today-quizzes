@@ -3,6 +3,17 @@
 @section('title', $videoChallenge->title . ' — Progress')
 
 @section('content')
+@php
+    function embedUrl($link) {
+        if (preg_match('/drive\.google\.com\/file\/d\/([^\/\?]+)/', $link, $m)) {
+            return 'https://drive.google.com/file/d/' . $m[1] . '/preview';
+        }
+        if (preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\?]+)/', $link, $m)) {
+            return 'https://www.youtube.com/embed/' . $m[1] . '?autoplay=1';
+        }
+        return null;
+    }
+@endphp
 <div class="py-8">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="mb-6">
@@ -65,8 +76,8 @@
                             <span class="text-green-600 font-semibold">{{ $data['submitted_count'] }} submitted</span>
                             <span class="text-red-500 font-semibold">{{ $data['pending_count'] }} pending</span>
                         </div>
-                        <button onclick="openModal({{ $index }}, '{{ $data['division_name'] }}')"
-                                class="w-full px-3 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-lg hover:bg-indigo-700 transition">
+                        <button onclick="showDivision({{ $loop->index }})"
+                                 class="w-full px-3 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-lg hover:bg-indigo-700 transition">
                             Detail
                         </button>
                     </div>
@@ -78,12 +89,12 @@
             @endforelse
         </div>
 
-        {{-- Modal for employee list --}}
+        {{-- Employee list modal --}}
         <div id="employeeModal" class="fixed inset-0 z-50 hidden bg-black/40 backdrop-blur-sm items-center justify-center p-4" style="display: none;">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col">
                 <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between shrink-0">
                     <h3 class="font-bold text-gray-900 text-lg" id="modalDivisionName">Daftar Pegawai</h3>
-                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition">
+                    <button onclick="closeModal('employeeModal')" class="text-gray-400 hover:text-gray-600 transition">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
@@ -92,56 +103,123 @@
                 <div class="overflow-y-auto p-6" id="modalBody"></div>
             </div>
         </div>
+
+        {{-- Video player modal --}}
+        <div id="videoModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm items-center justify-center p-4" style="display: none;">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                    <h3 class="font-bold text-gray-900 text-lg" id="videoModalTitle">Putar Video</h3>
+                    <button onclick="closeModal('videoModal')" class="text-gray-400 hover:text-gray-600 transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="aspect-video bg-black" id="videoPlayer"></div>
+            </div>
+        </div>
     </div>
 </div>
 
 @push('scripts')
 <script>
-    const divisionData = @json($divisionData->values());
+    const divisionData = <?php echo json_encode($divisionData->map(fn($d, $i) => [
+        'name' => $d['division_name'],
+        'employees' => $d['employees']->map(fn($e) => [
+            'name' => $e['user']->full_name ?? $e['user']->name,
+            'email' => $e['user']->email,
+            'submitted' => $e['submission'] ? true : false,
+            'embed' => $e['submission'] ? embedUrl($e['submission']->link) : null,
+        ])->values()->toArray(),
+    ])->values()->toArray()); ?>;
 
-    function openModal(index, name) {
+    function showDivision(index) {
         const data = divisionData[index];
         if (!data) return;
 
-        document.getElementById('modalDivisionName').textContent = 'Daftar Pegawai — ' + name;
+        document.getElementById('modalDivisionName').textContent = 'Daftar Pegawai \u2014 ' + data.name;
+
         const body = document.getElementById('modalBody');
         body.innerHTML = '';
 
-        const submitted = data.employees.filter(e => e.submission);
-        const pending = data.employees.filter(e => !e.submission);
+        const submitted = data.employees.filter(e => e.submitted);
+        const pending = data.employees.filter(e => !e.submitted);
 
-        function renderEmployee(item, isSubmitted) {
-            const user = item.user;
-            const initial = (user.full_name || user.name || '?').charAt(0).toUpperCase();
-            const bg = isSubmitted ? 'from-green-500 to-emerald-600 bg-green-50/50 border-green-100' : 'from-gray-400 to-gray-500 border-gray-100';
-            const statusHtml = isSubmitted
-                ? `<div class="flex items-center gap-2"><span class="px-2.5 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full">Sudah</span><a href="${item.submission.link}" target="_blank" class="px-3 py-1.5 bg-indigo-600 text-white text-xs font-semibold rounded-lg hover:bg-indigo-700 transition">Lihat Video</a></div>`
-                : `<span class="px-2.5 py-0.5 bg-red-100 text-red-600 text-xs font-semibold rounded-full">Belum</span>`;
+        submitted.concat(pending).forEach(function(emp) {
+            const isSubmitted = emp.submitted;
+            const initial = emp.name.charAt(0).toUpperCase();
+            const bg = isSubmitted ? 'from-green-500 to-emerald-600' : 'from-gray-400 to-gray-500';
 
-            return `<div class="flex items-center justify-between px-5 py-3 ${isSubmitted ? 'bg-green-50/50' : ''}" style="border-bottom:1px solid ${isSubmitted ? 'rgba(0,128,0,0.1)' : 'rgba(0,0,0,0.05)'}">
-                <div class="flex items-center gap-3 min-w-0">
-                    <div class="w-9 h-9 bg-gradient-to-br ${bg} rounded-lg flex items-center justify-center text-white font-bold text-xs shrink-0">${initial}</div>
-                    <div class="min-w-0">
-                        <p class="font-semibold text-gray-900 text-sm truncate">${user.full_name || user.name}</p>
-                        <p class="text-xs text-gray-500 truncate">${user.email}</p>
-                    </div>
-                </div>
-                <div class="shrink-0 ml-3">${statusHtml}</div>
-            </div>`;
-        }
+            const div = document.createElement('div');
+            div.className = 'flex items-center justify-between px-5 py-3' + (isSubmitted ? ' bg-green-50/50' : '');
+            div.style.borderBottom = '1px solid ' + (isSubmitted ? 'rgba(0,128,0,0.1)' : 'rgba(0,0,0,0.05)');
 
-        submitted.forEach(e => body.innerHTML += renderEmployee(e, true));
-        pending.forEach(e => body.innerHTML += renderEmployee(e, false));
+            const left = document.createElement('div');
+            left.className = 'flex items-center gap-3 min-w-0';
+            left.innerHTML = '<div class="w-9 h-9 bg-gradient-to-br ' + bg + ' rounded-lg flex items-center justify-center text-white font-bold text-xs shrink-0">' + initial + '</div>' +
+                '<div class="min-w-0"><p class="font-semibold text-gray-900 text-sm truncate">' + escapeHtml(emp.name) + '</p>' +
+                '<p class="text-xs text-gray-500 truncate">' + escapeHtml(emp.email) + '</p></div>';
+            div.appendChild(left);
+
+            const right = document.createElement('div');
+            right.className = 'shrink-0 ml-3 flex items-center gap-2';
+            if (isSubmitted) {
+                const badge = document.createElement('span');
+                badge.className = 'px-2.5 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full';
+                badge.textContent = 'Sudah';
+                right.appendChild(badge);
+
+                const btn = document.createElement('button');
+                btn.className = 'px-3 py-1.5 bg-indigo-600 text-white text-xs font-semibold rounded-lg hover:bg-indigo-700 transition';
+                btn.textContent = 'Lihat Video';
+                btn.dataset.embed = emp.embed || '';
+                btn.dataset.name = emp.name;
+                btn.addEventListener('click', function() {
+                    playVideo(this.dataset.embed, this.dataset.name);
+                });
+                right.appendChild(btn);
+            } else {
+                const badge = document.createElement('span');
+                badge.className = 'px-2.5 py-0.5 bg-red-100 text-red-600 text-xs font-semibold rounded-full';
+                badge.textContent = 'Belum';
+                right.appendChild(badge);
+            }
+            div.appendChild(right);
+
+            body.appendChild(div);
+        });
 
         document.getElementById('employeeModal').style.display = 'flex';
     }
 
-    function closeModal() {
-        document.getElementById('employeeModal').style.display = 'none';
+    function playVideo(embedUrl, name) {
+        if (!embedUrl) return;
+        document.getElementById('videoModalTitle').textContent = 'Video \u2014 ' + (name || '');
+        document.getElementById('videoPlayer').innerHTML = '<iframe src="' + embedUrl + '" width="100%" height="100%" style="position:absolute;top:0;left:0;width:100%;height:100%" frameborder="0" allowfullscreen allow="autoplay"></iframe>';
+        document.getElementById('videoPlayer').classList.add('relative');
+        document.getElementById('videoModal').style.display = 'flex';
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+        if (id === 'videoModal') {
+            document.getElementById('videoPlayer').innerHTML = '';
+            document.getElementById('videoPlayer').classList.remove('relative');
+        }
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        const d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
     }
 
     document.getElementById('employeeModal').addEventListener('click', function(e) {
-        if (e.target === this) closeModal();
+        if (e.target === this) closeModal('employeeModal');
+    });
+    document.getElementById('videoModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal('videoModal');
     });
 </script>
 @endpush

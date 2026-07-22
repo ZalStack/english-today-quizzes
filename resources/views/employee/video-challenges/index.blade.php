@@ -65,12 +65,16 @@
                             <h3 class="text-base font-bold text-gray-900 mb-1">{{ $challenge->title }}</h3>
 
                             @if($mySubmission && $thumb)
-                                <div class="relative rounded-xl overflow-hidden bg-gray-100 mb-3 aspect-video video-preview" data-embed="{{ $thumb['embed'] }}">
+                                <div class="relative rounded-xl overflow-hidden bg-gray-200 mb-3 video-preview"
+                                     style="aspect-ratio: 16/9;"
+                                     data-embed="{{ $thumb['embed'] }}"
+                                     data-title="{{ $challenge->title }}">
                                     <img src="{{ $thumb['thumb'] }}" alt="Video thumbnail"
-                                         class="w-full h-full object-cover cursor-pointer"
+                                         class="absolute inset-0 w-full h-full object-cover cursor-pointer"
                                          onclick="playVideo(this)"
-                                         onerror="this.parentElement.classList.add('bg-gray-200');this.style.display='none';this.parentElement.innerHTML='<div class=\'flex items-center justify-center h-full\'><svg class=\'w-10 h-10 text-gray-400\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z\'/></svg></div>'">
-                                    <div onclick="playVideo(this)" class="absolute inset-0 bg-black/20 hover:bg-black/30 transition flex items-center justify-center cursor-pointer">
+                                         onerror="this.style.display='none'">
+                                    <div onclick="playVideo(this)"
+                                         class="absolute inset-0 flex items-center justify-center cursor-pointer bg-black/0 hover:bg-black/20 transition-colors">
                                         <div class="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
                                             <svg class="w-5 h-5 text-gray-900 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
                                                 <path d="M8 5v14l11-7z"/>
@@ -118,7 +122,22 @@
     </div>
 </div>
 
-{{-- Modal --}}
+{{-- Video player modal --}}
+<div id="videoModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm items-center justify-center p-4" style="display: none;">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <h3 class="font-bold text-gray-900 text-lg" id="videoModalTitle">Putar Video</h3>
+            <button onclick="closeVideoModal()" class="text-gray-400 hover:text-gray-600 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="aspect-video bg-black" id="videoPlayer"></div>
+    </div>
+</div>
+
+{{-- Submit modal --}}
 <div id="submitModal" class="fixed inset-0 z-50 hidden bg-black/40 backdrop-blur-sm items-center justify-center p-4" style="display: none;">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6">
         <div class="flex justify-between items-center mb-4">
@@ -173,9 +192,22 @@
         if (!preview) return;
         const embedUrl = preview.dataset.embed;
         if (!embedUrl) return;
-        preview.innerHTML = '<iframe src="' + embedUrl + '" width="100%" height="100%" style="position:absolute;top:0;left:0;width:100%;height:100%" frameborder="0" allowfullscreen allow="autoplay"></iframe>';
-        preview.classList.add('relative');
+        const title = preview.dataset.title || '';
+        document.getElementById('videoModalTitle').textContent = 'Video \u2014 ' + title;
+        document.getElementById('videoPlayer').innerHTML = '<iframe src="' + embedUrl + '" width="100%" height="100%" style="position:absolute;top:0;left:0;width:100%;height:100%" frameborder="0" allowfullscreen allow="autoplay"></iframe>';
+        document.getElementById('videoPlayer').classList.add('relative');
+        document.getElementById('videoModal').style.display = 'flex';
     }
+
+    function closeVideoModal() {
+        document.getElementById('videoModal').style.display = 'none';
+        document.getElementById('videoPlayer').innerHTML = '';
+        document.getElementById('videoPlayer').classList.remove('relative');
+    }
+
+    document.getElementById('videoModal').addEventListener('click', function(e) {
+        if (e.target === this) closeVideoModal();
+    });
 </script>
 @endpush
 @endsection
