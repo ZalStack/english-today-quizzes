@@ -34,7 +34,7 @@
                             </div>
                             <div class="bg-white/20 rounded-xl p-3">
                                 <p class="text-xs opacity-90">Time</p>
-                                <p class="text-2xl font-bold">{{ $attempt->started_at->diffInMinutes($attempt->completed_at) }}m</p>
+                                <p class="text-2xl font-bold">{{ (int) $attempt->started_at->diffInMinutes($attempt->completed_at) }}m</p>
                             </div>
                         </div>
                     </div>

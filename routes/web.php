@@ -8,8 +8,10 @@ use App\Http\Controllers\HR\QuizCategoryController;
 use App\Http\Controllers\HR\QuizController as HRQuizController;
 use App\Http\Controllers\HR\QuestionController;
 use App\Http\Controllers\HR\ReportController;
+use App\Http\Controllers\HR\VideoChallengeController as HRVideoChallengeController;
 use App\Http\Controllers\Employee\DashboardController as EmployeeDashboardController;
 use App\Http\Controllers\Employee\QuizController as EmployeeQuizController;
+use App\Http\Controllers\Employee\VideoChallengeController as EmployeeVideoChallengeController;
 use App\Http\Controllers\Employee\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -27,6 +29,8 @@ Route::middleware(['auth', 'role:hr'])->prefix('hr')->name('hr.')->group(functio
     Route::resource('divisions', DivisionController::class);
 
     // Employee Management
+    Route::get('/employees/bulk/division', [EmployeeController::class, 'bulkDivision'])->name('employees.bulk.division');
+    Route::post('/employees/bulk/division', [EmployeeController::class, 'bulkDivisionUpdate'])->name('employees.bulk.division.update');
     Route::resource('employees', EmployeeController::class);
 
     // Profile Management untuk HR
@@ -59,6 +63,9 @@ Route::middleware(['auth', 'role:hr'])->prefix('hr')->name('hr.')->group(functio
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/{quiz}', [ReportController::class, 'show'])->name('reports.show');
     Route::get('/reports/{quiz}/export', [ReportController::class, 'export'])->name('reports.export');
+
+    // Video Challenges
+    Route::resource('video-challenges', HRVideoChallengeController::class);
 });
 
 // Employee Routes
@@ -75,10 +82,15 @@ Route::middleware(['auth', 'role:employee'])->prefix('employee')->name('employee
     Route::get('/quizzes/take/{attempt}', [EmployeeQuizController::class, 'take'])->name('quizzes.take');
     Route::post('/quizzes/take/{attempt}/save', [EmployeeQuizController::class, 'saveAnswer'])->name('quizzes.save');
     Route::post('/quizzes/take/{attempt}/submit', [EmployeeQuizController::class, 'submit'])->name('quizzes.submit');
+    Route::get('/quizzes/take/{attempt}/unanswered', [EmployeeQuizController::class, 'unansweredCount'])->name('quizzes.unanswered');
 
     // Results & History
     Route::get('/quizzes/result/{attempt}', [EmployeeQuizController::class, 'result'])->name('quizzes.result');
     Route::get('/quizzes/history', [EmployeeQuizController::class, 'history'])->name('quizzes.history');
+
+    // Video Challenges
+    Route::get('/video-challenges', [EmployeeVideoChallengeController::class, 'index'])->name('video-challenges.index');
+    Route::post('/video-challenges/{videoChallenge}/submit', [EmployeeVideoChallengeController::class, 'submit'])->name('video-challenges.submit');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

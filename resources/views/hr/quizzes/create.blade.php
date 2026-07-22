@@ -6,12 +6,12 @@
 <div class="py-8">
     <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="px-8 py-6 bg-gradient-to-r from-indigo-600 to-purple-600">
-                <h2 class="text-2xl font-bold text-white">Create New Quiz</h2>
-                <p class="text-indigo-100 mt-1">Set up a new assessment for your employees</p>
+            <div class="px-4 sm:px-8 py-4 sm:py-6 bg-gradient-to-r from-indigo-600 to-purple-600">
+                <h2 class="text-xl sm:text-2xl font-bold text-white">Create New Quiz</h2>
+                <p class="text-indigo-100 text-sm mt-1">Set up a new assessment for your employees</p>
             </div>
 
-            <form action="{{ route('hr.quizzes.store') }}" method="POST" enctype="multipart/form-data" class="p-8 space-y-6">
+            <form action="{{ route('hr.quizzes.store') }}" method="POST" enctype="multipart/form-data" class="p-4 sm:p-8 space-y-6">
                 @csrf
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

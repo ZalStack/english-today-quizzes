@@ -10,6 +10,7 @@ class UserQuizAttempt extends Model
         'user_id',
         'quiz_id',
         'started_at',
+        'ends_at',
         'completed_at',
         'score',
         'total_correct',
@@ -19,6 +20,7 @@ class UserQuizAttempt extends Model
 
     protected $casts = [
         'started_at' => 'datetime',
+        'ends_at' => 'datetime',
         'completed_at' => 'datetime',
     ];
 

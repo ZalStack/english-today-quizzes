@@ -201,6 +201,14 @@ class QuestionController extends Controller
             return back()->with('error', 'Tidak ada soal yang dipilih untuk diimport.');
         }
         
+        // ✅ Urutkan: Multiple Choice dulu, baru True/False, lalu Short Answer, Essay
+        $typeOrder = ['multiple_choice' => 1, 'true_false' => 2, 'short_answer' => 3, 'essay' => 4];
+        uasort($questionsToImport, function($a, $b) use ($typeOrder) {
+            $orderA = $typeOrder[$a['question_type']] ?? 99;
+            $orderB = $typeOrder[$b['question_type']] ?? 99;
+            return $orderA <=> $orderB;
+        });
+        
         // ✅ Hitung distribusi poin otomatis (total max 100)
         $pointsDistribution = $this->calculatePointsDistribution($totalToImport, 100);
         

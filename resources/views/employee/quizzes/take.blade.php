@@ -5,139 +5,232 @@
 
 @section('content')
 <div class="py-0">
-    <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <!-- Quiz Header -->
-            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white sticky top-0 z-10">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
-                    <div>
-                        <h2 class="text-xl font-bold">{{ $quiz->title }}</h2>
-                        <p class="text-indigo-200 text-sm mt-1">
-                            Question <span id="currentQuestionNum">1</span> of {{ $questions->count() }}
-                        </p>
-                    </div>
-                    <div class="mt-4 sm:mt-0 bg-white/20 backdrop-blur-sm rounded-xl px-6 py-3">
-                        <div class="text-3xl font-bold text-center" id="timer">
-                            <span id="minutes">{{ floor($remainingSeconds / 60) }}</span>:<span id="seconds">{{ sprintf('%02d', $remainingSeconds % 60) }}</span>
-                        </div>
-                        <p class="text-xs text-center text-indigo-200">Time Remaining</p>
-                    </div>
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <!-- Quiz Header -->
+        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 sm:p-6 text-white sticky top-0 z-10 rounded-b-2xl shadow-lg">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div class="flex-1 min-w-0">
+                    <h2 class="text-lg sm:text-xl font-bold truncate">{{ $quiz->title }}</h2>
+                    <p class="text-indigo-200 text-xs sm:text-sm mt-1">
+                        Question <span id="currentQuestionNum">1</span> of {{ $questions->count() }}
+                    </p>
                 </div>
+                <div class="bg-white/20 backdrop-blur-sm rounded-xl px-4 sm:px-6 py-2 sm:py-3 shrink-0">
+                    <div class="text-2xl sm:text-3xl font-bold text-center font-mono" id="timer">
+                        <span id="minutes">{{ floor($remainingSeconds / 60) }}</span>:<span id="seconds">{{ sprintf('%02d', $remainingSeconds % 60) }}</span>
+                    </div>
+                    <p class="text-[10px] sm:text-xs text-center text-indigo-200">Time Remaining</p>
+                </div>
+            </div>
+            <div class="w-full bg-white/20 rounded-full h-1.5 sm:h-2 mt-3 sm:mt-4">
+                <div id="progressBar" class="bg-white h-1.5 sm:h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+        </div>
 
-                <!-- Progress Bar -->
-                <div class="w-full bg-white/20 rounded-full h-2 mt-4">
-                    <div id="progressBar" class="bg-white h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+        <div class="flex flex-col lg:flex-row gap-4 mt-4">
+            <!-- Questions Area -->
+            <div class="flex-1 min-w-0">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
+                    <form id="quizForm" action="{{ route('employee.quizzes.submit', $attempt->id) }}" method="POST" class="p-4 sm:p-6">
+                        @csrf
+
+                        <div id="questionsContainer" class="min-h-[300px] sm:min-h-[400px]">
+                            @php
+                                $lastType = null;
+                                $typeLabels = [
+                                    'multiple_choice' => 'Multiple Choice',
+                                    'true_false' => 'True / False',
+                                    'short_answer' => 'Short Answer',
+                                    'essay' => 'Essay',
+                                ];
+                            @endphp
+                            @foreach($questions as $index => $question)
+                                @php
+                                    $showHeader = $lastType !== $question->question_type;
+                                    $lastType = $question->question_type;
+                                @endphp
+                                <div class="question-slide" data-question="{{ $index + 1 }}" data-type="{{ $question->question_type }}" data-qid="{{ $question->id }}" data-answered="{{ in_array($question->id, $answeredQuestionIds) ? '1' : '0' }}" style="{{ $index === 0 ? '' : 'display: none;' }}">
+
+                                    {{-- Section header for question type --}}
+                                    @if($showHeader)
+                                        <div class="mb-6">
+                                            <div class="flex items-center gap-3 mb-2">
+                                                <div class="h-px flex-1 bg-gradient-to-r from-indigo-200 to-transparent"></div>
+                                                <span class="px-4 py-1.5 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-full uppercase tracking-wider">
+                                                    {{ $typeLabels[$question->question_type] ?? ucfirst(str_replace('_', ' ', $question->question_type)) }}
+                                                </span>
+                                                <div class="h-px flex-1 bg-gradient-to-l from-indigo-200 to-transparent"></div>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <div class="mb-4">
+                                            <span class="px-3 py-1 bg-indigo-50 text-indigo-600 text-[11px] font-semibold rounded-full inline-block">
+                                                {{ $typeLabels[$question->question_type] ?? ucfirst(str_replace('_', ' ', $question->question_type)) }}
+                                            </span>
+                                        </div>
+                                    @endif
+
+                                    <div class="mb-6">
+                                        <div class="flex items-center justify-between mb-4">
+                                            <div class="flex items-center gap-2 sm:gap-3">
+                                                <span class="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-sm sm:text-base shrink-0">
+                                                    {{ $index + 1 }}
+                                                </span>
+                                                <span class="px-2 sm:px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
+                                                    {{ $question->points }} pts
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-4 leading-relaxed">{{ $question->question_text }}</h3>
+
+                                        @if($question->question_image)
+                                            <img src="{{ asset('storage/' . $question->question_image) }}" alt="Question" class="mb-4 rounded-xl max-w-full h-auto">
+                                        @endif
+
+                                        @if($question->question_type === 'multiple_choice')
+                                            @if(!empty($question->options) && is_array($question->options))
+                                                <div class="space-y-2 sm:space-y-3">
+                                                    @foreach($question->options as $key => $option)
+                                                        <label class="flex items-center p-3 sm:p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-indigo-400 hover:bg-indigo-50 transition-all duration-200">
+                                                            <input type="radio" name="answers[{{ $question->id }}]" value="{{ $option }}"
+                                                                class="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600 focus:ring-indigo-500 shrink-0"
+                                                                onchange="saveAnswer({{ $question->id }}, '{{ addslashes($option) }}')">
+                                                            <span class="ml-2 sm:ml-3 font-semibold text-gray-500 mr-1 sm:mr-2 text-sm sm:text-base">{{ chr(65 + $key) }}.</span>
+                                                            <span class="text-sm sm:text-base text-gray-700">{{ $option }}</span>
+                                                        </label>
+                                                    @endforeach
+                                                </div>
+                                            @else
+                                                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 text-yellow-800 text-sm">
+                                                    <strong>Warning:</strong> Soal ini tidak memiliki pilihan jawaban. Silakan hubungi admin.
+                                                </div>
+                                            @endif
+                                        @elseif($question->question_type === 'true_false')
+                                            <div class="space-y-2 sm:space-y-3">
+                                                <label class="flex items-center p-3 sm:p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-green-400 hover:bg-green-50 transition-all duration-200">
+                                                    <input type="radio" name="answers[{{ $question->id }}]" value="True"
+                                                        class="w-4 h-4 sm:w-5 sm:h-5 text-green-600 focus:ring-green-500 shrink-0"
+                                                        onchange="saveAnswer({{ $question->id }}, 'True')">
+                                                    <span class="ml-2 sm:ml-3 text-base sm:text-lg">True</span>
+                                                </label>
+                                                <label class="flex items-center p-3 sm:p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-red-400 hover:bg-red-50 transition-all duration-200">
+                                                    <input type="radio" name="answers[{{ $question->id }}]" value="False"
+                                                        class="w-4 h-4 sm:w-5 sm:h-5 text-red-600 focus:ring-red-500 shrink-0"
+                                                        onchange="saveAnswer({{ $question->id }}, 'False')">
+                                                    <span class="ml-2 sm:ml-3 text-base sm:text-lg">False</span>
+                                                </label>
+                                            </div>
+                                        @elseif($question->question_type === 'short_answer')
+                                            <input type="text" name="answers[{{ $question->id }}]"
+                                                class="w-full px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+                                                placeholder="Type your answer here..."
+                                                onchange="saveAnswer({{ $question->id }}, this.value)">
+                                        @elseif($question->question_type === 'essay')
+                                            <textarea name="answers[{{ $question->id }}]" rows="6"
+                                                class="w-full px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+                                                placeholder="Write your essay answer here..."
+                                                onchange="saveAnswer({{ $question->id }}, this.value)"></textarea>
+                                        @endif
+                                    </div>
+
+                                    {{-- Transition button between sections --}}
+                                    @php
+                                        $nextIndex = $index + 1;
+                                        $nextQuestion = $questions->get($nextIndex);
+                                        $isLastOfType = $nextQuestion && $nextQuestion->question_type !== $question->question_type;
+                                    @endphp
+                                    @if($isLastOfType && $nextQuestion)
+                                        <div class="my-6 text-center">
+                                            <div class="border-t border-dashed border-gray-300 mb-4"></div>
+                                            <button type="button" onclick="goToQuestion({{ $nextIndex + 1 }})"
+                                                class="px-6 py-3 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 font-semibold text-sm">
+                                                Next Section: {{ $typeLabels[$nextQuestion->question_type] ?? ucfirst(str_replace('_', ' ', $nextQuestion->question_type)) }} →
+                                            </button>
+                                        </div>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <!-- Navigation Buttons -->
+                        <div class="flex flex-col sm:flex-row justify-between items-center gap-3 mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-gray-200">
+                            <button type="button" id="prevBtn" onclick="navigateQuestion(-1)"
+                                class="w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition font-medium disabled:opacity-50 text-sm sm:text-base"
+                                disabled>
+                                ← Previous
+                            </button>
+
+                            <button type="button" id="nextBtn" onclick="navigateQuestion(1)"
+                                class="w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition font-medium text-sm sm:text-base">
+                                Next →
+                            </button>
+                        </div>
+
+                    </form>
                 </div>
             </div>
 
-            <!-- Questions -->
-            <form id="quizForm" action="{{ route('employee.quizzes.submit', $attempt->id) }}" method="POST" class="p-6">
-                @csrf
+            <!-- Question Number Sidebar (Right Side) -->
+            <div class="w-full lg:w-56 xl:w-64 shrink-0">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 lg:sticky lg:top-28">
+                    <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Soal</h4>
 
-                <div id="questionsContainer" class="min-h-[400px]">
-                    @foreach($questions as $index => $question)
-                        <div class="question-slide" data-question="{{ $index + 1 }}" style="{{ $index === 0 ? '' : 'display: none;' }}">
-                            <div class="mb-6">
-                                <div class="flex items-center space-x-3 mb-4">
-                                    <span class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold">
-                                        {{ $index + 1 }}
-                                    </span>
-                                    <span class="px-3 py-1 bg-indigo-100 text-indigo-700 text-xs font-semibold rounded-full">
-                                        {{ ucfirst(str_replace('_', ' ', $question->question_type)) }}
-                                    </span>
-                                    <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
-                                        {{ $question->points }} pts
-                                    </span>
+                    @php
+                        $groupedByType = $questions->groupBy('question_type');
+                        $typeFullLabels = [
+                            'multiple_choice' => 'Multiple Choice',
+                            'true_false' => 'True / False',
+                            'short_answer' => 'Short Answer',
+                            'essay' => 'Essay',
+                        ];
+                        $typeColors = [
+                            'multiple_choice' => 'text-indigo-700',
+                            'true_false' => 'text-green-700',
+                            'short_answer' => 'text-orange-700',
+                            'essay' => 'text-purple-700',
+                        ];
+                        $globalIndex = 0;
+                    @endphp
+                    <div id="questionNav" class="space-y-3 max-h-[420px] overflow-y-auto">
+                        @foreach($groupedByType as $type => $typeQuestions)
+                            <div>
+                                <p class="text-[10px] font-bold uppercase tracking-wider mb-1.5 {{ $typeColors[$type] ?? 'text-gray-500' }}">
+                                    {{ $typeFullLabels[$type] ?? ucfirst(str_replace('_', ' ', $type)) }}
+                                </p>
+                                <div class="grid grid-cols-5 gap-1">
+                                    @foreach($typeQuestions as $question)
+                                        @php $globalIndex++; @endphp
+                                        <button type="button" onclick="goToQuestion({{ $globalIndex }})"
+                                            class="question-dot w-full aspect-square text-xs font-bold bg-gray-200 text-gray-600 hover:bg-indigo-200 hover:text-indigo-700 transition-all duration-200 rounded-lg"
+                                            data-question="{{ $globalIndex }}">
+                                            {{ $globalIndex }}
+                                        </button>
+                                    @endforeach
                                 </div>
-
-                                <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ $question->question_text }}</h3>
-
-                                @if($question->question_image)
-                                    <img src="{{ asset('storage/' . $question->question_image) }}" alt="Question" class="mb-4 rounded-xl max-w-full">
-                                @endif
-
-                                {{-- Question options --}}
-                                @if($question->question_type === 'multiple_choice')
-                                    @if(!empty($question->options) && is_array($question->options))
-                                        <div class="space-y-3">
-                                            @foreach($question->options as $key => $option)
-                                                <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-indigo-400 hover:bg-indigo-50 transition-all duration-200">
-                                                    <input type="radio" name="answers[{{ $question->id }}]" value="{{ $option }}"
-                                                        class="w-5 h-5 text-indigo-600 focus:ring-indigo-500"
-                                                        onchange="saveAnswer({{ $question->id }}, '{{ addslashes($option) }}')">
-                                                    <span class="ml-3 font-semibold text-gray-500 mr-2">{{ chr(65 + $key) }}.</span>
-                                                    <span class="text-gray-700">{{ $option }}</span>
-                                                </label>
-                                            @endforeach
-                                        </div>
-                                    @else
-                                        <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 text-yellow-800 text-sm">
-                                            <strong>⚠️ Warning:</strong> Soal ini tidak memiliki pilihan jawaban. Silakan hubungi admin.
-                                        </div>
-                                    @endif
-                                @elseif($question->question_type === 'true_false')
-                                    <div class="space-y-3">
-                                        <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-green-400 hover:bg-green-50 transition-all duration-200">
-                                            <input type="radio" name="answers[{{ $question->id }}]" value="True"
-                                                class="w-5 h-5 text-green-600 focus:ring-green-500"
-                                                onchange="saveAnswer({{ $question->id }}, 'True')">
-                                            <span class="ml-3 text-lg">✅ True</span>
-                                        </label>
-                                        <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-red-400 hover:bg-red-50 transition-all duration-200">
-                                            <input type="radio" name="answers[{{ $question->id }}]" value="False"
-                                                class="w-5 h-5 text-red-600 focus:ring-red-500"
-                                                onchange="saveAnswer({{ $question->id }}, 'False')">
-                                            <span class="ml-3 text-lg">❌ False</span>
-                                        </label>
-                                    </div>
-                                @elseif($question->question_type === 'short_answer')
-                                    <input type="text" name="answers[{{ $question->id }}]"
-                                        class="w-full px-4 py-3 text-lg rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
-                                        placeholder="Type your answer here..."
-                                        onchange="saveAnswer({{ $question->id }}, this.value)">
-                                @elseif($question->question_type === 'essay')
-                                    <textarea name="answers[{{ $question->id }}]" rows="8"
-                                        class="w-full px-4 py-3 text-lg rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
-                                        placeholder="Write your essay answer here..."
-                                        onchange="saveAnswer({{ $question->id }}, this.value)"></textarea>
-                                @endif
                             </div>
-                        </div>
-                    @endforeach
-                </div>
-
-                <!-- Navigation -->
-                <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-8 pt-6 border-t border-gray-200">
-                    <button type="button" id="prevBtn" onclick="navigateQuestion(-1)"
-                        class="px-6 py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition font-medium disabled:opacity-50 w-full sm:w-auto"
-                        disabled>
-                        ← Previous
-                    </button>
-
-                    <div class="flex flex-wrap justify-center gap-2">
-                        @foreach($questions as $index => $question)
-                            <button type="button" onclick="goToQuestion({{ $index + 1 }})"
-                                class="w-10 h-10 rounded-xl text-sm font-semibold question-dot bg-gray-200 text-gray-600 hover:bg-indigo-200 transition-all duration-200"
-                                data-question="{{ $index + 1 }}">
-                                {{ $index + 1 }}
-                            </button>
                         @endforeach
                     </div>
 
-                    <button type="button" id="nextBtn" onclick="navigateQuestion(1)"
-                        class="px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition font-medium w-full sm:w-auto">
-                        Next →
-                    </button>
+                    {{-- Ragu + Submit buttons --}}
+                    <div class="mt-4 pt-4 border-t border-gray-100 flex flex-col gap-2">
+                        <button type="button" id="raguBtn" onclick="toggleRagu()"
+                            class="flex items-center justify-center gap-2 w-full px-3 py-2 bg-orange-400 text-white rounded-lg hover:bg-orange-500 transition-all duration-200 font-semibold text-sm">
+                            <svg class="w-4 h-4 ragu-icon" fill="none" stroke="currentColor" viewBox="0 0 20 20">
+                                <path d="M3.5 2.5h10a1 1 0 011 1v12.5a.5.5 0 01-.8.4L10 13.5l-3.7 2.9a.5.5 0 01-.8-.4V3.5a1 1 0 011-1z"/>
+                            </svg>
+                            <span>Ragu</span>
+                        </button>
+                        <button type="button" onclick="submitQuiz()"
+                            class="flex items-center justify-center gap-2 w-full px-3 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:shadow-md transition-all duration-300 font-bold text-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Submit
+                        </button>
+                    </div>
                 </div>
-
-                <!-- Submit -->
-                <div class="mt-6 text-center">
-                    <button type="button" onclick="submitQuiz()"
-                        class="px-10 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 font-bold text-lg">
-                        Submit Quiz ✓
-                    </button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
@@ -146,16 +239,20 @@
 <script>
     let currentQuestion = 1;
     const totalQuestions = {{ $questions->count() }};
-    let timeLeft = Math.floor({{ (int) $remainingSeconds }});
     const attemptId = {{ $attempt->id }};
+    let timeLeft = Math.floor({{ (int) $remainingSeconds }});
+    const raguSet = new Set();
+    const answeredSet = new Set();
+    let isAutoSubmitting = false;
 
     function updateTimer() {
         if (timeLeft <= 0) {
             timeLeft = 0;
             updateTimerDisplay();
+            isAutoSubmitting = true;
             setTimeout(() => {
                 document.getElementById('quizForm').submit();
-            }, 1000);
+            }, 500);
             return;
         }
         timeLeft--;
@@ -170,15 +267,61 @@
         document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
 
         const timerEl = document.getElementById('timer');
+        timerEl.classList.remove('text-red-300', 'text-red-500', 'text-white');
         if (timeLeft <= 60 && timeLeft > 0) {
             timerEl.classList.add('text-red-300');
-            timerEl.classList.remove('text-white');
         } else if (timeLeft <= 0) {
             timerEl.classList.add('text-red-500');
+        } else {
+            timerEl.classList.add('text-white');
         }
     }
 
     setInterval(updateTimer, 1000);
+
+    function toggleRagu() {
+        const qNum = currentQuestion;
+        if (raguSet.has(qNum)) {
+            raguSet.delete(qNum);
+        } else {
+            raguSet.add(qNum);
+        }
+        updateDots();
+        updateRaguBtn();
+    }
+
+    function updateRaguBtn() {
+        const btn = document.getElementById('raguBtn');
+        const icon = btn.querySelector('.ragu-icon');
+        const isRagu = raguSet.has(currentQuestion);
+        if (isRagu) {
+            btn.classList.add('ring-2', 'ring-orange-700', 'ring-offset-1', 'bg-orange-500');
+            btn.classList.remove('bg-orange-400');
+            icon.setAttribute('fill', 'currentColor');
+        } else {
+            btn.classList.remove('ring-2', 'ring-orange-700', 'ring-offset-1', 'bg-orange-500');
+            btn.classList.add('bg-orange-400');
+            icon.setAttribute('fill', 'none');
+        }
+    }
+
+    function updateDots() {
+        document.querySelectorAll('.question-dot').forEach(dot => {
+            const qNum = parseInt(dot.dataset.question);
+            const isActive = qNum === currentQuestion;
+            const isRagu = raguSet.has(qNum);
+
+            dot.classList.remove('bg-indigo-600', 'bg-yellow-400', 'bg-gray-200', 'text-white', 'text-gray-600');
+
+            if (isRagu) {
+                dot.classList.add('bg-yellow-400', 'text-white');
+            } else if (isActive) {
+                dot.classList.add('bg-indigo-600', 'text-white');
+            } else {
+                dot.classList.add('bg-gray-200', 'text-gray-600');
+            }
+        });
+    }
 
     function navigateQuestion(direction) {
         const newQuestion = currentQuestion + direction;
@@ -204,25 +347,20 @@
 
         const nextBtn = document.getElementById('nextBtn');
         if (questionNum === totalQuestions) {
-            nextBtn.textContent = 'Finish';
-            nextBtn.className = 'px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition font-medium w-full sm:w-auto';
+            nextBtn.textContent = 'Submit';
+            nextBtn.className = 'w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition font-medium text-sm sm:text-base';
+            nextBtn.onclick = submitQuiz;
         } else {
             nextBtn.textContent = 'Next →';
-            nextBtn.className = 'px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition font-medium w-full sm:w-auto';
+            nextBtn.className = 'w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition font-medium text-sm sm:text-base';
+            nextBtn.onclick = function() { navigateQuestion(1); };
         }
 
-        document.querySelectorAll('.question-dot').forEach(dot => {
-            dot.classList.remove('bg-indigo-600', 'text-white');
-            dot.classList.add('bg-gray-200', 'text-gray-600');
-        });
-
-        const activeDot = document.querySelector(`.question-dot[data-question="${questionNum}"]`);
-        if (activeDot) {
-            activeDot.classList.remove('bg-gray-200', 'text-gray-600');
-            activeDot.classList.add('bg-indigo-600', 'text-white');
-        }
+        updateDots();
 
         document.getElementById('progressBar').style.width = (questionNum / totalQuestions) * 100 + '%';
+
+        updateRaguBtn();
     }
 
     function saveAnswer(questionId, answer) {
@@ -234,17 +372,58 @@
                 'Accept': 'application/json',
             },
             body: JSON.stringify({ question_id: questionId, answer: answer }),
+        }).then(() => {
+            answeredSet.add(questionId);
+            updateDotAnswered(questionId);
         });
     }
 
-    function submitQuiz() {
-        if (confirm('Are you sure you want to submit your quiz? This action cannot be undone.')) {
-            document.getElementById('quizForm').submit();
+    function updateDotAnswered(questionId) {
+        const slide = document.querySelector(`.question-slide[data-qid="${questionId}"]`);
+        if (slide) {
+            slide.dataset.answered = '1';
         }
     }
 
+    function getUnansweredCount() {
+        let count = 0;
+        for (let i = 1; i <= totalQuestions; i++) {
+            const slide = document.querySelector(`.question-slide[data-question="${i}"]`);
+            if (!slide || slide.dataset.answered !== '1') {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    function submitQuiz() {
+        if (isAutoSubmitting) {
+            document.getElementById('quizForm').submit();
+            return;
+        }
+
+        const unanswered = getUnansweredCount();
+        if (unanswered > 0) {
+            if (!confirm(`Ada ${unanswered} soal yang belum dijawab.\n\nSoal yang tidak dijawab akan dianggap salah.\n\nTetap kirim jawaban?`)) {
+                return;
+            }
+        } else {
+            if (!confirm('Yakin ingin mengumpulkan jawaban? Tindakan ini tidak dapat dibatalkan.')) {
+                return;
+            }
+        }
+        document.getElementById('quizForm').submit();
+    }
+
+    // Pre-populate answeredSet from server state
+    document.querySelectorAll('.question-slide').forEach(slide => {
+        if (slide.dataset.answered === '1') {
+            answeredSet.add(parseInt(slide.dataset.qid));
+        }
+    });
+
     showQuestion(1);
-    updateTimerDisplay();
+    updateTimer();
 </script>
 @endpush
 @endsection

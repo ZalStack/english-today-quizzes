@@ -138,11 +138,10 @@ class QuizController extends Controller
         }
 
         $quiz = $attempt->quiz;
-        $questions = $quiz->questions()->orderBy('order_number')->get();
+        $questions = $quiz->questions()->orderByRaw("FIELD(question_type, 'multiple_choice', 'true_false', 'short_answer', 'essay')")->orderBy('order_number')->get();
 
-        // Check if time is up
-        $startTime = Carbon::parse($attempt->started_at);
-        $endTime = $startTime->copy()->addMinutes($quiz->duration);
+        // Check if time is up - use ends_at from attempt, fallback to started_at + duration
+        $endTime = $attempt->ends_at ?? $attempt->started_at->copy()->addMinutes($quiz->duration);
 
         if (now()->greaterThan($endTime)) {
             $this->submitQuiz($attempt);
@@ -151,8 +150,11 @@ class QuizController extends Controller
         }
 
         $remainingSeconds = max(0, (int) now()->diffInSeconds($endTime, false));
+        $answeredQuestionIds = UserAnswer::where('attempt_id', $attempt->id)
+            ->pluck('question_id')
+            ->toArray();
 
-        return view('employee.quizzes.take', compact('attempt', 'quiz', 'questions', 'remainingSeconds'));
+        return view('employee.quizzes.take', compact('attempt', 'quiz', 'questions', 'remainingSeconds', 'answeredQuestionIds'));
     }
 
     public function saveAnswer(Request $request, UserQuizAttempt $attempt)
@@ -207,6 +209,7 @@ class QuizController extends Controller
 
     private function submitQuiz(UserQuizAttempt $attempt)
     {
+        $attempt->load('answers');
         $answers = $attempt->answers;
         $totalPoints = $attempt->quiz->questions()->sum('points');
         $earnedPoints = $answers->sum('points_earned');
@@ -219,6 +222,22 @@ class QuizController extends Controller
             'total_correct' => $answers->where('is_correct', true)->count(),
             'total_wrong' => $answers->where('is_correct', false)->count(),
             'status' => 'completed',
+        ]);
+    }
+
+    public function unansweredCount(UserQuizAttempt $attempt)
+    {
+        if ($attempt->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $totalQuestions = $attempt->quiz->questions()->count();
+        $answeredQuestions = UserAnswer::where('attempt_id', $attempt->id)->count();
+        $unanswered = $totalQuestions - $answeredQuestions;
+
+        return response()->json([
+            'unanswered' => $unanswered,
+            'total' => $totalQuestions,
         ]);
     }
 

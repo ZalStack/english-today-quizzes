@@ -86,6 +86,31 @@ class EmployeeController extends Controller
             ->with('success', 'Employee updated successfully.');
     }
 
+    public function bulkDivision()
+    {
+        $employees = User::where('role', 'employee')->with('division')->orderBy('full_name')->get();
+        $divisions = Division::orderBy('name')->get();
+
+        return view('hr.employees.bulk-division', compact('employees', 'divisions'));
+    }
+
+    public function bulkDivisionUpdate(Request $request)
+    {
+        $request->validate([
+            'divisions' => 'required|array',
+            'divisions.*' => 'nullable|exists:divisions,id',
+        ]);
+
+        foreach ($request->divisions as $userId => $divisionId) {
+            User::where('id', $userId)->where('role', 'employee')->update([
+                'division_id' => $divisionId ?: null,
+            ]);
+        }
+
+        return redirect()->route('hr.employees.index')
+            ->with('success', 'Divisi pegawai berhasil diperbarui.');
+    }
+
     public function destroy(User $employee)
     {
         if ($employee->role !== 'employee') {
