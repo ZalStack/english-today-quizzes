@@ -89,6 +89,18 @@
                                         {{ $mySubmission->link }}
                                     </a>
                                 </div>
+                            @else
+                                <div class="rounded-xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 mb-3 flex items-center justify-center"
+                                     style="aspect-ratio: 16/9;">
+                                    <div class="text-center px-4">
+                                        <div class="w-14 h-14 bg-white/80 rounded-full flex items-center justify-center mx-auto mb-2 shadow-sm">
+                                            <svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                            </svg>
+                                        </div>
+                                        <p class="text-xs text-gray-400 font-medium">Kumpulkan video Anda</p>
+                                    </div>
+                                </div>
                             @endif
 
                             <div class="mt-auto">
