@@ -25,21 +25,31 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
+        /* Responsive table wrapper */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        /* Mobile-friendly tap targets */
+        .tap-target {
+            min-height: 44px;
+            min-width: 44px;
+        }
     </style>
 </head>
 <body class="font-sans antialiased bg-gray-50">
-    <div class="min-h-screen">
+    <div class="min-h-screen flex flex-col">
         @include('layouts.navigation')
 
         @if (isset($header))
-            <header class="bg-white shadow-sm border-b border-gray-100">
-                <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+            <header class="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-40">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
                     {{ $header }}
                 </div>
             </header>
         @endif
 
-        <main>
+        <main class="flex-1">
             @yield('content')
         </main>
 
