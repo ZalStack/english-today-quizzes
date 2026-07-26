@@ -3,21 +3,21 @@
 @section('title', 'Video Challenge')
 
 @section('content')
-<div class="py-8">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="mb-8">
-            <h1 class="text-3xl font-extrabold text-gray-900">Video Challenge English Today</h1>
-            <p class="text-gray-500 mt-1">Kumpulkan link video Bahasa Inggris sesuai tema yang tersedia</p>
+<div class="py-4 sm:py-6 lg:py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="mb-6 sm:mb-8">
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">Video Challenge English Today</h1>
+            <p class="text-gray-500 text-sm sm:text-base mt-1">Kumpulkan link video Bahasa Inggris sesuai tema yang tersedia</p>
         </div>
 
         @if(session('success'))
-            <div class="bg-green-100 border border-green-200 text-green-700 px-5 py-3 rounded-xl mb-6">
+            <div class="bg-green-100 border border-green-200 text-green-700 px-4 sm:px-5 py-3 rounded-xl mb-4 sm:mb-6 text-sm sm:text-base">
                 {{ session('success') }}
             </div>
         @endif
 
         @if(session('error'))
-            <div class="bg-red-100 border border-red-200 text-red-700 px-5 py-3 rounded-xl mb-6">
+            <div class="bg-red-100 border border-red-200 text-red-700 px-4 sm:px-5 py-3 rounded-xl mb-4 sm:mb-6 text-sm sm:text-base">
                 {{ session('error') }}
             </div>
         @endif
@@ -41,28 +41,28 @@
         @endphp
 
         @if($challenges->count() > 0)
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 @foreach($challenges as $challenge)
                     @php
                         $mySubmission = $mySubmissions->get($challenge->id);
                         $thumb = $mySubmission ? videoThumbnail($mySubmission->link) : null;
                     @endphp
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden card-hover flex flex-col">
-                        <div class="p-5 flex flex-col h-full">
+                        <div class="p-4 sm:p-5 flex flex-col h-full">
                             <div class="flex items-start justify-between mb-3">
-                                <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shrink-0">
-                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shrink-0">
+                                    <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                                     </svg>
                                 </div>
                                 @if($mySubmission)
-                                    <span class="px-2.5 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">Terkumpul</span>
+                                    <span class="px-2 py-0.5 sm:px-2.5 sm:py-1 bg-green-100 text-green-700 text-[10px] sm:text-xs font-semibold rounded-full">Terkumpul</span>
                                 @else
-                                    <span class="px-2.5 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full">Belum</span>
+                                    <span class="px-2 py-0.5 sm:px-2.5 sm:py-1 bg-yellow-100 text-yellow-700 text-[10px] sm:text-xs font-semibold rounded-full">Belum</span>
                                 @endif
                             </div>
 
-                            <h3 class="text-base font-bold text-gray-900 mb-1">{{ $challenge->title }}</h3>
+                            <h3 class="text-sm sm:text-base font-bold text-gray-900 mb-1 line-clamp-1">{{ $challenge->title }}</h3>
 
                             @if($mySubmission && $thumb)
                                 <div class="relative rounded-xl overflow-hidden bg-gray-200 mb-3 video-preview"
@@ -75,8 +75,8 @@
                                          onerror="this.style.display='none'">
                                     <div onclick="playVideo(this)"
                                          class="absolute inset-0 flex items-center justify-center cursor-pointer bg-black/0 hover:bg-black/20 transition-colors">
-                                        <div class="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
-                                            <svg class="w-5 h-5 text-gray-900 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                                        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-white/90 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+                                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-900 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
                                                 <path d="M8 5v14l11-7z"/>
                                             </svg>
                                         </div>
@@ -93,12 +93,12 @@
                                 <div class="rounded-xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 mb-3 flex items-center justify-center"
                                      style="aspect-ratio: 16/9;">
                                     <div class="text-center px-4">
-                                        <div class="w-14 h-14 bg-white/80 rounded-full flex items-center justify-center mx-auto mb-2 shadow-sm">
-                                            <svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <div class="w-12 h-12 sm:w-14 sm:h-14 bg-white/80 rounded-full flex items-center justify-center mx-auto mb-2 shadow-sm">
+                                            <svg class="w-6 h-6 sm:w-7 sm:h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                                             </svg>
                                         </div>
-                                        <p class="text-xs text-gray-400 font-medium">Kumpulkan video Anda</p>
+                                        <p class="text-[10px] sm:text-xs text-gray-400 font-medium">Kumpulkan video Anda</p>
                                     </div>
                                 </div>
                             @endif
@@ -106,12 +106,12 @@
                             <div class="mt-auto">
                                 @if($mySubmission)
                                     <button type="button" onclick="openModal({{ $challenge->id }}, '{{ $mySubmission->link }}')"
-                                            class="w-full px-4 py-2.5 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700 transition">
+                                            class="w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-indigo-600 text-white text-xs sm:text-sm font-semibold rounded-xl hover:bg-indigo-700 transition">
                                         Perbarui Link
                                     </button>
                                 @else
                                     <button type="button" onclick="openModal({{ $challenge->id }})"
-                                            class="w-full px-4 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-semibold rounded-xl hover:shadow-lg transition-all duration-300">
+                                            class="w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs sm:text-sm font-semibold rounded-xl hover:shadow-lg transition-all duration-300">
                                         Kumpulkan Video
                                     </button>
                                 @endif
@@ -121,14 +121,14 @@
                 @endforeach
             </div>
         @else
-            <div class="text-center py-16 bg-white rounded-2xl border border-gray-100">
-                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="text-center py-10 sm:py-16 bg-white rounded-2xl border border-gray-100">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                    <svg class="w-8 h-8 sm:w-10 sm:h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                     </svg>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-1">Belum Ada Challenge</h3>
-                <p class="text-gray-500">Tunggu challenge terbaru dari HRD</p>
+                <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-1">Belum Ada Challenge</h3>
+                <p class="text-gray-500 text-sm sm:text-base">Tunggu challenge terbaru dari HRD</p>
             </div>
         @endif
     </div>
@@ -137,10 +137,10 @@
 {{-- Video player modal --}}
 <div id="videoModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm items-center justify-center p-4" style="display: none;">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h3 class="font-bold text-gray-900 text-lg" id="videoModalTitle">Putar Video</h3>
+        <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 flex items-center justify-between">
+            <h3 class="font-bold text-gray-900 text-base sm:text-lg" id="videoModalTitle">Putar Video</h3>
             <button onclick="closeVideoModal()" class="text-gray-400 hover:text-gray-600 transition">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
@@ -151,30 +151,30 @@
 
 {{-- Submit modal --}}
 <div id="submitModal" class="fixed inset-0 z-50 hidden bg-black/40 backdrop-blur-sm items-center justify-center p-4" style="display: none;">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-bold text-gray-900" id="modalTitle">Kumpulkan Video</h3>
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-4 sm:p-6">
+        <div class="flex justify-between items-center mb-3 sm:mb-4">
+            <h3 class="text-base sm:text-lg font-bold text-gray-900" id="modalTitle">Kumpulkan Video</h3>
             <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
         </div>
         <form id="submitForm" method="POST">
             @csrf
-            <div class="mb-4">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Link Video</label>
+            <div class="mb-3 sm:mb-4">
+                <label class="block text-sm font-semibold text-gray-700 mb-1 sm:mb-2">Link Video</label>
                 <input type="url" name="link" id="linkInput" required
-                       class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+                       class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-sm sm:text-base"
                        placeholder="https://drive.google.com/... atau https://youtube.com/...">
             </div>
-            <div class="flex gap-3">
+            <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <button type="submit"
-                        class="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 font-semibold">
+                        class="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 font-semibold text-sm sm:text-base">
                     Kirim
                 </button>
                 <button type="button" onclick="closeModal()"
-                        class="px-6 py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition font-semibold">
+                        class="px-4 sm:px-6 py-2.5 sm:py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition font-semibold text-sm sm:text-base">
                     Batal
                 </button>
             </div>
