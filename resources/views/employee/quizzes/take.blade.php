@@ -91,10 +91,10 @@
                                             @if(!empty($question->options) && is_array($question->options))
                                                 <div class="space-y-2 sm:space-y-3">
                                                     @foreach($question->options as $key => $option)
-                                                        <label class="flex items-center p-3 sm:p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-indigo-400 hover:bg-indigo-50 transition-all duration-200">
+                                                        <label class="mc-option flex items-center p-3 sm:p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-indigo-400 hover:bg-indigo-50 transition-all duration-200">
                                                             <input type="radio" name="answers[{{ $question->id }}]" value="{{ $option }}"
                                                                 class="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600 focus:ring-indigo-500 shrink-0"
-                                                                onchange="saveAnswer({{ $question->id }}, '{{ addslashes($option) }}')">
+                                                                onchange="saveAnswer({{ $question->id }}, '{{ addslashes($option) }}'); highlightSelectedOption(this);">
                                                             <span class="ml-2 sm:ml-3 font-semibold text-gray-500 mr-1 sm:mr-2 text-sm sm:text-base">{{ chr(65 + $key) }}.</span>
                                                             <span class="text-sm sm:text-base text-gray-700">{{ $option }}</span>
                                                         </label>
@@ -107,16 +107,16 @@
                                             @endif
                                         @elseif($question->question_type === 'true_false')
                                             <div class="space-y-2 sm:space-y-3">
-                                                <label class="flex items-center p-3 sm:p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-green-400 hover:bg-green-50 transition-all duration-200">
+                                                <label class="tf-option flex items-center p-3 sm:p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-purple-400 hover:bg-purple-50 transition-all duration-200">
                                                     <input type="radio" name="answers[{{ $question->id }}]" value="True"
-                                                        class="w-4 h-4 sm:w-5 sm:h-5 text-green-600 focus:ring-green-500 shrink-0"
-                                                        onchange="saveAnswer({{ $question->id }}, 'True')">
+                                                        class="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 focus:ring-purple-500 shrink-0"
+                                                        onchange="saveAnswer({{ $question->id }}, 'True'); highlightSelectedOption(this);">
                                                     <span class="ml-2 sm:ml-3 text-sm sm:text-lg">True</span>
                                                 </label>
-                                                <label class="flex items-center p-3 sm:p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-red-400 hover:bg-red-50 transition-all duration-200">
+                                                <label class="tf-option flex items-center p-3 sm:p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-purple-400 hover:bg-purple-50 transition-all duration-200">
                                                     <input type="radio" name="answers[{{ $question->id }}]" value="False"
-                                                        class="w-4 h-4 sm:w-5 sm:h-5 text-red-600 focus:ring-red-500 shrink-0"
-                                                        onchange="saveAnswer({{ $question->id }}, 'False')">
+                                                        class="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 focus:ring-purple-500 shrink-0"
+                                                        onchange="saveAnswer({{ $question->id }}, 'False'); highlightSelectedOption(this);">
                                                     <span class="ml-2 sm:ml-3 text-sm sm:text-lg">False</span>
                                                 </label>
                                             </div>
@@ -210,14 +210,18 @@
                         @endforeach
                     </div>
 
+                    <div class="mt-2 sm:mt-3 flex items-center gap-3 sm:gap-4 text-[9px] sm:text-[11px] text-gray-500">
+                        <span class="flex items-center gap-1">
+                            <span class="inline-block w-2.5 h-2.5 sm:w-3 sm:h-3 rounded bg-green-500"></span>
+                            Terjawab
+                        </span>
+                        <span class="flex items-center gap-1">
+                            <span class="inline-block w-2.5 h-2.5 sm:w-3 sm:h-3 rounded bg-gray-200"></span>
+                            Kosong
+                        </span>
+                    </div>
+
                     <div class="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-100 flex flex-col gap-2">
-                        <button type="button" id="raguBtn" onclick="toggleRagu()"
-                            class="flex items-center justify-center gap-2 w-full px-2 sm:px-3 py-1.5 sm:py-2 bg-orange-400 text-white rounded-lg hover:bg-orange-500 transition-all duration-200 font-semibold text-[10px] sm:text-sm">
-                            <svg class="w-3 h-3 sm:w-4 sm:h-4 ragu-icon" fill="none" stroke="currentColor" viewBox="0 0 20 20">
-                                <path d="M3.5 2.5h10a1 1 0 011 1v12.5a.5.5 0 01-.8.4L10 13.5l-3.7 2.9a.5.5 0 01-.8-.4V3.5a1 1 0 011-1z"/>
-                            </svg>
-                            <span>Ragu</span>
-                        </button>
                         <button type="button" onclick="submitQuiz()"
                             class="flex items-center justify-center gap-2 w-full px-2 sm:px-3 py-1.5 sm:py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:shadow-md transition-all duration-300 font-bold text-[10px] sm:text-sm">
                             <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -238,7 +242,6 @@
     const totalQuestions = {{ $questions->count() }};
     const attemptId = {{ $attempt->id }};
     let timeLeft = Math.floor({{ (int) $remainingSeconds }});
-    const raguSet = new Set();
     const answeredSet = new Set();
     let isAutoSubmitting = false;
 
@@ -276,48 +279,53 @@
 
     setInterval(updateTimer, 1000);
 
-    function toggleRagu() {
-        const qNum = currentQuestion;
-        if (raguSet.has(qNum)) {
-            raguSet.delete(qNum);
-        } else {
-            raguSet.add(qNum);
-        }
-        updateDots();
-        updateRaguBtn();
-    }
-
-    function updateRaguBtn() {
-        const btn = document.getElementById('raguBtn');
-        const icon = btn.querySelector('.ragu-icon');
-        const isRagu = raguSet.has(currentQuestion);
-        if (isRagu) {
-            btn.classList.add('ring-2', 'ring-orange-700', 'ring-offset-1', 'bg-orange-500');
-            btn.classList.remove('bg-orange-400');
-            icon.setAttribute('fill', 'currentColor');
-        } else {
-            btn.classList.remove('ring-2', 'ring-orange-700', 'ring-offset-1', 'bg-orange-500');
-            btn.classList.add('bg-orange-400');
-            icon.setAttribute('fill', 'none');
-        }
-    }
-
     function updateDots() {
         document.querySelectorAll('.question-dot').forEach(dot => {
             const qNum = parseInt(dot.dataset.question);
             const isActive = qNum === currentQuestion;
-            const isRagu = raguSet.has(qNum);
+            const slide = document.querySelector(`.question-slide[data-question="${qNum}"]`);
+            const isAnswered = !!slide && slide.dataset.answered === '1';
 
-            dot.classList.remove('bg-indigo-600', 'bg-yellow-400', 'bg-gray-200', 'text-white', 'text-gray-600');
+            dot.classList.remove(
+                'bg-indigo-600', 'bg-green-500', 'bg-gray-200',
+                'text-white', 'text-gray-600',
+                'ring-2', 'ring-indigo-700', 'ring-offset-1'
+            );
 
-            if (isRagu) {
-                dot.classList.add('bg-yellow-400', 'text-white');
-            } else if (isActive) {
-                dot.classList.add('bg-indigo-600', 'text-white');
+            // Warna dasar: hijau kalau sudah dijawab, abu-abu kalau masih kosong
+            if (isAnswered) {
+                dot.classList.add('bg-green-500', 'text-white');
             } else {
                 dot.classList.add('bg-gray-200', 'text-gray-600');
             }
+
+            // Soal yang sedang dibuka diberi cincin penanda, warna dasar tetap menunjukkan status jawaban
+            if (isActive) {
+                dot.classList.add('ring-2', 'ring-indigo-700', 'ring-offset-1');
+            }
         });
+    }
+
+    function highlightSelectedOption(inputEl) {
+        const name = inputEl.name;
+        const isTrueFalse = inputEl.closest('.question-slide')?.dataset.type === 'true_false';
+        const selectedClasses = isTrueFalse
+            ? ['border-purple-500', 'bg-purple-50', 'ring-2', 'ring-purple-400']
+            : ['border-indigo-500', 'bg-indigo-50', 'ring-2', 'ring-indigo-400'];
+
+        document.querySelectorAll(`input[name="${CSS.escape(name)}"]`).forEach(radio => {
+            const label = radio.closest('label');
+            if (!label) return;
+            label.classList.remove(
+                'border-purple-500', 'bg-purple-50', 'ring-2', 'ring-purple-400',
+                'border-indigo-500', 'bg-indigo-50', 'ring-2', 'ring-indigo-400'
+            );
+        });
+
+        const selectedLabel = inputEl.closest('label');
+        if (selectedLabel) {
+            selectedLabel.classList.add(...selectedClasses);
+        }
     }
 
     function navigateQuestion(direction) {
@@ -355,7 +363,6 @@
 
         updateDots();
         document.getElementById('progressBar').style.width = (questionNum / totalQuestions) * 100 + '%';
-        updateRaguBtn();
     }
 
     function saveAnswer(questionId, answer) {
@@ -378,6 +385,7 @@
         if (slide) {
             slide.dataset.answered = '1';
         }
+        updateDots();
     }
 
     function getUnansweredCount() {
@@ -415,6 +423,11 @@
         if (slide.dataset.answered === '1') {
             answeredSet.add(parseInt(slide.dataset.qid));
         }
+    });
+
+    // Pre-populate highlight untuk opsi yang sudah tercentang (mis. saat reload halaman)
+    document.querySelectorAll('.mc-option input:checked, .tf-option input:checked').forEach(input => {
+        highlightSelectedOption(input);
     });
 
     showQuestion(1);

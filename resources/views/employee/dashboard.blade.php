@@ -92,7 +92,7 @@
                                             </div>
                                             <div class="flex items-center space-x-2">
                                                 @if($quiz->enroll_key)
-                                                    <span class="text-[10px] sm:text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">Key: {{ $quiz->enroll_key }}</span>
+                                                    <span class="text-[10px] sm:text-xs text-gray-800 font-medium bg-orange-600 px-2 py-0.5 rounded">Key: {{ $quiz->enroll_key }}</span>
                                                 @endif
                                                 <a href="{{ route('employee.quizzes.join') }}"
                                                    class="px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs sm:text-sm rounded-lg hover:shadow-lg transition-all duration-300 whitespace-nowrap">
