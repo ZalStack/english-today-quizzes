@@ -10,12 +10,12 @@ use App\Http\Controllers\Api\Hr\QuizController;
 use App\Http\Controllers\Api\Hr\QuestionController;
 use App\Http\Controllers\Api\Hr\ReportController;
 use App\Http\Controllers\Api\Hr\ProfileController as HrProfileController;
+use App\Http\Controllers\Api\Hr\VideoChallengeController as HRVideoChallengeController;
 
 use App\Http\Controllers\Api\Employee\DashboardController as EmployeeDashboardController;
 use App\Http\Controllers\Api\Employee\QuizController as EmployeeQuizController;
 use App\Http\Controllers\Api\Employee\VideoChallengeController as EmployeeVideoChallengeController;
 use App\Http\Controllers\Api\Employee\ProfileController as EmployeeProfileController;
-use App\Http\Controllers\HR\VideoChallengeController as HRVideoChallengeController;
 
 /*
 |--------------------------------------------------------------------------
