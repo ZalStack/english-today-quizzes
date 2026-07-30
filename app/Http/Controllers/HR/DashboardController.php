@@ -35,7 +35,7 @@ class DashboardController extends Controller
             }], 'score')
             ->having('completed_quizzes_count', '>', 0)
             ->orderByDesc('total_score')
-            ->take(5)
+            ->take(10)
             ->get();
 
         return view('hr.dashboard', compact(
