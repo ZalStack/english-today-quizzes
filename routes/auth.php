@@ -4,9 +4,8 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
-use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
-use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\PasswordVerificationController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
@@ -22,17 +21,30 @@ Route::middleware('guest')->group(function () {
 
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
 
-    Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
+    // ── Forgot Password Flow (Custom) ──────────────────────────────
+    // Step 1: Input & verifikasi email
+    Route::get('forgot-password', [PasswordVerificationController::class, 'showEmailForm'])
         ->name('password.request');
 
-    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
+    Route::post('forgot-password', [PasswordVerificationController::class, 'verifyEmail'])
+        ->middleware('throttle:6,1')
         ->name('password.email');
 
-    Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
-        ->name('password.reset');
+    // Step 2: Captcha matematika (penjumlahan / pengurangan / pembagian acak)
+    Route::get('forgot-password/verification', [PasswordVerificationController::class, 'showCaptcha'])
+        ->name('password.captcha');
 
-    Route::post('reset-password', [NewPasswordController::class, 'store'])
-        ->name('password.store');
+    Route::post('forgot-password/verification', [PasswordVerificationController::class, 'verifyCaptcha'])
+        ->middleware('throttle:10,1')
+        ->name('password.captcha.verify');
+
+    // Step 3: Password baru & konfirmasi password baru
+    Route::get('forgot-password/new-password', [PasswordVerificationController::class, 'showNewPasswordForm'])
+        ->name('password.new');
+
+    Route::post('forgot-password/new-password', [PasswordVerificationController::class, 'updatePassword'])
+        ->name('password.new.update');
+    // ────────────────────────────────────────────────────────────────
 });
 
 Route::middleware('auth')->group(function () {

@@ -389,7 +389,7 @@
                     @enderror
                 </div>
 
-                <!-- Remember Me -->
+                <!-- Remember Me & Forgot Password -->
                 <div class="flex items-center justify-between">
                     <label class="checkbox-wrapper">
                         <input
@@ -399,6 +399,10 @@
                         >
                         <span class="text-sm text-[#3a3a55]/80">Remember me</span>
                     </label>
+
+                    <a href="{{ route('password.request') }}" class="text-sm font-semibold text-[#27438D] hover:text-[#00A2E9] transition-colors">
+                        Forgot password?
+                    </a>
                 </div>
 
                 <!-- Submit -->
