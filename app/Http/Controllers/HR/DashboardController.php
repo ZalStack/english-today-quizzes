@@ -22,7 +22,7 @@ class DashboardController extends Controller
 
         $recentAttempts = UserQuizAttempt::with(['user', 'quiz'])
             ->latest('created_at')
-            ->take(10)
+            ->take(8)
             ->get();
 
         $leaderboard = User::where('role', 'employee')
