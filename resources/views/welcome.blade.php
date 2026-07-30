@@ -233,12 +233,12 @@
                     </div>
                 </div>
 
-                <!-- Nav Links (hidden mobile) -->
+                {{-- <!-- Nav Links (hidden mobile) -->
                 <div class="hidden md:flex items-center gap-1">
                     <a href="#fitur" class="px-4 py-2 text-sm font-medium text-[#3a3a55]/70 hover:text-[#161758] rounded-lg hover:bg-[#161758]/5 transition-all duration-200">Fitur</a>
                     <a href="#cara-kerja" class="px-4 py-2 text-sm font-medium text-[#3a3a55]/70 hover:text-[#161758] rounded-lg hover:bg-[#161758]/5 transition-all duration-200">Cara Kerja</a>
                     <a href="#faq" class="px-4 py-2 text-sm font-medium text-[#3a3a55]/70 hover:text-[#161758] rounded-lg hover:bg-[#161758]/5 transition-all duration-200">FAQ</a>
-                </div>
+                </div> --}}
 
                 <!-- CTA -->
                 <div class="flex items-center gap-3">
@@ -375,7 +375,7 @@
 </div>
 </section>
 
-<!-- ==================== FEATURES SECTION ==================== -->
+{{-- <!-- ==================== FEATURES SECTION ==================== -->
 <section id="fitur" class="py-20 sm:py-28 px-5 sm:px-8 bg-gradient-to-b from-transparent via-[#161758]/2 to-transparent">
     <div class="max-w-6xl mx-auto">
         <!-- Section header -->
@@ -650,7 +650,7 @@
             </p>
         </div>
     </div>
-</footer>
+</footer> --}}
 
 <!-- ==================== SIMPLE NAV SCROLL SCRIPT ==================== -->
 <script>
