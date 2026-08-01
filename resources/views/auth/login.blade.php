@@ -318,7 +318,7 @@
             <div class="badge">
                 <span>ET</span>
             </div>
-            <span class="label">ET-Quizzes</span>
+            <span class="label">English TOday KPM</span>
         </a>
 
         <!-- Card -->
