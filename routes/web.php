@@ -16,7 +16,11 @@ use App\Http\Controllers\Employee\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 // Welcome Page
-Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
+// Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
+// Welcome Page - Redirect ke login
+Route::get('/', function () {
+    return redirect('/login');
+})->name('welcome');
 
 // Authentication Routes (Breeze)
 require __DIR__.'/auth.php';
@@ -78,7 +82,7 @@ Route::middleware(['auth', 'role:employee'])->prefix('employee')->name('employee
 
     // Quiz Taking
     Route::get('/quizzes/{quiz}/preview', [EmployeeQuizController::class, 'preview'])->name('quizzes.preview');
-    Route::post('/quizzes/{quiz}/start', [EmployeeQuizController::class, 'start'])->name('quizzes.start'); 
+    Route::post('/quizzes/{quiz}/start', [EmployeeQuizController::class, 'start'])->name('quizzes.start');
     Route::get('/quizzes/take/{attempt}', [EmployeeQuizController::class, 'take'])->name('quizzes.take');
     Route::post('/quizzes/take/{attempt}/save', [EmployeeQuizController::class, 'saveAnswer'])->name('quizzes.save');
     Route::post('/quizzes/take/{attempt}/submit', [EmployeeQuizController::class, 'submit'])->name('quizzes.submit');
