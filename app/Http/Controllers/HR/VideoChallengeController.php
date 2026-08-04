@@ -16,10 +16,7 @@ class VideoChallengeController extends Controller
             ->latest()
             ->paginate(9);
 
-        // Get all divisions with employee counts
-        $divisions = \App\Models\Division::withCount('users')->get();
-
-        // Get active employees grouped by division
+        // Active employees grouped by division name (computed on the fly, no schema changes)
         $employees = User::where('role', 'employee')
             ->where('status', 'active')
             ->with('division')
@@ -38,7 +35,7 @@ class VideoChallengeController extends Controller
             ->groupBy('challenge_id')
             ->map(fn ($subs) => $subs->pluck('user_id')->flip());
 
-        $challenges->getCollection()->transform(function ($challenge) use ($employeesByDivision, $totalEmployees, $submissionsByChallenge, $divisions) {
+        $challenges->getCollection()->transform(function ($challenge) use ($employeesByDivision, $totalEmployees, $submissionsByChallenge) {
             $submittedIds = $submissionsByChallenge->get($challenge->id, collect());
 
             $breakdown = $employeesByDivision->map(function ($emps, $divisionName) use ($submittedIds) {
@@ -54,7 +51,6 @@ class VideoChallengeController extends Controller
             $challenge->division_breakdown = $breakdown;
             $challenge->total_employees_snapshot = $totalEmployees;
             $challenge->total_submitted_snapshot = $breakdown->sum('submitted');
-            $challenge->divisions = $divisions;
 
             return $challenge;
         });
@@ -139,8 +135,7 @@ class VideoChallengeController extends Controller
             ];
         })->sortByDesc(fn($d) => $d['is_no_division']);
 
-        // Add ALL division data
-        $allData = [
+        $divisionData->prepend([
             'division_name' => 'ALL',
             'is_no_division' => false,
             'employees' => $employees->map(function ($user) use ($submissions) {
@@ -152,10 +147,7 @@ class VideoChallengeController extends Controller
             'submitted_count' => $allSubmitted,
             'pending_count' => $allPending,
             'total' => $employees->count(),
-        ];
-
-        // Prepend ALL data
-        $divisionData = collect([$allData])->concat($divisionData);
+        ]);
 
         return view('hr.video-challenges.show', compact('videoChallenge', 'divisionData', 'stats'));
     }
