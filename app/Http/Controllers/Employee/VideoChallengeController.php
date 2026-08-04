@@ -7,12 +7,21 @@ use App\Models\User;
 use App\Models\VideoChallenge;
 use App\Models\VideoSubmission;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class VideoChallengeController extends Controller
 {
     public function index()
     {
         try {
+            // Cache active employees for 5 minutes
+            $activeEmployees = Cache::remember('active_employees', 300, function() {
+                return User::where('role', 'employee')
+                    ->where('status', 'active')
+                    ->with('division')
+                    ->get();
+            });
+
             $challenges = VideoChallenge::where('is_active', true)
                 ->withCount('submissions')
                 ->latest()
@@ -22,14 +31,10 @@ class VideoChallengeController extends Controller
                 ->get()
                 ->keyBy('challenge_id');
 
-            // Get all active employees
-            $activeEmployees = User::where('role', 'employee')
-                ->where('status', 'active')
-                ->with('division')
-                ->get();
-
-            // Get submissions for all challenges
+            // Get submissions for all challenges efficiently
             $challengeIds = $challenges->pluck('id');
+
+            // Use eager loading and cache
             $allSubmissions = VideoSubmission::whereIn('challenge_id', $challengeIds)
                 ->with('user')
                 ->get()
@@ -127,6 +132,9 @@ class VideoChallengeController extends Controller
                 'link' => $request->link,
             ]);
 
+            // Clear cache
+            Cache::forget('active_employees');
+
             return redirect()->route('employee.video-challenges.index')
                 ->with('success', 'Link video berhasil diperbarui.');
         }
@@ -136,6 +144,9 @@ class VideoChallengeController extends Controller
             'user_id' => auth()->id(),
             'link' => $request->link,
         ]);
+
+        // Clear cache
+        Cache::forget('active_employees');
 
         return redirect()->route('employee.video-challenges.index')
             ->with('success', 'Link video berhasil dikumpulkan.');
