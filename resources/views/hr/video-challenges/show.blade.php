@@ -3,17 +3,6 @@
 @section('title', $videoChallenge->title . ' — Progress')
 
 @section('content')
-@php
-    function embedUrl($link) {
-        if (preg_match('/drive\.google\.com\/file\/d\/([^\/\?]+)/', $link, $m)) {
-            return 'https://drive.google.com/file/d/' . $m[1] . '/preview';
-        }
-        if (preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\?]+)/', $link, $m)) {
-            return 'https://www.youtube.com/embed/' . $m[1] . '?autoplay=1';
-        }
-        return null;
-    }
-@endphp
 <div class="py-4 sm:py-6 lg:py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="mb-4 sm:mb-6">
@@ -62,13 +51,14 @@
             </div>
         @endif
 
+        {{-- Division cards --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
-            @forelse($divisionData as $index => $data)
+            @forelse($divisionData as $data)
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden card-hover">
                     <div class="p-3 sm:p-4">
                         <div class="flex items-center justify-between mb-2">
-                            <h3 class="font-bold text-gray-900 text-xs sm:text-sm truncate">{{ $data['division_name'] }}</h3>
-                            <span class="text-[10px] sm:text-xs text-gray-400">{{ $data['total'] }} org</span>
+                            <h3 class="font-bold text-gray-900 text-xs sm:text-sm truncate" title="{{ $data['division_name'] }}">{{ $data['division_name'] }}</h3>
+                            <span class="text-[10px] sm:text-xs text-gray-400 shrink-0">{{ $data['total'] }} org</span>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
                             <div class="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full transition-all"
@@ -131,7 +121,7 @@
             'name' => $e['user']->full_name ?? $e['user']->name,
             'email' => $e['user']->email,
             'submitted' => $e['submission'] ? true : false,
-            'embed' => $e['submission'] ? embedUrl($e['submission']->link) : null,
+            'embed' => $e['submission'] ? \App\Helpers\VideoLinkHelper::embedUrl($e['submission']->link) : null,
         ])->values()->toArray(),
     ])->values()->toArray()); ?>;
 

@@ -22,30 +22,12 @@
             </div>
         @endif
 
-        @php
-            function videoThumbnail($link) {
-                if (preg_match('/drive\.google\.com\/file\/d\/([^\/\?]+)/', $link, $m)) {
-                    return [
-                        'thumb' => 'https://drive.google.com/thumbnail?id=' . $m[1] . '&sz=w400-h300',
-                        'embed' => 'https://drive.google.com/file/d/' . $m[1] . '/preview',
-                    ];
-                }
-                if (preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\?]+)/', $link, $m)) {
-                    return [
-                        'thumb' => 'https://img.youtube.com/vi/' . $m[1] . '/maxresdefault.jpg',
-                        'embed' => 'https://www.youtube.com/embed/' . $m[1] . '?autoplay=1',
-                    ];
-                }
-                return null;
-            }
-        @endphp
-
         @if($challenges->count() > 0)
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 @foreach($challenges as $challenge)
                     @php
                         $mySubmission = $mySubmissions->get($challenge->id);
-                        $thumb = $mySubmission ? videoThumbnail($mySubmission->link) : null;
+                        $thumb = $mySubmission ? \App\Helpers\VideoLinkHelper::thumbnail($mySubmission->link) : null;
                     @endphp
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden card-hover flex flex-col">
                         <div class="p-4 sm:p-5 flex flex-col h-full">
@@ -62,14 +44,18 @@
                                 @endif
                             </div>
 
-                            <h3 class="text-sm sm:text-base font-bold text-gray-900 mb-1 line-clamp-1">{{ $challenge->title }}</h3>
+                            <h3 class="text-sm sm:text-base font-bold text-gray-900 mb-1 line-clamp-1" title="{{ $challenge->title }}">{{ $challenge->title }}</h3>
+                            @if($challenge->description)
+                                <p class="text-gray-500 text-xs sm:text-sm mb-3 line-clamp-2">{{ $challenge->description }}</p>
+                            @endif
 
+                            {{-- Employee's own video for this chapter/challenge --}}
                             @if($mySubmission && $thumb)
                                 <div class="relative rounded-xl overflow-hidden bg-gray-200 mb-3 video-preview"
                                      style="aspect-ratio: 16/9;"
                                      data-embed="{{ $thumb['embed'] }}"
                                      data-title="{{ $challenge->title }}">
-                                    <img src="{{ $thumb['thumb'] }}" alt="Video thumbnail"
+                                    <img src="{{ $thumb['thumb'] }}" alt="Video thumbnail milik saya"
                                          class="absolute inset-0 w-full h-full object-cover cursor-pointer"
                                          onclick="playVideo(this)"
                                          onerror="this.style.display='none'">
@@ -84,7 +70,7 @@
                                 </div>
                             @elseif($mySubmission)
                                 <div class="bg-gray-50 rounded-xl p-3 mb-3 text-center">
-                                    <a href="{{ $mySubmission->link }}" target="_blank"
+                                    <a href="{{ $mySubmission->link }}" target="_blank" rel="noopener"
                                        class="text-xs text-indigo-600 hover:text-indigo-700 font-semibold break-all">
                                         {{ $mySubmission->link }}
                                     </a>

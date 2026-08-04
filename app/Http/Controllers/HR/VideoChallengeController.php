@@ -14,7 +14,46 @@ class VideoChallengeController extends Controller
     {
         $challenges = VideoChallenge::withCount('submissions')
             ->latest()
-            ->paginate(12);
+            ->paginate(9);
+
+        // Active employees grouped by division name (computed on the fly, no schema changes)
+        $employees = User::where('role', 'employee')
+            ->where('status', 'active')
+            ->with('division')
+            ->get();
+
+        $employeesByDivision = $employees
+            ->groupBy(fn ($u) => $u->division?->name ?: 'Tanpa Divisi')
+            ->sortKeys();
+
+        $totalEmployees = $employees->count();
+
+        $challengeIds = $challenges->pluck('id');
+
+        $submissionsByChallenge = VideoSubmission::whereIn('challenge_id', $challengeIds)
+            ->get()
+            ->groupBy('challenge_id')
+            ->map(fn ($subs) => $subs->pluck('user_id')->flip());
+
+        $challenges->getCollection()->transform(function ($challenge) use ($employeesByDivision, $totalEmployees, $submissionsByChallenge) {
+            $submittedIds = $submissionsByChallenge->get($challenge->id, collect());
+
+            $breakdown = $employeesByDivision->map(function ($emps, $divisionName) use ($submittedIds) {
+                $submitted = $emps->filter(fn ($u) => $submittedIds->has($u->id))->count();
+
+                return [
+                    'name' => $divisionName,
+                    'submitted' => $submitted,
+                    'total' => $emps->count(),
+                ];
+            })->values();
+
+            $challenge->division_breakdown = $breakdown;
+            $challenge->total_employees_snapshot = $totalEmployees;
+            $challenge->total_submitted_snapshot = $breakdown->sum('submitted');
+
+            return $challenge;
+        });
 
         return view('hr.video-challenges.index', compact('challenges'));
     }
