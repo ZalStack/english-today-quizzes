@@ -28,6 +28,7 @@
                     @php
                         $mySubmission = $mySubmissions->get($challenge->id);
                         $thumb = $mySubmission ? \App\Helpers\VideoLinkHelper::thumbnail($mySubmission->link) : null;
+                        $divisionStats = isset($challenge->division_stats) ? $challenge->division_stats : collect();
                     @endphp
 
                     <!-- Challenge Card -->
@@ -53,25 +54,26 @@
                                     @else
                                         <span class="px-2.5 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full">Belum</span>
                                     @endif
-                                    <span class="text-xs text-gray-400">{{ $challenge->total_submitted }}/{{ $challenge->total_employees }} terkumpul</span>
+                                    <span class="text-xs text-gray-400">{{ $challenge->total_submitted ?? 0 }}/{{ $challenge->total_employees ?? 0 }} terkumpul</span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Division Stats Cards -->
+                        @if($divisionStats->count() > 0)
                         <div class="p-4 sm:p-6">
                             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
-                                @foreach($challenge->division_stats as $div)
+                                @foreach($divisionStats as $divIndex => $div)
                                     <div class="bg-gray-50 rounded-xl p-3 sm:p-4 border border-gray-100">
                                         <div class="flex justify-between items-start mb-2">
-                                            <h4 class="font-semibold text-gray-900 text-sm">{{ $div['name'] }}</h4>
-                                            <span class="text-xs text-gray-400">{{ $div['submitted'] }}/{{ $div['total'] }}</span>
+                                            <h4 class="font-semibold text-gray-900 text-sm">{{ $div['name'] ?? 'Unknown' }}</h4>
+                                            <span class="text-xs text-gray-400">{{ $div['submitted'] ?? 0 }}/{{ $div['total'] ?? 0 }}</span>
                                         </div>
                                         <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
                                             <div class="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full transition-all"
-                                                 style="width: {{ $div['total'] > 0 ? round(($div['submitted'] / $div['total']) * 100) : 0 }}%"></div>
+                                                 style="width: {{ isset($div['total']) && $div['total'] > 0 ? round((($div['submitted'] ?? 0) / $div['total']) * 100) : 0 }}%"></div>
                                         </div>
-                                        <button onclick="openDivisionModal({{ $loop->parent->index }}, {{ $loop->index }})"
+                                        <button onclick="openDivisionModal({{ $loop->parent->index }}, {{ $divIndex }})"
                                                 class="w-full text-center text-xs text-indigo-600 hover:text-indigo-700 font-semibold py-1 hover:underline">
                                             Lihat Detail
                                         </button>
@@ -79,6 +81,7 @@
                                 @endforeach
                             </div>
                         </div>
+                        @endif
 
                         <!-- My Video Submission -->
                         <div class="px-4 sm:px-6 pb-4 sm:pb-6">
@@ -87,7 +90,7 @@
                                     <div>
                                         <span class="text-sm font-semibold text-gray-700">Video Saya</span>
                                         @if($mySubmission && $thumb)
-                                            <div class="mt-2 flex items-center gap-3">
+                                            <div class="mt-2 flex flex-wrap items-center gap-3">
                                                 <button onclick="playVideo('{{ $thumb['embed'] }}', '{{ $challenge->title }}')"
                                                         class="flex items-center gap-2 px-3 py-1.5 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition">
                                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -202,23 +205,24 @@
         return [
             'id' => $challenge->id,
             'title' => $challenge->title,
-            'divisions' => $challenge->division_stats->map(function($div) {
+            'divisions' => isset($challenge->division_stats) ? $challenge->division_stats->map(function($div) {
                 return [
-                    'name' => $div['name'],
-                    'employees' => $div['employees']->map(function($emp) {
-                        $user = $emp['user'];
-                        $submission = $emp['submission'];
+                    'name' => $div['name'] ?? 'Unknown',
+                    'employees' => isset($div['employees']) ? $div['employees']->map(function($emp) {
+                        $user = $emp['user'] ?? null;
+                        $submission = $emp['submission'] ?? null;
+                        if (!$user) return null;
                         return [
-                            'name' => $user->full_name ?? $user->name,
-                            'email' => $user->email,
+                            'name' => $user->full_name ?? $user->name ?? 'Unknown',
+                            'email' => $user->email ?? '',
                             'submitted' => !is_null($submission),
                             'link' => $submission ? $submission->link : null,
                             'embed' => $submission ? \App\Helpers\VideoLinkHelper::embedUrl($submission->link) : null,
                             'is_me' => $user->id === auth()->id(),
                         ];
-                    })->values()->toArray(),
+                    })->filter()->values()->toArray() : [],
                 ];
-            })->values()->toArray(),
+            })->values()->toArray() : [],
         ];
     })->values()->toArray());
 
@@ -254,7 +258,7 @@
         // Show submitted first
         [...submitted, ...pending].forEach(function(emp) {
             const isSubmitted = emp.submitted;
-            const initial = emp.name.charAt(0).toUpperCase();
+            const initial = (emp.name || 'U').charAt(0).toUpperCase();
             const bg = isSubmitted ? 'from-green-500 to-emerald-600' : 'from-gray-400 to-gray-500';
 
             const div = document.createElement('div');
