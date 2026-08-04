@@ -23,84 +23,100 @@
         @endif
 
         @if($challenges->count() > 0)
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                @foreach($challenges as $challenge)
+            <div class="space-y-6 sm:space-y-8">
+                @foreach($challenges as $index => $challenge)
                     @php
-                        $mySubmission = $mySubmissions->get($challenge->id);
+                        $challengeData = $challengesData[$index] ?? null;
+                        $mySubmission = $challengeData['my_submission'] ?? null;
                         $thumb = $mySubmission ? \App\Helpers\VideoLinkHelper::thumbnail($mySubmission->link) : null;
+                        $divisionStats = $challengeData['division_stats'] ?? [];
                     @endphp
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden card-hover flex flex-col">
-                        <div class="p-4 sm:p-5 flex flex-col h-full">
-                            <div class="flex items-start justify-between mb-3">
-                                <div class="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shrink-0">
-                                    <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                                    </svg>
+
+                    <!-- Challenge Card -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="p-4 sm:p-6 border-b border-gray-100">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div class="flex items-start sm:items-center gap-3 sm:gap-4">
+                                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shrink-0">
+                                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-base sm:text-lg font-bold text-gray-900">{{ $challenge->title }}</h3>
+                                        @if($challenge->description)
+                                            <p class="text-gray-500 text-sm mt-0.5">{{ $challenge->description }}</p>
+                                        @endif
+                                    </div>
                                 </div>
-                                @if($mySubmission)
-                                    <span class="px-2 py-0.5 sm:px-2.5 sm:py-1 bg-green-100 text-green-700 text-[10px] sm:text-xs font-semibold rounded-full">Terkumpul</span>
-                                @else
-                                    <span class="px-2 py-0.5 sm:px-2.5 sm:py-1 bg-yellow-100 text-yellow-700 text-[10px] sm:text-xs font-semibold rounded-full">Belum</span>
-                                @endif
+                                <div class="flex items-center gap-2 sm:gap-3">
+                                    @if($mySubmission)
+                                        <span class="px-2.5 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">Terkumpul</span>
+                                    @else
+                                        <span class="px-2.5 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full">Belum</span>
+                                    @endif
+                                    <span class="text-xs text-gray-400">{{ $challengeData['total_submitted'] ?? 0 }}/{{ $challengeData['total_employees'] ?? 0 }} terkumpul</span>
+                                </div>
                             </div>
+                        </div>
 
-                            <h3 class="text-sm sm:text-base font-bold text-gray-900 mb-1 line-clamp-1" title="{{ $challenge->title }}">{{ $challenge->title }}</h3>
-                            @if($challenge->description)
-                                <p class="text-gray-500 text-xs sm:text-sm mb-3 line-clamp-2">{{ $challenge->description }}</p>
-                            @endif
-
-                            {{-- Employee's own video for this chapter/challenge --}}
-                            @if($mySubmission && $thumb)
-                                <div class="relative rounded-xl overflow-hidden bg-gray-200 mb-3 video-preview"
-                                     style="aspect-ratio: 16/9;"
-                                     data-embed="{{ $thumb['embed'] }}"
-                                     data-title="{{ $challenge->title }}">
-                                    <img src="{{ $thumb['thumb'] }}" alt="Video thumbnail milik saya"
-                                         class="absolute inset-0 w-full h-full object-cover cursor-pointer"
-                                         onclick="playVideo(this)"
-                                         onerror="this.style.display='none'">
-                                    <div onclick="playVideo(this)"
-                                         class="absolute inset-0 flex items-center justify-center cursor-pointer bg-black/0 hover:bg-black/20 transition-colors">
-                                        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-white/90 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
-                                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-900 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M8 5v14l11-7z"/>
-                                            </svg>
+                        <!-- Division Stats Cards -->
+                        @if(count($divisionStats) > 0)
+                        <div class="p-4 sm:p-6">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
+                                @foreach($divisionStats as $divIndex => $div)
+                                    <div class="bg-gray-50 rounded-xl p-3 sm:p-4 border border-gray-100">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <h4 class="font-semibold text-gray-900 text-sm">{{ $div['name'] ?? 'Unknown' }}</h4>
+                                            <span class="text-xs text-gray-400">{{ $div['submitted'] ?? 0 }}/{{ $div['total'] ?? 0 }}</span>
                                         </div>
-                                    </div>
-                                </div>
-                            @elseif($mySubmission)
-                                <div class="bg-gray-50 rounded-xl p-3 mb-3 text-center">
-                                    <a href="{{ $mySubmission->link }}" target="_blank" rel="noopener"
-                                       class="text-xs text-indigo-600 hover:text-indigo-700 font-semibold break-all">
-                                        {{ $mySubmission->link }}
-                                    </a>
-                                </div>
-                            @else
-                                <div class="rounded-xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 mb-3 flex items-center justify-center"
-                                     style="aspect-ratio: 16/9;">
-                                    <div class="text-center px-4">
-                                        <div class="w-12 h-12 sm:w-14 sm:h-14 bg-white/80 rounded-full flex items-center justify-center mx-auto mb-2 shadow-sm">
-                                            <svg class="w-6 h-6 sm:w-7 sm:h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                                            </svg>
+                                        <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
+                                            <div class="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full transition-all"
+                                                 style="width: {{ isset($div['total']) && $div['total'] > 0 ? round((($div['submitted'] ?? 0) / $div['total']) * 100) : 0 }}%"></div>
                                         </div>
-                                        <p class="text-[10px] sm:text-xs text-gray-400 font-medium">Kumpulkan video Anda</p>
+                                        <button onclick="openDivisionModal({{ $index }}, {{ $divIndex }})"
+                                                class="w-full text-center text-xs text-indigo-600 hover:text-indigo-700 font-semibold py-1 hover:underline">
+                                            Lihat Detail ({{ $div['total'] ?? 0 }})
+                                        </button>
                                     </div>
-                                </div>
-                            @endif
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
 
-                            <div class="mt-auto">
-                                @if($mySubmission)
-                                    <button type="button" onclick="openModal({{ $challenge->id }}, '{{ $mySubmission->link }}')"
-                                            class="w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-indigo-600 text-white text-xs sm:text-sm font-semibold rounded-xl hover:bg-indigo-700 transition">
-                                        Perbarui Link
+                        <!-- My Video Submission -->
+                        <div class="px-4 sm:px-6 pb-4 sm:pb-6">
+                            <div class="bg-gray-50 rounded-xl p-4">
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                    <div>
+                                        <span class="text-sm font-semibold text-gray-700">Video Saya</span>
+                                        @if($mySubmission && $thumb)
+                                            <div class="mt-2 flex flex-wrap items-center gap-3">
+                                                <button onclick="playVideo('{{ $thumb['embed'] }}', '{{ $challenge->title }}')"
+                                                        class="flex items-center gap-2 px-3 py-1.5 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition">
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                                        <path d="M8 5v14l11-7z"/>
+                                                    </svg>
+                                                    Lihat Video Saya
+                                                </button>
+                                                <span class="text-xs text-gray-500 truncate max-w-[200px]">{{ $mySubmission->link }}</span>
+                                            </div>
+                                        @elseif($mySubmission)
+                                            <div class="mt-2">
+                                                <a href="{{ $mySubmission->link }}" target="_blank" rel="noopener"
+                                                   class="text-xs text-indigo-600 hover:text-indigo-700 font-semibold break-all">
+                                                    {{ $mySubmission->link }}
+                                                </a>
+                                            </div>
+                                        @else
+                                            <p class="text-xs text-gray-400 mt-1">Belum mengumpulkan video</p>
+                                        @endif
+                                    </div>
+                                    <button type="button" onclick="openSubmitModal({{ $challenge->id }}, '{{ $mySubmission?->link ?? '' }}')"
+                                            class="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-semibold rounded-xl hover:shadow-lg transition-all duration-300">
+                                        {{ $mySubmission ? 'Perbarui Link' : 'Kumpulkan Video' }}
                                     </button>
-                                @else
-                                    <button type="button" onclick="openModal({{ $challenge->id }})"
-                                            class="w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs sm:text-sm font-semibold rounded-xl hover:shadow-lg transition-all duration-300">
-                                        Kumpulkan Video
-                                    </button>
-                                @endif
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -120,12 +136,27 @@
     </div>
 </div>
 
-{{-- Video player modal --}}
+<!-- Division Detail Modal -->
+<div id="divisionModal" class="fixed inset-0 z-50 hidden bg-black/40 backdrop-blur-sm items-center justify-center p-4" style="display: none;">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col">
+        <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 flex items-center justify-between shrink-0">
+            <h3 class="font-bold text-gray-900 text-base sm:text-lg" id="divisionModalTitle">Daftar Pegawai</h3>
+            <button onclick="closeModal('divisionModal')" class="text-gray-400 hover:text-gray-600 transition">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="overflow-y-auto p-4 sm:p-6" id="divisionModalBody"></div>
+    </div>
+</div>
+
+<!-- Video Player Modal -->
 <div id="videoModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm items-center justify-center p-4" style="display: none;">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden">
         <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 flex items-center justify-between">
             <h3 class="font-bold text-gray-900 text-base sm:text-lg" id="videoModalTitle">Putar Video</h3>
-            <button onclick="closeVideoModal()" class="text-gray-400 hover:text-gray-600 transition">
+            <button onclick="closeModal('videoModal')" class="text-gray-400 hover:text-gray-600 transition">
                 <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
@@ -135,12 +166,12 @@
     </div>
 </div>
 
-{{-- Submit modal --}}
+<!-- Submit Modal -->
 <div id="submitModal" class="fixed inset-0 z-50 hidden bg-black/40 backdrop-blur-sm items-center justify-center p-4" style="display: none;">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-4 sm:p-6">
         <div class="flex justify-between items-center mb-3 sm:mb-4">
-            <h3 class="text-base sm:text-lg font-bold text-gray-900" id="modalTitle">Kumpulkan Video</h3>
-            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition">
+            <h3 class="text-base sm:text-lg font-bold text-gray-900" id="submitModalTitle">Kumpulkan Video</h3>
+            <button onclick="closeModal('submitModal')" class="text-gray-400 hover:text-gray-600 transition">
                 <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
@@ -159,7 +190,7 @@
                         class="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 font-semibold text-sm sm:text-base">
                     Kirim
                 </button>
-                <button type="button" onclick="closeModal()"
+                <button type="button" onclick="closeModal('submitModal')"
                         class="px-4 sm:px-6 py-2.5 sm:py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition font-semibold text-sm sm:text-base">
                     Batal
                 </button>
@@ -170,41 +201,146 @@
 
 @push('scripts')
 <script>
-    function openModal(challengeId, link) {
+    // Store division data for modals from PHP
+    const challengesData = @json($challengesData);
+
+    function openDivisionModal(challengeIndex, divisionIndex) {
+        const data = challengesData[challengeIndex];
+        if (!data) return;
+
+        const div = data.division_stats[divisionIndex];
+        if (!div) return;
+
+        document.getElementById('divisionModalTitle').textContent = div.name + ' - ' + data.title;
+
+        const body = document.getElementById('divisionModalBody');
+        body.innerHTML = '';
+
+        const employees = div.employees || [];
+        const submitted = employees.filter(e => e.submitted);
+        const pending = employees.filter(e => !e.submitted);
+
+        // Show stats
+        const statsDiv = document.createElement('div');
+        statsDiv.className = 'flex gap-4 mb-4 pb-3 border-b border-gray-100';
+        statsDiv.innerHTML = `
+            <div><span class="text-green-600 font-bold">${submitted.length}</span> <span class="text-gray-500 text-sm">Sudah</span></div>
+            <div><span class="text-red-500 font-bold">${pending.length}</span> <span class="text-gray-500 text-sm">Belum</span></div>
+            <div><span class="text-gray-900 font-bold">${employees.length}</span> <span class="text-gray-500 text-sm">Total</span></div>
+        `;
+        body.appendChild(statsDiv);
+
+        // Show employees
+        const list = document.createElement('div');
+        list.className = 'space-y-2';
+
+        // Show submitted first
+        const sortedEmployees = [...submitted, ...pending];
+        sortedEmployees.forEach(function(emp) {
+            const isSubmitted = emp.submitted;
+            const initial = (emp.name || 'U').charAt(0).toUpperCase();
+            const bg = isSubmitted ? 'from-green-500 to-emerald-600' : 'from-gray-400 to-gray-500';
+
+            const div = document.createElement('div');
+            div.className = 'flex flex-col sm:flex-row sm:items-center justify-between px-3 sm:px-4 py-2 sm:py-3 rounded-lg ' + (isSubmitted ? 'bg-green-50/50' : 'bg-gray-50/50');
+
+            const left = document.createElement('div');
+            left.className = 'flex items-center gap-2 sm:gap-3 min-w-0';
+
+            let nameHtml = `<p class="font-semibold text-gray-900 text-xs sm:text-sm truncate">${escapeHtml(emp.name)}`;
+            if (emp.is_me) {
+                nameHtml += ` <span class="text-[10px] text-indigo-600 font-bold">(saya)</span>`;
+            }
+            nameHtml += `</p>`;
+
+            left.innerHTML = `
+                <div class="w-7 h-7 sm:w-9 sm:h-9 bg-gradient-to-br ${bg} rounded-lg flex items-center justify-center text-white font-bold text-xs sm:text-sm shrink-0">${initial}</div>
+                <div class="min-w-0">${nameHtml}<p class="text-[10px] sm:text-xs text-gray-500 truncate">${escapeHtml(emp.email)}</p></div>
+            `;
+            div.appendChild(left);
+
+            const right = document.createElement('div');
+            right.className = 'flex items-center gap-2 mt-1 sm:mt-0';
+
+            if (isSubmitted) {
+                const badge = document.createElement('span');
+                badge.className = 'px-2 py-0.5 sm:px-2.5 sm:py-0.5 bg-green-100 text-green-700 text-[10px] sm:text-xs font-semibold rounded-full';
+                badge.textContent = 'Sudah';
+                right.appendChild(badge);
+
+                if (emp.embed) {
+                    const btn = document.createElement('button');
+                    btn.className = 'px-2 py-1 sm:px-3 sm:py-1.5 bg-indigo-600 text-white text-[10px] sm:text-xs font-semibold rounded-lg hover:bg-indigo-700 transition';
+                    btn.textContent = 'Lihat Video';
+                    btn.dataset.embed = emp.embed;
+                    btn.dataset.name = emp.name;
+                    btn.addEventListener('click', function() {
+                        playVideo(this.dataset.embed, this.dataset.name);
+                    });
+                    right.appendChild(btn);
+                } else if (emp.link) {
+                    const link = document.createElement('a');
+                    link.href = emp.link;
+                    link.target = '_blank';
+                    link.rel = 'noopener';
+                    link.className = 'text-[10px] sm:text-xs text-indigo-600 hover:underline truncate max-w-[120px] sm:max-w-[200px]';
+                    link.textContent = 'Link';
+                    right.appendChild(link);
+                }
+            } else {
+                const badge = document.createElement('span');
+                badge.className = 'px-2 py-0.5 sm:px-2.5 sm:py-0.5 bg-red-100 text-red-600 text-[10px] sm:text-xs font-semibold rounded-full';
+                badge.textContent = 'Belum';
+                right.appendChild(badge);
+            }
+            div.appendChild(right);
+
+            list.appendChild(div);
+        });
+
+        body.appendChild(list);
+        document.getElementById('divisionModal').style.display = 'flex';
+    }
+
+    function openSubmitModal(challengeId, link) {
         const form = document.getElementById('submitForm');
         form.action = `/employee/video-challenges/${challengeId}/submit`;
         document.getElementById('linkInput').value = link || '';
         document.getElementById('submitModal').style.display = 'flex';
     }
 
-    function closeModal() {
-        document.getElementById('submitModal').style.display = 'none';
-    }
-
-    document.getElementById('submitModal').addEventListener('click', function(e) {
-        if (e.target === this) closeModal();
-    });
-
-    function playVideo(el) {
-        const preview = el.closest('.video-preview');
-        if (!preview) return;
-        const embedUrl = preview.dataset.embed;
+    function playVideo(embedUrl, name) {
         if (!embedUrl) return;
-        const title = preview.dataset.title || '';
-        document.getElementById('videoModalTitle').textContent = 'Video \u2014 ' + title;
+        document.getElementById('videoModalTitle').textContent = 'Video \u2014 ' + (name || '');
         document.getElementById('videoPlayer').innerHTML = '<iframe src="' + embedUrl + '" width="100%" height="100%" style="position:absolute;top:0;left:0;width:100%;height:100%" frameborder="0" allowfullscreen allow="autoplay"></iframe>';
         document.getElementById('videoPlayer').classList.add('relative');
         document.getElementById('videoModal').style.display = 'flex';
     }
 
-    function closeVideoModal() {
-        document.getElementById('videoModal').style.display = 'none';
-        document.getElementById('videoPlayer').innerHTML = '';
-        document.getElementById('videoPlayer').classList.remove('relative');
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+        if (id === 'videoModal') {
+            document.getElementById('videoPlayer').innerHTML = '';
+            document.getElementById('videoPlayer').classList.remove('relative');
+        }
     }
 
+    function escapeHtml(str) {
+        if (!str) return '';
+        const d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
+    }
+
+    // Close modals on backdrop click
+    document.getElementById('divisionModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal('divisionModal');
+    });
     document.getElementById('videoModal').addEventListener('click', function(e) {
-        if (e.target === this) closeVideoModal();
+        if (e.target === this) closeModal('videoModal');
+    });
+    document.getElementById('submitModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal('submitModal');
     });
 </script>
 @endpush
