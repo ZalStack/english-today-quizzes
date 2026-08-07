@@ -12,44 +12,36 @@ class VideoChallengeController extends Controller
 {
     public function index()
     {
-        $challenges = VideoChallenge::withCount('submissions')
-            ->latest()
-            ->paginate(9);
+        $challenges = VideoChallenge::withCount('submissions')->latest()->paginate(9);
 
         // Get all divisions with employee counts
         $divisions = \App\Models\Division::withCount('users')->get();
 
         // Get active employees grouped by division
-        $employees = User::where('role', 'employee')
-            ->where('status', 'active')
-            ->with('division')
-            ->get();
+        $employees = User::where('role', 'employee')->where('status', 'active')->with('division')->get();
 
-        $employeesByDivision = $employees
-            ->groupBy(fn ($u) => $u->division?->name ?: 'Tanpa Divisi')
-            ->sortKeys();
+        $employeesByDivision = $employees->groupBy(fn($u) => $u->division?->name ?: 'Tanpa Divisi')->sortKeys();
 
         $totalEmployees = $employees->count();
 
         $challengeIds = $challenges->pluck('id');
 
-        $submissionsByChallenge = VideoSubmission::whereIn('challenge_id', $challengeIds)
-            ->get()
-            ->groupBy('challenge_id')
-            ->map(fn ($subs) => $subs->pluck('user_id')->flip());
+        $submissionsByChallenge = VideoSubmission::whereIn('challenge_id', $challengeIds)->get()->groupBy('challenge_id')->map(fn($subs) => $subs->pluck('user_id')->flip());
 
         $challenges->getCollection()->transform(function ($challenge) use ($employeesByDivision, $totalEmployees, $submissionsByChallenge, $divisions) {
             $submittedIds = $submissionsByChallenge->get($challenge->id, collect());
 
-            $breakdown = $employeesByDivision->map(function ($emps, $divisionName) use ($submittedIds) {
-                $submitted = $emps->filter(fn ($u) => $submittedIds->has($u->id))->count();
+            $breakdown = $employeesByDivision
+                ->map(function ($emps, $divisionName) use ($submittedIds) {
+                    $submitted = $emps->filter(fn($u) => $submittedIds->has($u->id))->count();
 
-                return [
-                    'name' => $divisionName,
-                    'submitted' => $submitted,
-                    'total' => $emps->count(),
-                ];
-            })->values();
+                    return [
+                        'name' => $divisionName,
+                        'submitted' => $submitted,
+                        'total' => $emps->count(),
+                    ];
+                })
+                ->values();
 
             $challenge->division_breakdown = $breakdown;
             $challenge->total_employees_snapshot = $totalEmployees;
@@ -80,29 +72,24 @@ class VideoChallengeController extends Controller
             'created_by' => auth()->id(),
         ]);
 
-        return redirect()->route('hr.video-challenges.index')
-            ->with('success', 'Video Challenge created successfully.');
+        return redirect()->route('hr.video-challenges.index')->with('success', 'Video Challenge created successfully.');
     }
 
     public function show(VideoChallenge $videoChallenge)
     {
-        $priorityEmails = [
-            'ridwan.saputra@etquizzes.com',
-            'anis.kurniasih@etquizzes.com',
-        ];
+        $priorityEmails = ['ridwan.saputra@etquizzes.com', 'anis.kurniasih@etquizzes.com'];
 
-        $employees = User::where('role', 'employee')->where('status', 'active')
+        $employees = User::where('role', 'employee')
+            ->where('status', 'active')
             ->with('division')
             ->get()
             ->sortBy(function ($u) use ($priorityEmails) {
                 $pos = array_search($u->email, $priorityEmails);
                 return $pos === false ? 999 : $pos;
-            })->values();
+            })
+            ->values();
 
-        $submissions = VideoSubmission::where('challenge_id', $videoChallenge->id)
-            ->with('user')
-            ->get()
-            ->keyBy('user_id');
+        $submissions = VideoSubmission::where('challenge_id', $videoChallenge->id)->with('user')->get()->keyBy('user_id');
 
         $stats = [
             'total_employees' => $employees->count(),
@@ -115,29 +102,31 @@ class VideoChallengeController extends Controller
         $allSubmitted = 0;
         $allPending = 0;
 
-        $divisionData = $grouped->map(function ($emps, $divisionName) use ($submissions, &$stats, &$allSubmitted, &$allPending) {
-            $submittedCount = $emps->filter(fn($u) => $submissions->has($u->id))->count();
-            $pendingCount = $emps->count() - $submittedCount;
+        $divisionData = $grouped
+            ->map(function ($emps, $divisionName) use ($submissions, &$stats, &$allSubmitted, &$allPending) {
+                $submittedCount = $emps->filter(fn($u) => $submissions->has($u->id))->count();
+                $pendingCount = $emps->count() - $submittedCount;
 
-            $stats['submitted'] += $submittedCount;
-            $stats['pending'] += $pendingCount;
-            $allSubmitted += $submittedCount;
-            $allPending += $pendingCount;
+                $stats['submitted'] += $submittedCount;
+                $stats['pending'] += $pendingCount;
+                $allSubmitted += $submittedCount;
+                $allPending += $pendingCount;
 
-            return [
-                'division_name' => $divisionName === '__no_division' ? 'Tanpa Divisi' : $divisionName,
-                'is_no_division' => $divisionName === '__no_division',
-                'employees' => $emps->map(function ($user) use ($submissions) {
-                    return [
-                        'user' => $user,
-                        'submission' => $submissions->get($user->id),
-                    ];
-                }),
-                'submitted_count' => $submittedCount,
-                'pending_count' => $pendingCount,
-                'total' => $emps->count(),
-            ];
-        })->sortByDesc(fn($d) => $d['is_no_division']);
+                return [
+                    'division_name' => $divisionName === '__no_division' ? 'Tanpa Divisi' : $divisionName,
+                    'is_no_division' => $divisionName === '__no_division',
+                    'employees' => $emps->map(function ($user) use ($submissions) {
+                        return [
+                            'user' => $user,
+                            'submission' => $submissions->get($user->id),
+                        ];
+                    }),
+                    'submitted_count' => $submittedCount,
+                    'pending_count' => $pendingCount,
+                    'total' => $emps->count(),
+                ];
+            })
+            ->sortByDesc(fn($d) => $d['is_no_division']);
 
         // Add ALL division data
         $allData = [
@@ -157,7 +146,31 @@ class VideoChallengeController extends Controller
         // Prepend ALL data
         $divisionData = collect([$allData])->concat($divisionData);
 
-        return view('hr.video-challenges.show', compact('videoChallenge', 'divisionData', 'stats'));
+        // ==========================================
+        // FIX: Pre-process data for JavaScript
+        // ==========================================
+        $divisionDataJson = $divisionData
+            ->map(function ($d) {
+                return [
+                    'name' => $d['division_name'],
+                    'employees' => $d['employees']
+                        ->map(function ($e) {
+                            return [
+                                'name' => $e['user']->full_name ?? $e['user']->name,
+                                'email' => $e['user']->email,
+                                'submitted' => $e['submission'] ? true : false,
+                                'link' => $e['submission'] ? $e['submission']->link : null,
+                                'embed' => $e['submission'] ? \App\Helpers\VideoLinkHelper::embedUrl($e['submission']->link) : null,
+                            ];
+                        })
+                        ->values()
+                        ->toArray(),
+                ];
+            })
+            ->values()
+            ->toArray();
+
+        return view('hr.video-challenges.show', compact('videoChallenge', 'divisionData', 'stats', 'divisionDataJson'));
     }
 
     public function edit(VideoChallenge $videoChallenge)
@@ -179,15 +192,13 @@ class VideoChallengeController extends Controller
             'is_active' => $request->boolean('is_active'),
         ]);
 
-        return redirect()->route('hr.video-challenges.index')
-            ->with('success', 'Video Challenge updated successfully.');
+        return redirect()->route('hr.video-challenges.index')->with('success', 'Video Challenge updated successfully.');
     }
 
     public function destroy(VideoChallenge $videoChallenge)
     {
         $videoChallenge->delete();
 
-        return redirect()->route('hr.video-challenges.index')
-            ->with('success', 'Video Challenge deleted successfully.');
+        return redirect()->route('hr.video-challenges.index')->with('success', 'Video Challenge deleted successfully.');
     }
 }

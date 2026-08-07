@@ -138,20 +138,10 @@
 
 @push('scripts')
 <script>
-    const divisionData = @json($divisionData->map(function($d, $i) {
-        return [
-            'name' => $d['division_name'],
-            'employees' => $d['employees']->map(function($e) {
-                return [
-                    'name' => $e['user']->full_name ?? $e['user']->name,
-                    'email' => $e['user']->email,
-                    'submitted' => $e['submission'] ? true : false,
-                    'link' => $e['submission'] ? $e['submission']->link : null,
-                    'embed' => $e['submission'] ? \App\Helpers\VideoLinkHelper::embedUrl($e['submission']->link) : null,
-                ];
-            })->values()->toArray(),
-        ];
-    })->values()->toArray());
+    // ==========================================
+    // FIXED: Use pre-processed data from controller
+    // ==========================================
+    const divisionData = @json($divisionDataJson);
 
     function showDivision(index) {
         const data = divisionData[index];
@@ -264,6 +254,7 @@
         return d.innerHTML;
     }
 
+    // Close modals on backdrop click
     document.getElementById('employeeModal').addEventListener('click', function(e) {
         if (e.target === this) closeEmployeeModal();
     });
