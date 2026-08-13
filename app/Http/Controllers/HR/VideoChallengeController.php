@@ -1,4 +1,5 @@
 <?php
+// app/Http/Controllers/HR/VideoChallengeController.php
 
 namespace App\Http\Controllers\HR;
 
@@ -6,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\VideoChallenge;
 use App\Models\VideoSubmission;
+use App\Helpers\VideoLinkHelper;
 use Illuminate\Http\Request;
 
 class VideoChallengeController extends Controller
@@ -64,11 +66,19 @@ class VideoChallengeController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'material_link' => 'nullable|string|max:500',
+            'material_title' => 'nullable|string|max:255',
+            'kisi_kisi_link' => 'nullable|string|max:500',
+            'kisi_kisi_title' => 'nullable|string|max:255',
         ]);
 
         VideoChallenge::create([
             'title' => $request->title,
             'description' => $request->description,
+            'material_link' => $request->material_link,
+            'material_title' => $request->material_title,
+            'kisi_kisi_link' => $request->kisi_kisi_link,
+            'kisi_kisi_title' => $request->kisi_kisi_title,
             'created_by' => auth()->id(),
         ]);
 
@@ -146,9 +156,7 @@ class VideoChallengeController extends Controller
         // Prepend ALL data
         $divisionData = collect([$allData])->concat($divisionData);
 
-        // ==========================================
-        // FIX: Pre-process data for JavaScript
-        // ==========================================
+        // Pre-process data for JavaScript
         $divisionDataJson = $divisionData
             ->map(function ($d) {
                 return [
@@ -160,7 +168,7 @@ class VideoChallengeController extends Controller
                                 'email' => $e['user']->email,
                                 'submitted' => $e['submission'] ? true : false,
                                 'link' => $e['submission'] ? $e['submission']->link : null,
-                                'embed' => $e['submission'] ? \App\Helpers\VideoLinkHelper::embedUrl($e['submission']->link) : null,
+                                'embed' => $e['submission'] ? VideoLinkHelper::embedUrl($e['submission']->link) : null,
                             ];
                         })
                         ->values()
@@ -170,7 +178,30 @@ class VideoChallengeController extends Controller
             ->values()
             ->toArray();
 
-        return view('hr.video-challenges.show', compact('videoChallenge', 'divisionData', 'stats', 'divisionDataJson'));
+        // Prepare material and kisi-kisi data
+        $materialData = null;
+        if ($videoChallenge->material_link) {
+            $materialData = [
+                'link' => $videoChallenge->material_link,
+                'title' => $videoChallenge->material_title ?? 'Materi Video Challenge',
+                'embed' => VideoLinkHelper::getDriveEmbedUrl($videoChallenge->material_link),
+                'is_drive' => VideoLinkHelper::isDriveLink($videoChallenge->material_link),
+                'is_youtube' => VideoLinkHelper::isYoutubeLink($videoChallenge->material_link),
+            ];
+        }
+
+        $kisiKisiData = null;
+        if ($videoChallenge->kisi_kisi_link) {
+            $kisiKisiData = [
+                'link' => $videoChallenge->kisi_kisi_link,
+                'title' => $videoChallenge->kisi_kisi_title ?? 'Kisi-Kisi Video Challenge',
+                'embed' => VideoLinkHelper::getDriveEmbedUrl($videoChallenge->kisi_kisi_link),
+                'is_drive' => VideoLinkHelper::isDriveLink($videoChallenge->kisi_kisi_link),
+                'is_youtube' => VideoLinkHelper::isYoutubeLink($videoChallenge->kisi_kisi_link),
+            ];
+        }
+
+        return view('hr.video-challenges.show', compact('videoChallenge', 'divisionData', 'stats', 'divisionDataJson', 'materialData', 'kisiKisiData'));
     }
 
     public function edit(VideoChallenge $videoChallenge)
@@ -184,12 +215,20 @@ class VideoChallengeController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'is_active' => 'boolean',
+            'material_link' => 'nullable|string|max:500',
+            'material_title' => 'nullable|string|max:255',
+            'kisi_kisi_link' => 'nullable|string|max:500',
+            'kisi_kisi_title' => 'nullable|string|max:255',
         ]);
 
         $videoChallenge->update([
             'title' => $request->title,
             'description' => $request->description,
             'is_active' => $request->boolean('is_active'),
+            'material_link' => $request->material_link,
+            'material_title' => $request->material_title,
+            'kisi_kisi_link' => $request->kisi_kisi_link,
+            'kisi_kisi_title' => $request->kisi_kisi_title,
         ]);
 
         return redirect()->route('hr.video-challenges.index')->with('success', 'Video Challenge updated successfully.');

@@ -1,3 +1,4 @@
+{{-- resources/views/hr/video-challenges/edit.blade.php --}}
 @extends('layouts.app')
 
 @section('title', 'Edit Challenge')
@@ -30,6 +31,38 @@
                               class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-sm sm:text-base"
                               placeholder="Jelaskan challenge ini...">{{ old('description', $videoChallenge->description) }}</textarea>
                     @error('description') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div class="mb-4 sm:mb-5">
+                    <label class="block text-sm font-semibold text-gray-700 mb-1 sm:mb-2">Link Materi (Google Drive) <span class="text-gray-400">(opsional)</span></label>
+                    <input type="url" name="material_link" value="{{ old('material_link', $videoChallenge->material_link) }}"
+                           class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-sm sm:text-base"
+                           placeholder="https://drive.google.com/file/d/...">
+                    @error('material_link') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div class="mb-4 sm:mb-5">
+                    <label class="block text-sm font-semibold text-gray-700 mb-1 sm:mb-2">Judul Materi <span class="text-gray-400">(opsional)</span></label>
+                    <input type="text" name="material_title" value="{{ old('material_title', $videoChallenge->material_title) }}"
+                           class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-sm sm:text-base"
+                           placeholder="Contoh: Materi Introduce Myself">
+                    @error('material_title') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div class="mb-4 sm:mb-5">
+                    <label class="block text-sm font-semibold text-gray-700 mb-1 sm:mb-2">Link Kisi-Kisi (Google Drive) <span class="text-gray-400">(opsional)</span></label>
+                    <input type="url" name="kisi_kisi_link" value="{{ old('kisi_kisi_link', $videoChallenge->kisi_kisi_link) }}"
+                           class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-sm sm:text-base"
+                           placeholder="https://drive.google.com/file/d/...">
+                    @error('kisi_kisi_link') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div class="mb-4 sm:mb-5">
+                    <label class="block text-sm font-semibold text-gray-700 mb-1 sm:mb-2">Judul Kisi-Kisi <span class="text-gray-400">(opsional)</span></label>
+                    <input type="text" name="kisi_kisi_title" value="{{ old('kisi_kisi_title', $videoChallenge->kisi_kisi_title) }}"
+                           class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-sm sm:text-base"
+                           placeholder="Contoh: Kisi-Kisi Introduce Myself">
+                    @error('kisi_kisi_title') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <div class="mb-4 sm:mb-6">

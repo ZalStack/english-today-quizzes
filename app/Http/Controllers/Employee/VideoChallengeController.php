@@ -1,4 +1,5 @@
 <?php
+// app/Http/Controllers/Employee/VideoChallengeController.php
 
 namespace App\Http\Controllers\Employee;
 
@@ -6,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\VideoChallenge;
 use App\Models\VideoSubmission;
+use App\Helpers\VideoLinkHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -74,7 +76,7 @@ class VideoChallengeController extends Controller
                             'email' => $user['email'],
                             'submitted' => !is_null($submission),
                             'link' => $submission ? $submission->link : null,
-                            'embed' => $submission ? \App\Helpers\VideoLinkHelper::embedUrl($submission->link) : null,
+                            'embed' => $submission ? VideoLinkHelper::embedUrl($submission->link) : null,
                             'is_me' => $user['id'] === auth()->id(),
                         ];
                     }
@@ -91,6 +93,29 @@ class VideoChallengeController extends Controller
                     return strcmp($a['name'], $b['name']);
                 });
 
+                // Prepare material and kisi-kisi data
+                $materialData = null;
+                if ($challenge->material_link) {
+                    $materialData = [
+                        'link' => $challenge->material_link,
+                        'title' => $challenge->material_title ?? 'Materi Video Challenge',
+                        'embed' => VideoLinkHelper::getDriveEmbedUrl($challenge->material_link),
+                        'is_drive' => VideoLinkHelper::isDriveLink($challenge->material_link),
+                        'is_youtube' => VideoLinkHelper::isYoutubeLink($challenge->material_link),
+                    ];
+                }
+
+                $kisiKisiData = null;
+                if ($challenge->kisi_kisi_link) {
+                    $kisiKisiData = [
+                        'link' => $challenge->kisi_kisi_link,
+                        'title' => $challenge->kisi_kisi_title ?? 'Kisi-Kisi Video Challenge',
+                        'embed' => VideoLinkHelper::getDriveEmbedUrl($challenge->kisi_kisi_link),
+                        'is_drive' => VideoLinkHelper::isDriveLink($challenge->kisi_kisi_link),
+                        'is_youtube' => VideoLinkHelper::isYoutubeLink($challenge->kisi_kisi_link),
+                    ];
+                }
+
                 $challengesData[] = [
                     'id' => $challenge->id,
                     'title' => $challenge->title,
@@ -101,6 +126,8 @@ class VideoChallengeController extends Controller
                     'total_employees' => $activeEmployees->count(),
                     'total_submitted' => $submittedUserIds->count(),
                     'my_submission' => $mySubmissions->get($challenge->id),
+                    'material' => $materialData,
+                    'kisi_kisi' => $kisiKisiData,
                 ];
             }
 
@@ -111,12 +138,6 @@ class VideoChallengeController extends Controller
             ]);
 
         } catch (\Throwable $e) {
-            \Log::error('Video Challenge Error: ' . $e->getMessage(), [
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }

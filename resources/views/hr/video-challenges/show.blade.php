@@ -1,3 +1,4 @@
+{{-- resources/views/hr/video-challenges/show.blade.php --}}
 @extends('layouts.app')
 
 @section('title', $videoChallenge->title . ' — Progress')
@@ -27,6 +28,57 @@
                     {{ $videoChallenge->is_active ? 'Aktif' : 'Nonaktif' }}
                 </span>
             </div>
+
+            {{-- Material and Kisi-Kisi Section --}}
+            @if($materialData || $kisiKisiData)
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                        @if($materialData)
+                            <div class="bg-gray-50 rounded-xl p-3 sm:p-4">
+                                <h4 class="text-sm font-semibold text-gray-700 mb-2">
+                                    <svg class="inline w-4 h-4 mr-1 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                    </svg>
+                                    Materi
+                                </h4>
+                                <p class="text-xs sm:text-sm text-gray-600 truncate">{{ $materialData['title'] }}</p>
+                                <a href="{{ $materialData['link'] }}" target="_blank" rel="noopener"
+                                   class="inline-block mt-2 px-3 py-1.5 bg-indigo-600 text-white text-xs font-semibold rounded-lg hover:bg-indigo-700 transition">
+                                    Lihat Materi
+                                </a>
+                                @if($materialData['embed'])
+                                    <button onclick="openDrivePreview('{{ $materialData['embed'] }}', '{{ $materialData['title'] }}')"
+                                            class="inline-block mt-2 ml-2 px-3 py-1.5 bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg hover:bg-gray-300 transition">
+                                        Preview
+                                    </button>
+                                @endif
+                            </div>
+                        @endif
+
+                        @if($kisiKisiData)
+                            <div class="bg-gray-50 rounded-xl p-3 sm:p-4">
+                                <h4 class="text-sm font-semibold text-gray-700 mb-2">
+                                    <svg class="inline w-4 h-4 mr-1 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                    Kisi-Kisi
+                                </h4>
+                                <p class="text-xs sm:text-sm text-gray-600 truncate">{{ $kisiKisiData['title'] }}</p>
+                                <a href="{{ $kisiKisiData['link'] }}" target="_blank" rel="noopener"
+                                   class="inline-block mt-2 px-3 py-1.5 bg-purple-600 text-white text-xs font-semibold rounded-lg hover:bg-purple-700 transition">
+                                    Lihat Kisi-Kisi
+                                </a>
+                                @if($kisiKisiData['embed'])
+                                    <button onclick="openDrivePreview('{{ $kisiKisiData['embed'] }}', '{{ $kisiKisiData['title'] }}')"
+                                            class="inline-block mt-2 ml-2 px-3 py-1.5 bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg hover:bg-gray-300 transition">
+                                        Preview
+                                    </button>
+                                @endif
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
@@ -136,11 +188,26 @@
     </div>
 </div>
 
+{{-- Drive Preview Modal --}}
+<div id="drivePreviewModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm items-center justify-center p-4" style="display: none;">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden">
+        <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 flex items-center justify-between">
+            <h3 class="font-bold text-gray-900 text-base sm:text-lg" id="drivePreviewTitle">Preview File</h3>
+            <button onclick="closeDrivePreview()" class="text-gray-400 hover:text-gray-600 transition">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="relative" style="padding-bottom: 75%;">
+            <iframe id="drivePreviewFrame" src="" width="100%" height="100%" style="position:absolute;top:0;left:0;width:100%;height:100%" frameborder="0" allowfullscreen></iframe>
+        </div>
+    </div>
+</div>
+
 @push('scripts')
 <script>
-    // ==========================================
-    // FIXED: Use pre-processed data from controller
-    // ==========================================
+    // Pre-processed data from controller
     const divisionData = @json($divisionDataJson);
 
     function showDivision(index) {
@@ -237,6 +304,18 @@
         document.getElementById('videoModal').style.display = 'flex';
     }
 
+    function openDrivePreview(embedUrl, title) {
+        if (!embedUrl) return;
+        document.getElementById('drivePreviewTitle').textContent = 'Preview \u2014 ' + (title || 'File');
+        document.getElementById('drivePreviewFrame').src = embedUrl;
+        document.getElementById('drivePreviewModal').style.display = 'flex';
+    }
+
+    function closeDrivePreview() {
+        document.getElementById('drivePreviewModal').style.display = 'none';
+        document.getElementById('drivePreviewFrame').src = '';
+    }
+
     function closeEmployeeModal() {
         document.getElementById('employeeModal').style.display = 'none';
     }
@@ -260,6 +339,9 @@
     });
     document.getElementById('videoModal').addEventListener('click', function(e) {
         if (e.target === this) closeVideoModal();
+    });
+    document.getElementById('drivePreviewModal').addEventListener('click', function(e) {
+        if (e.target === this) closeDrivePreview();
     });
 </script>
 @endpush

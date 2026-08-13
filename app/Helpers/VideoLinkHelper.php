@@ -1,4 +1,5 @@
 <?php
+// app/Helpers/VideoLinkHelper.php
 
 namespace App\Helpers;
 
@@ -51,6 +52,56 @@ class VideoLinkHelper
             ];
         }
 
+        return null;
+    }
+
+    /**
+     * Check if a link is a Google Drive file link
+     */
+    public static function isDriveLink(?string $link): bool
+    {
+        if (!$link) {
+            return false;
+        }
+        return preg_match('/drive\.google\.com\/file\/d\/([^\/\?]+)/', $link) === 1;
+    }
+
+    /**
+     * Check if a link is a YouTube link
+     */
+    public static function isYoutubeLink(?string $link): bool
+    {
+        if (!$link) {
+            return false;
+        }
+        return preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\?]+)/', $link) === 1;
+    }
+
+    /**
+     * Get Google Drive file ID from link
+     */
+    public static function getDriveFileId(?string $link): ?string
+    {
+        if (!$link) {
+            return null;
+        }
+        if (preg_match('/drive\.google\.com\/file\/d\/([^\/\?]+)/', $link, $m)) {
+            return $m[1];
+        }
+        return null;
+    }
+
+    /**
+     * Get Google Drive direct embed URL
+     */
+    public static function getDriveEmbedUrl(?string $link): ?string
+    {
+        if (!$link) {
+            return null;
+        }
+        if (preg_match('/drive\.google\.com\/file\/d\/([^\/\?]+)/', $link, $m)) {
+            return 'https://drive.google.com/file/d/' . $m[1] . '/preview';
+        }
         return null;
     }
 }
