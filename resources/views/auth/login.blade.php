@@ -1,3 +1,4 @@
+{{-- resources/views/auth/login.blade.php --}}
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
 <head>
@@ -20,7 +21,6 @@
             --paper: #FBFBF9;
         }
 
-        /* ── Reset & base ── */
         *,
         *::before,
         *::after {
@@ -48,14 +48,12 @@
             font-family: 'JetBrains Mono', monospace;
         }
 
-        /* ── ruled background ── */
         .ruled-bg {
             background-image: repeating-linear-gradient(to bottom,
                     transparent 0px, transparent 39px,
                     rgba(22, 23, 88, 0.05) 40px);
         }
 
-        /* ── form field ── */
         .field {
             width: 100%;
             border: 1.5px solid #E4E4EE;
@@ -77,7 +75,6 @@
             border-color: var(--alert);
         }
 
-        /* ── stamp ── */
         .stamp-mini {
             position: absolute;
             top: -0.75rem;
@@ -135,93 +132,17 @@
             outline-offset: 3px;
         }
 
-        /* ── responsive tweaks ── */
-
-        /* Small phones (≤ 400px) */
-        @media (max-width: 400px) {
-            body {
-                padding: 0.5rem;
-            }
-            .stamp-mini {
-                width: 3.75rem;
-                height: 3.75rem;
-                top: -0.5rem;
-                right: 0.75rem;
-            }
-            .stamp-mini span:first-child {
-                font-size: 0.4rem;
-            }
-            .stamp-mini span:last-child {
-                font-size: 0.6rem;
-            }
-            .field {
-                font-size: 0.9rem;
-                padding: 0.6rem 0.8rem;
-            }
-        }
-
-        /* Phones (401–640px) */
-        @media (min-width: 401px) and (max-width: 640px) {
-            .stamp-mini {
-                width: 4.25rem;
-                height: 4.25rem;
-                top: -0.6rem;
-                right: 0.9rem;
-            }
-            .stamp-mini span:first-child {
-                font-size: 0.4rem;
-            }
-            .stamp-mini span:last-child {
-                font-size: 0.65rem;
-            }
-        }
-
-        /* Tablets & small laptops (641–1024px) */
-        @media (min-width: 641px) and (max-width: 1024px) {
-            .stamp-mini {
-                width: 5rem;
-                height: 5rem;
-                top: -0.7rem;
-                right: 1.2rem;
-            }
-            .stamp-mini span:first-child {
-                font-size: 0.5rem;
-            }
-            .stamp-mini span:last-child {
-                font-size: 0.75rem;
-            }
-        }
-
-        /* Large screens (≥ 1025px) */
-        @media (min-width: 1025px) {
-            .stamp-mini {
-                width: 5.5rem;
-                height: 5.5rem;
-                top: -1rem;
-                right: 1.5rem;
-            }
-            .stamp-mini span:first-child {
-                font-size: 0.5rem;
-            }
-            .stamp-mini span:last-child {
-                font-size: 0.85rem;
-            }
-        }
-
-        /* ── card max-width & padding ── */
         .login-card {
             width: 100%;
             max-width: 440px;
             margin-inline: auto;
         }
 
-        /* ── ensure touch targets ── */
         .field,
         button[type="submit"] {
             min-height: 48px;
         }
 
-        /* ── checkbox larger tap area ── */
         .checkbox-wrapper {
             display: inline-flex;
             align-items: center;
@@ -247,7 +168,6 @@
             outline-offset: 2px;
         }
 
-        /* ── wordmark ── */
         .wordmark {
             display: flex;
             align-items: center;
@@ -278,7 +198,67 @@
             letter-spacing: -0.02em;
         }
 
+        .password-toggle-btn {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0.25rem;
+            color: #8a8aa0;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .password-toggle-btn:hover {
+            color: #161758;
+        }
+        .password-toggle-btn:focus-visible {
+            outline: 2px solid var(--cyan);
+            outline-offset: 2px;
+            border-radius: 0.25rem;
+        }
+
+        .password-input-wrapper {
+            position: relative;
+        }
+        .password-input-wrapper .field {
+            padding-right: 2.75rem;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 0.65rem;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.08em;
+            color: rgba(58, 58, 85, 0.45);
+            margin-top: 1.5rem;
+            padding-inline: 0.5rem;
+        }
+
         @media (max-width: 400px) {
+            body {
+                padding: 0.5rem;
+            }
+            .stamp-mini {
+                width: 3.75rem;
+                height: 3.75rem;
+                top: -0.5rem;
+                right: 0.75rem;
+            }
+            .stamp-mini span:first-child {
+                font-size: 0.4rem;
+            }
+            .stamp-mini span:last-child {
+                font-size: 0.6rem;
+            }
+            .field {
+                font-size: 0.9rem;
+                padding: 0.6rem 0.8rem;
+            }
             .wordmark .badge {
                 width: 2rem;
                 height: 2rem;
@@ -289,22 +269,54 @@
             .wordmark .label {
                 font-size: 1rem;
             }
-        }
-
-        /* ── footer text ── */
-        .footer-note {
-            text-align: center;
-            font-size: 0.65rem;
-            font-family: 'JetBrains Mono', monospace;
-            letter-spacing: 0.08em;
-            color: rgba(58, 58, 85, 0.45);
-            margin-top: 1.5rem;
-            padding-inline: 0.5rem;
-        }
-        @media (max-width: 400px) {
             .footer-note {
                 font-size: 0.55rem;
                 margin-top: 1.25rem;
+            }
+        }
+
+        @media (min-width: 401px) and (max-width: 640px) {
+            .stamp-mini {
+                width: 4.25rem;
+                height: 4.25rem;
+                top: -0.6rem;
+                right: 0.9rem;
+            }
+            .stamp-mini span:first-child {
+                font-size: 0.4rem;
+            }
+            .stamp-mini span:last-child {
+                font-size: 0.65rem;
+            }
+        }
+
+        @media (min-width: 641px) and (max-width: 1024px) {
+            .stamp-mini {
+                width: 5rem;
+                height: 5rem;
+                top: -0.7rem;
+                right: 1.2rem;
+            }
+            .stamp-mini span:first-child {
+                font-size: 0.5rem;
+            }
+            .stamp-mini span:last-child {
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (min-width: 1025px) {
+            .stamp-mini {
+                width: 5.5rem;
+                height: 5.5rem;
+                top: -1rem;
+                right: 1.5rem;
+            }
+            .stamp-mini span:first-child {
+                font-size: 0.5rem;
+            }
+            .stamp-mini span:last-child {
+                font-size: 0.85rem;
             }
         }
     </style>
@@ -314,7 +326,7 @@
     <div class="login-card">
 
         <!-- Wordmark -->
-        <a href="{{ url('/') }}" class="wordmark" style="justify-content:center; margin-bottom:1.75rem;">
+        <a href="{{ url('/') }}" class="wordmark justify-center mb-7">
             <div class="badge">
                 <span>ET</span>
             </div>
@@ -355,47 +367,61 @@
                         Email
                     </label>
                     <input
-                    id="email"
-                    type="email"
-                    name="email"
-                    value="{{ old('email') }}"
-                    required
-                    autofocus
-                    autocomplete="username"
-                    class="field {{ $errors->has('email') ? 'field-error' : '' }}"
-                    placeholder="you@example.com"
+                        id="email"
+                        type="email"
+                        name="email"
+                        value="{{ old('email') }}"
+                        required
+                        autofocus
+                        autocomplete="username"
+                        class="field {{ $errors->has('email') ? 'field-error' : '' }}"
+                        placeholder="you@example.com"
                     >
                     @error('email')
-                    <p class="mt-1.5 text-xs text-[#EC1D1D] font-medium">{{ $message }}</p>
+                        <p class="mt-1.5 text-xs text-[#EC1D1D] font-medium">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <!-- Password -->
+                <!-- Password with Toggle -->
                 <div>
                     <label for="password" class="block text-sm font-semibold text-[#161758] mb-1.5">
                         Password
                     </label>
-                    <input
-                    id="password"
-                    type="password"
-                    name="password"
-                    required
-                    autocomplete="current-password"
-                    class="field {{ $errors->has('password') ? 'field-error' : '' }}"
-                    placeholder="••••••••"
-                    >
+                    <div class="password-input-wrapper">
+                        <input
+                            id="password"
+                            type="password"
+                            name="password"
+                            required
+                            autocomplete="current-password"
+                            class="field {{ $errors->has('password') ? 'field-error' : '' }}"
+                            placeholder="••••••••"
+                        >
+                        <button
+                            type="button"
+                            class="password-toggle-btn"
+                            id="togglePasswordBtn"
+                            aria-label="Toggle password visibility"
+                            title="Toggle password visibility"
+                        >
+                            <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
                     @error('password')
-                    <p class="mt-1.5 text-xs text-[#EC1D1D] font-medium">{{ $message }}</p>
+                        <p class="mt-1.5 text-xs text-[#EC1D1D] font-medium">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <!-- Remember Me & Forgot Password -->
-                <div class="flex items-center justify-between">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
                     <label class="checkbox-wrapper">
                         <input
-                        id="remember_me"
-                        type="checkbox"
-                        name="remember"
+                            id="remember_me"
+                            type="checkbox"
+                            name="remember"
                         >
                         <span class="text-sm text-[#3a3a55]/80">Remember me</span>
                     </label>
@@ -407,20 +433,47 @@
 
                 <!-- Submit -->
                 <button
-                type="submit"
-                class="w-full py-3 bg-[#161758] text-white rounded-xl hover:bg-[#27438D] transition-colors duration-200 font-semibold text-base sm:text-lg"
-                style="min-height:52px;"
+                    type="submit"
+                    class="w-full py-3 bg-[#161758] text-white rounded-xl hover:bg-[#27438D] transition-colors duration-200 font-semibold text-base sm:text-lg"
+                    style="min-height:52px;"
                 >
-                Log in
-            </button>
-        </form>
+                    Log in
+                </button>
+            </form>
+        </div>
+
+        <!-- Footer -->
+        <p class="footer-note">
+            YOUR SCORE HISTORY IS SAVED TO YOUR PROFILE
+        </p>
     </div>
 
-    <!-- Footer -->
-    <p class="footer-note">
-        YOUR SCORE HISTORY IS SAVED TO YOUR PROFILE
-    </p>
-</div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleBtn = document.getElementById('togglePasswordBtn');
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eyeIcon');
 
+            if (toggleBtn && passwordInput) {
+                toggleBtn.addEventListener('click', function() {
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+
+                    // Update icon
+                    if (type === 'text') {
+                        eyeIcon.innerHTML = `
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                        `;
+                    } else {
+                        eyeIcon.innerHTML = `
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        `;
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

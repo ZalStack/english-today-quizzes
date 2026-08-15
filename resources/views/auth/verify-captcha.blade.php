@@ -1,3 +1,4 @@
+{{-- resources/views/auth/verify-captcha.blade.php --}}
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
 <head>
@@ -45,7 +46,10 @@
         .auth-card { width: 100%; max-width: 440px; margin-inline: auto; }
         .field, button[type="submit"] { min-height: 48px; }
 
-        .wordmark { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; }
+        .wordmark {
+            display: flex; align-items: center; gap: 0.6rem; text-decoration: none;
+            justify-content: center; margin-bottom: 1.75rem;
+        }
         .wordmark .badge {
             width: 2.25rem; height: 2.25rem; border-radius: 0.6rem; background: #161758;
             display: flex; align-items: center; justify-content: center; flex-shrink: 0;
@@ -64,6 +68,7 @@
             border-radius: 0.75rem;
             padding: 1.25rem 1rem;
             margin-bottom: 1.5rem;
+            flex-wrap: wrap;
         }
         .equation-box .num, .equation-box .op {
             font-family: 'Space Grotesk', sans-serif;
@@ -77,13 +82,28 @@
             text-align: center; font-size: 0.65rem; font-family: 'JetBrains Mono', monospace;
             letter-spacing: 0.08em; color: rgba(58, 58, 85, 0.45); margin-top: 1.5rem; padding-inline: 0.5rem;
         }
+
+        @media (max-width: 400px) {
+            body { padding: 0.5rem; }
+            .wordmark .badge { width: 2rem; height: 2rem; }
+            .wordmark .badge span { font-size: 0.7rem; }
+            .wordmark .label { font-size: 1rem; }
+            .equation-box .num, .equation-box .op { font-size: 1.4rem; }
+            .equation-box { padding: 1rem 0.75rem; gap: 0.5rem; }
+            .field { font-size: 1rem; }
+            .footer-note { font-size: 0.55rem; margin-top: 1.25rem; }
+        }
+
+        @media (min-width: 401px) and (max-width: 640px) {
+            .equation-box .num, .equation-box .op { font-size: 1.5rem; }
+        }
     </style>
 </head>
 <body class="antialiased ruled-bg">
 
     <div class="auth-card">
 
-        <a href="{{ url('/') }}" class="wordmark" style="justify-content:center; margin-bottom:1.75rem;">
+        <a href="{{ url('/') }}" class="wordmark">
             <div class="badge"><span>ET</span></div>
             <span class="label">ET-Quizzes</span>
         </a>
@@ -103,6 +123,12 @@
             <p class="text-sm text-[#3a3a55]/70 mb-6 sm:mb-7">
                 Selesaikan operasi hitung berikut untuk melanjutkan.
             </p>
+
+            @if ($errors->any())
+                <div class="mb-5 px-4 py-3 rounded-lg bg-[#EC1D1D]/10 border border-[#EC1D1D]/30 text-sm text-[#EC1D1D] font-medium">
+                    {{ $errors->first() }}
+                </div>
+            @endif
 
             @php
                 $opSymbol = match($operation) {

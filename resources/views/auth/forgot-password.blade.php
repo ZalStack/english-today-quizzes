@@ -1,3 +1,4 @@
+{{-- resources/views/auth/forgot-password.blade.php --}}
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
 <head>
@@ -67,14 +68,37 @@
 
         .field, button[type="submit"] { min-height: 48px; }
 
-        .wordmark { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; }
+        .wordmark {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+            justify-content: center;
+            margin-bottom: 1.75rem;
+        }
         .wordmark .badge {
-            width: 2.25rem; height: 2.25rem; border-radius: 0.6rem;
-            background: #161758; display: flex; align-items: center; justify-content: center;
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 0.6rem;
+            background: #161758;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             flex-shrink: 0;
         }
-        .wordmark .badge span { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.85rem; color: #fff; }
-        .wordmark .label { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.15rem; color: #161758; letter-spacing: -0.02em; }
+        .wordmark .badge span {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #fff;
+        }
+        .wordmark .label {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: #161758;
+            letter-spacing: -0.02em;
+        }
 
         .step-track { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 1.5rem; }
         .step-dot {
@@ -83,8 +107,25 @@
         .step-dot.active { background: var(--cyan); }
 
         .footer-note {
-            text-align: center; font-size: 0.65rem; font-family: 'JetBrains Mono', monospace;
-            letter-spacing: 0.08em; color: rgba(58, 58, 85, 0.45); margin-top: 1.5rem; padding-inline: 0.5rem;
+            text-align: center;
+            font-size: 0.65rem;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.08em;
+            color: rgba(58, 58, 85, 0.45);
+            margin-top: 1.5rem;
+            padding-inline: 0.5rem;
+        }
+
+        @media (max-width: 400px) {
+            body { padding: 0.5rem; }
+            .wordmark .badge {
+                width: 2rem;
+                height: 2rem;
+            }
+            .wordmark .badge span { font-size: 0.7rem; }
+            .wordmark .label { font-size: 1rem; }
+            .field { font-size: 0.9rem; padding: 0.6rem 0.8rem; }
+            .footer-note { font-size: 0.55rem; margin-top: 1.25rem; }
         }
     </style>
 </head>
@@ -92,7 +133,7 @@
 
     <div class="auth-card">
 
-        <a href="{{ url('/') }}" class="wordmark" style="justify-content:center; margin-bottom:1.75rem;">
+        <a href="{{ url('/') }}" class="wordmark">
             <div class="badge"><span>ET</span></div>
             <span class="label">ET-Quizzes</span>
         </a>
@@ -116,6 +157,12 @@
             @if (session('status'))
                 <div class="mb-5 px-4 py-3 rounded-lg bg-[#2E7D3E]/10 border border-[#2E7D3E]/30 text-sm text-[#2E7D3E] font-medium">
                     {{ session('status') }}
+                </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="mb-5 px-4 py-3 rounded-lg bg-[#EC1D1D]/10 border border-[#EC1D1D]/30 text-sm text-[#EC1D1D] font-medium">
+                    {{ $errors->first() }}
                 </div>
             @endif
 
