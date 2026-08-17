@@ -1,81 +1,54 @@
-{{-- resources/views/hr/video-challenges/create.blade.php --}}
-@extends('layouts.app')
+@extends('layouts.hr')
 
-@section('title', 'Buat Challenge Baru')
+@section('title', 'Create Video Challenge')
+@section('header-title', 'Create Video Challenge')
+@section('header-subtitle', 'Assign a new video challenge to employees')
 
 @section('content')
-<div class="py-4 sm:py-6 lg:py-8">
-    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="mb-4 sm:mb-6">
-            <a href="{{ route('hr.video-challenges.index') }}" class="text-indigo-600 hover:text-indigo-700 text-sm font-semibold">&larr; Kembali</a>
-        </div>
+<div class="max-w-4xl">
+    <div class="hr-card overflow-hidden">
+        <form action="{{ route('hr.video-challenges.store') }}" method="POST" class="p-6 sm:p-8 space-y-5">
+            @csrf
 
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-8">
-            <h1 class="text-xl sm:text-2xl font-extrabold text-gray-900 mb-4 sm:mb-6">Buat Video Challenge Baru</h1>
-
-            <form action="{{ route('hr.video-challenges.store') }}" method="POST">
-                @csrf
-
-                <div class="mb-4 sm:mb-5">
-                    <label class="block text-sm font-semibold text-gray-700 mb-1 sm:mb-2">Judul Challenge</label>
-                    <input type="text" name="title" value="{{ old('title') }}" required
-                           class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-sm sm:text-base"
-                           placeholder="Contoh: Introduce Myself, My Daily Activity, dll">
-                    @error('title') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="md:col-span-2">
+                    <label for="title" class="block text-sm font-semibold text-slate-700 mb-2">Challenge Title</label>
+                    <input type="text" name="title" id="title" value="{{ old('title') }}" required class="hr-input" placeholder="e.g., Presentation Skills Challenge">
+                    @error('title')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
-                <div class="mb-4 sm:mb-5">
-                    <label class="block text-sm font-semibold text-gray-700 mb-1 sm:mb-2">Deskripsi <span class="text-gray-400">(opsional)</span></label>
-                    <textarea name="description" rows="4"
-                              class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-sm sm:text-base"
-                              placeholder="Jelaskan challenge ini...">{{ old('description') }}</textarea>
-                    @error('description') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                <div class="md:col-span-2">
+                    <label for="description" class="block text-sm font-semibold text-slate-700 mb-2">Description</label>
+                    <textarea name="description" id="description" rows="4" class="hr-input" placeholder="Describe the challenge requirements">{{ old('description') }}</textarea>
+                    @error('description')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
-                <div class="mb-4 sm:mb-5">
-                    <label class="block text-sm font-semibold text-gray-700 mb-1 sm:mb-2">Link Materi (Google Drive) <span class="text-gray-400">(opsional)</span></label>
-                    <input type="url" name="material_link" value="{{ old('material_link') }}"
-                           class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-sm sm:text-base"
-                           placeholder="https://drive.google.com/file/d/...">
-                    @error('material_link') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                <div>
+                    <label for="google_drive_link" class="block text-sm font-semibold text-slate-700 mb-2">Google Drive Link</label>
+                    <input type="url" name="google_drive_link" id="google_drive_link" value="{{ old('google_drive_link') }}" class="hr-input" placeholder="https://drive.google.com/...">
+                    @error('google_drive_link')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
-                <div class="mb-4 sm:mb-5">
-                    <label class="block text-sm font-semibold text-gray-700 mb-1 sm:mb-2">Judul Materi <span class="text-gray-400">(opsional)</span></label>
-                    <input type="text" name="material_title" value="{{ old('material_title') }}"
-                           class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-sm sm:text-base"
-                           placeholder="Contoh: Materi Introduce Myself">
-                    @error('material_title') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                <div>
+                    <label for="deadline" class="block text-sm font-semibold text-slate-700 mb-2">Deadline</label>
+                    <input type="datetime-local" name="deadline" id="deadline" value="{{ old('deadline') }}" class="hr-input">
+                    @error('deadline')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
+            </div>
 
-                <div class="mb-4 sm:mb-5">
-                    <label class="block text-sm font-semibold text-gray-700 mb-1 sm:mb-2">Link Kisi-Kisi (Google Drive) <span class="text-gray-400">(opsional)</span></label>
-                    <input type="url" name="kisi_kisi_link" value="{{ old('kisi_kisi_link') }}"
-                           class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-sm sm:text-base"
-                           placeholder="https://drive.google.com/file/d/...">
-                    @error('kisi_kisi_link') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                </div>
-
-                <div class="mb-4 sm:mb-6">
-                    <label class="block text-sm font-semibold text-gray-700 mb-1 sm:mb-2">Judul Kisi-Kisi <span class="text-gray-400">(opsional)</span></label>
-                    <input type="text" name="kisi_kisi_title" value="{{ old('kisi_kisi_title') }}"
-                           class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-sm sm:text-base"
-                           placeholder="Contoh: Kisi-Kisi Introduce Myself">
-                    @error('kisi_kisi_title') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                </div>
-
-                <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                    <button type="submit"
-                            class="w-full sm:w-auto px-4 sm:px-8 py-2.5 sm:py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 font-semibold text-sm sm:text-base">
-                        Simpan Challenge
-                    </button>
-                    <a href="{{ route('hr.video-challenges.index') }}"
-                       class="w-full sm:w-auto px-4 sm:px-8 py-2.5 sm:py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition font-semibold text-center text-sm sm:text-base">
-                        Batal
-                    </a>
-                </div>
-            </form>
-        </div>
+            <div class="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-slate-100">
+                <a href="{{ route('hr.video-challenges.index') }}" class="hr-btn-secondary">Cancel</a>
+                <button type="submit" class="hr-btn-primary">Create Challenge</button>
+            </div>
+        </form>
     </div>
 </div>
 @endsection
