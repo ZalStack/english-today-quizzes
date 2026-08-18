@@ -9,7 +9,7 @@
     <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:300,400,500,600,700,800&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans antialiased bg-slate-50" x-data="{ sidebarCollapsed: false, sidebarMobile: false }" @toggle-sidebar.window="sidebarMobile = !sidebarMobile">
+<body class="font-sans antialiased bg-[#f8fafc]" x-data="{ sidebarCollapsed: false, sidebarMobile: false }" @toggle-sidebar.window="sidebarMobile = !sidebarMobile">
 
     <div class="hr-layout" :class="{ 'hr-layout--collapsed': sidebarCollapsed }">
 
@@ -32,31 +32,31 @@
         <div class="hr-layout__main">
             @include('layouts.partials.hr-header')
 
-            <main class="hr-layout__content">
+            <main class="hr-layout__content page-enter">
                 @if(session('success'))
-                    <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl flex items-center text-sm">
+                    <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200/80 text-emerald-700 rounded-xl flex items-center text-sm shadow-soft animate-slide-up">
                         <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        {{ session('success') }}
+                        <span class="font-medium">{{ session('success') }}</span>
                     </div>
                 @endif
 
                 @if(session('error'))
-                    <div class="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl flex items-center text-sm">
+                    <div class="mb-6 p-4 bg-red-50 border border-red-200/80 text-red-700 rounded-xl flex items-center text-sm shadow-soft animate-slide-up">
                         <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        {{ session('error') }}
+                        <span class="font-medium">{{ session('error') }}</span>
                     </div>
                 @endif
 
                 @if(session('info'))
-                    <div class="mb-6 p-4 bg-blue-50 border border-blue-200 text-blue-700 rounded-xl flex items-center text-sm">
+                    <div class="mb-6 p-4 bg-blue-50 border border-blue-200/80 text-blue-700 rounded-xl flex items-center text-sm shadow-soft animate-slide-up">
                         <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        {{ session('info') }}
+                        <span class="font-medium">{{ session('info') }}</span>
                     </div>
                 @endif
 

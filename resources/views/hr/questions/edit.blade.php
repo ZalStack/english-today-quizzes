@@ -6,7 +6,7 @@
 
 @section('content')
 <div class="mb-6">
-    <a href="{{ route('hr.quizzes.questions.index', $quiz) }}" class="text-indigo-600 hover:text-indigo-700 text-sm font-semibold inline-flex items-center gap-1">
+    <a href="{{ route('hr.quizzes.questions.index', $quiz) }}" class="text-primary-600 hover:text-primary-700 text-sm font-semibold inline-flex items-center gap-1.5 transition-colors">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
@@ -40,7 +40,7 @@
                 <label for="question_text" class="block text-sm font-semibold text-slate-700 mb-2">Question Text</label>
                 <textarea name="question_text" id="question_text" rows="3" class="hr-input" required>{{ old('question_text', $question->question_text) }}</textarea>
                 @error('question_text')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    <p class="mt-1.5 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -77,7 +77,7 @@
                 <label for="correct_answer" class="block text-sm font-semibold text-slate-700 mb-2">Correct Answer</label>
                 <textarea name="correct_answer" id="correct_answer" rows="2" class="hr-input" required>{{ old('correct_answer', $question->correct_answer) }}</textarea>
                 @error('correct_answer')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    <p class="mt-1.5 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -91,7 +91,7 @@
                 <input type="number" name="points" id="points" value="{{ old('points', $question->points) }}" min="1" class="hr-input w-32">
             </div>
 
-            <div class="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-slate-100">
+            <div class="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-slate-100/80">
                 <a href="{{ route('hr.quizzes.questions.index', $quiz) }}" class="hr-btn-secondary">Cancel</a>
                 <button type="submit" class="hr-btn-primary">Update Question</button>
             </div>

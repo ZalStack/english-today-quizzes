@@ -10,8 +10,12 @@ class DivisionController extends Controller
 {
     public function index()
     {
+        $totalDivisions = Division::count();
+        $totalEmployeesInDivisions = \App\Models\User::where('role', 'employee')->whereNotNull('division_id')->count();
+        $averagePerDivision = $totalDivisions > 0 ? round($totalEmployeesInDivisions / $totalDivisions, 1) : 0;
+
         $divisions = Division::withCount('users')->paginate(10);
-        return view('hr.divisions.index', compact('divisions'));
+        return view('hr.divisions.index', compact('divisions', 'totalDivisions', 'totalEmployeesInDivisions', 'averagePerDivision'));
     }
 
     public function create()

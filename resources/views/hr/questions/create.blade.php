@@ -6,7 +6,7 @@
 
 @section('content')
 <div class="mb-6">
-    <a href="{{ route('hr.quizzes.questions.index', $quiz) }}" class="text-indigo-600 hover:text-indigo-700 text-sm font-semibold inline-flex items-center gap-1">
+    <a href="{{ route('hr.quizzes.questions.index', $quiz) }}" class="text-primary-600 hover:text-primary-700 text-sm font-semibold inline-flex items-center gap-1.5 transition-colors">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
@@ -17,12 +17,12 @@
 <div class="max-w-4xl">
     <div class="hr-card overflow-hidden">
         {{-- Tabs --}}
-        <div class="border-b border-slate-100" x-data="{ tab: 'manual' }">
+        <div class="border-b border-slate-100/80" x-data="{ tab: 'manual' }">
             <div class="flex">
-                <button @click="tab = 'manual'" :class="tab === 'manual' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700'" class="px-6 py-3 text-sm font-semibold border-b-2 transition">
+                <button @click="tab = 'manual'" :class="tab === 'manual' ? 'border-primary-600 text-primary-600' : 'border-transparent text-slate-500 hover:text-slate-700'" class="px-6 py-3 text-sm font-semibold border-b-2 transition-all duration-200">
                     Manual Input
                 </button>
-                <button @click="tab = 'pdf'" :class="tab === 'pdf' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700'" class="px-6 py-3 text-sm font-semibold border-b-2 transition">
+                <button @click="tab = 'pdf'" :class="tab === 'pdf' ? 'border-primary-600 text-primary-600' : 'border-transparent text-slate-500 hover:text-slate-700'" class="px-6 py-3 text-sm font-semibold border-b-2 transition-all duration-200">
                     Import from PDF
                 </button>
             </div>
@@ -52,7 +52,7 @@
                         <label for="question_text" class="block text-sm font-semibold text-slate-700 mb-2">Question Text</label>
                         <textarea name="question_text" id="question_text" rows="3" class="hr-input" placeholder="Enter the question text" required>{{ old('question_text') }}</textarea>
                         @error('question_text')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            <p class="mt-1.5 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -85,7 +85,7 @@
                         <label for="correct_answer" class="block text-sm font-semibold text-slate-700 mb-2">Correct Answer</label>
                         <textarea name="correct_answer" id="correct_answer" rows="2" class="hr-input" placeholder="Enter the correct answer" required>{{ old('correct_answer') }}</textarea>
                         @error('correct_answer')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            <p class="mt-1.5 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -99,7 +99,7 @@
                         <input type="number" name="points" id="points" value="{{ old('points', 10) }}" min="1" class="hr-input w-32">
                     </div>
 
-                    <div class="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-slate-100">
+                    <div class="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-slate-100/80">
                         <a href="{{ route('hr.quizzes.questions.index', $quiz) }}" class="hr-btn-secondary">Cancel</a>
                         <button type="submit" class="hr-btn-primary">Add Question</button>
                     </div>
@@ -111,11 +111,11 @@
                 <form action="{{ route('hr.quizzes.questions.import', $quiz) }}" method="POST" enctype="multipart/form-data" class="space-y-5">
                     @csrf
 
-                    <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-4 flex items-start gap-3">
-                        <svg class="w-5 h-5 text-indigo-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="bg-primary-50/80 border border-primary-200/80 rounded-xl p-4 flex items-start gap-3">
+                        <svg class="w-5 h-5 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        <div class="text-sm text-indigo-800">
+                        <div class="text-sm text-primary-800">
                             <p class="font-semibold">PDF Import</p>
                             <p>Upload a PDF file containing questions. The system will attempt to parse them automatically.</p>
                         </div>
@@ -125,11 +125,11 @@
                         <label for="pdf_file" class="block text-sm font-semibold text-slate-700 mb-2">Select PDF File</label>
                         <input type="file" name="pdf_file" id="pdf_file" accept=".pdf" required class="hr-input">
                         @error('pdf_file')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            <p class="mt-1.5 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
-                    <div class="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-slate-100">
+                    <div class="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-slate-100/80">
                         <a href="{{ route('hr.quizzes.questions.index', $quiz) }}" class="hr-btn-secondary">Cancel</a>
                         <button type="submit" class="hr-btn-primary">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

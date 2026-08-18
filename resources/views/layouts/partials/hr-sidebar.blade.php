@@ -10,11 +10,11 @@
     ];
 @endphp
 
-<aside class="hr-sidebar" :class="{ 'hr-sidebar--collapsed': sidebarCollapsed }" x-data="{ open: false }">
+<aside class="hr-sidebar" :class="{ 'hr-sidebar--collapsed': sidebarCollapsed }">
     <div class="hr-sidebar__inner">
         {{-- Logo --}}
         <div class="hr-sidebar__logo">
-            <a href="{{ route('hr.dashboard') }}" class="flex items-center gap-3 overflow-hidden">
+            <a href="{{ route('hr.dashboard') }}">
                 <div class="hr-sidebar__logo-icon">
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -26,7 +26,7 @@
 
         {{-- Navigation --}}
         <nav class="hr-sidebar__nav">
-            <div class="hr-sidebar__nav-label">Main Menu</div>
+            <div class="hr-sidebar__nav-label">Menu</div>
             @foreach($sidebarItems as $item)
                 <a href="{{ route($item['route']) }}"
                    class="hr-sidebar__link {{ request()->routeIs($item['active'] ?? $item['route']) ? 'hr-sidebar__link--active' : '' }}"

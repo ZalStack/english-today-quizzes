@@ -14,6 +14,10 @@ class VideoChallengeController extends Controller
 {
     public function index()
     {
+        $totalChallenges = VideoChallenge::count();
+        $totalSubmissions = VideoSubmission::count();
+        $activeChallenges = VideoChallenge::where('is_active', true)->count();
+
         $challenges = VideoChallenge::withCount('submissions')->latest()->paginate(9);
 
         // Get all divisions with employee counts
@@ -53,7 +57,7 @@ class VideoChallengeController extends Controller
             return $challenge;
         });
 
-        return view('hr.video-challenges.index', compact('challenges'));
+        return view('hr.video-challenges.index', compact('challenges', 'totalChallenges', 'totalSubmissions', 'activeChallenges'));
     }
 
     public function create()

@@ -9,9 +9,16 @@ class ReportController extends Controller
 {
     public function index()
     {
-        $quizzes = Quiz::withCount('attempts')->paginate(10); // atau 15
+        $totalQuizzes = Quiz::count();
+        $totalAttempts = \App\Models\UserQuizAttempt::where('status', 'completed')->count();
+        $averageScore = \App\Models\UserQuizAttempt::where('status', 'completed')->avg('score') ?? 0;
+        $passingRate = $totalAttempts > 0
+            ? round(\App\Models\UserQuizAttempt::where('status', 'completed')->where('score', '>=', 70)->count() / $totalAttempts * 100, 1)
+            : 0;
 
-        return view('hr.reports.index', compact('quizzes'));
+        $quizzes = Quiz::withCount('attempts')->paginate(10);
+
+        return view('hr.reports.index', compact('quizzes', 'totalQuizzes', 'totalAttempts', 'averageScore', 'passingRate'));
     }
 
     public function show(Quiz $quiz)

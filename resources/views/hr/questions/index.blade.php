@@ -7,7 +7,7 @@
 @section('content')
 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
     <div>
-        <a href="{{ route('hr.quizzes.show', $quiz) }}" class="text-indigo-600 hover:text-indigo-700 text-sm font-semibold inline-flex items-center gap-1 mb-2">
+        <a href="{{ route('hr.quizzes.show', $quiz) }}" class="text-primary-600 hover:text-primary-700 text-sm font-semibold inline-flex items-center gap-1.5 mb-2 transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
             </svg>
@@ -23,27 +23,27 @@
 </div>
 
 {{-- Quiz Info Card --}}
-<div class="bg-gradient-to-r from-indigo-600 to-violet-600 rounded-2xl p-6 mb-8 text-white">
+<div class="bg-gradient-to-r from-primary-600 to-primary-500 rounded-2xl p-6 mb-8 text-white shadow-glow-primary">
     <div class="grid grid-cols-2 sm:grid-cols-5 gap-4">
         <div>
-            <p class="text-indigo-200 text-sm">Total Questions</p>
-            <p class="text-xl font-bold">{{ $quiz->total_questions }}</p>
+            <p class="text-primary-200 text-sm font-medium">Total Questions</p>
+            <p class="text-xl font-bold tracking-tight">{{ $quiz->total_questions }}</p>
         </div>
         <div>
-            <p class="text-indigo-200 text-sm">Total Points</p>
-            <p class="text-xl font-bold">{{ $quiz->questions->sum('points') ?? 0 }}/100</p>
+            <p class="text-primary-200 text-sm font-medium">Total Points</p>
+            <p class="text-xl font-bold tracking-tight">{{ $quiz->questions->sum('points') ?? 0 }}/100</p>
         </div>
         <div>
-            <p class="text-indigo-200 text-sm">Duration</p>
-            <p class="text-xl font-bold">{{ $quiz->duration }} min</p>
+            <p class="text-primary-200 text-sm font-medium">Duration</p>
+            <p class="text-xl font-bold tracking-tight">{{ $quiz->duration }} min</p>
         </div>
         <div>
-            <p class="text-indigo-200 text-sm">Status</p>
-            <p class="text-xl font-bold capitalize">{{ $quiz->status }}</p>
+            <p class="text-primary-200 text-sm font-medium">Status</p>
+            <p class="text-xl font-bold tracking-tight capitalize">{{ $quiz->status }}</p>
         </div>
         <div class="col-span-2 sm:col-span-1">
-            <p class="text-indigo-200 text-sm">Enroll Key</p>
-            <p class="text-xl font-bold">{{ $quiz->enroll_key ?? 'None' }}</p>
+            <p class="text-primary-200 text-sm font-medium">Enroll Key</p>
+            <p class="text-xl font-bold tracking-tight">{{ $quiz->enroll_key ?? 'None' }}</p>
         </div>
     </div>
 </div>
@@ -51,7 +51,7 @@
 {{-- Import Preview Banner --}}
 @if(session('show_import_preview') && session('imported_questions'))
     @php $importedQuestions = session('imported_questions'); @endphp
-    <div class="hr-card overflow-hidden mb-8 border-2 border-emerald-200">
+    <div class="hr-card overflow-hidden mb-8 border-2 border-emerald-200/80">
         <div class="px-6 py-4 bg-gradient-to-r from-emerald-600 to-green-600 text-white">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                 <div>
@@ -70,7 +70,7 @@
 @if($questions->count() > 0)
     <div class="space-y-4">
         @foreach($questions as $index => $question)
-            <div class="hr-card p-5 sm:p-6 hover:shadow-md transition-all duration-300">
+            <div class="hr-card p-5 sm:p-6 hover:shadow-soft-md transition-all duration-300">
                 <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
                     <div class="flex-1 min-w-0">
                         <div class="flex flex-wrap items-center gap-2 mb-3">
@@ -86,7 +86,7 @@
                         @endif
 
                         @if($question->options && is_array($question->options))
-                            <div class="bg-slate-50 rounded-xl p-4 ml-0 sm:ml-4 overflow-x-auto">
+                            <div class="bg-slate-50/80 rounded-xl p-4 ml-0 sm:ml-4 overflow-x-auto">
                                 <p class="text-xs font-semibold text-slate-600 mb-2">Options:</p>
                                 <div class="space-y-2">
                                     @foreach($question->options as $key => $option)
@@ -105,14 +105,14 @@
                                 </div>
                             </div>
                         @else
-                            <div class="bg-emerald-50 rounded-xl p-4 ml-0 sm:ml-4 border border-emerald-200">
+                            <div class="bg-emerald-50/80 rounded-xl p-4 ml-0 sm:ml-4 border border-emerald-200/80">
                                 <p class="text-xs font-semibold text-emerald-800">Correct Answer:</p>
                                 <p class="text-emerald-700 whitespace-pre-wrap text-sm break-words">{{ $question->correct_answer }}</p>
                             </div>
                         @endif
 
                         @if($question->explanation)
-                            <div class="bg-blue-50 rounded-xl p-4 mt-3 border border-blue-200">
+                            <div class="bg-blue-50/80 rounded-xl p-4 mt-3 border border-blue-200/80">
                                 <p class="text-xs font-semibold text-blue-800">Explanation:</p>
                                 <p class="text-blue-700 whitespace-pre-wrap text-sm break-words">{{ $question->explanation }}</p>
                             </div>
@@ -120,13 +120,13 @@
                     </div>
 
                     <div class="flex lg:flex-col flex-row gap-2">
-                        <a href="{{ route('hr.quizzes.questions.edit', [$quiz, $question]) }}" class="flex-1 lg:flex-none px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition text-sm font-semibold text-center">
+                        <a href="{{ route('hr.quizzes.questions.edit', [$quiz, $question]) }}" class="flex-1 lg:flex-none px-4 py-2 bg-primary-50 text-primary-600 rounded-lg hover:bg-primary-100 transition-all duration-200 text-sm font-semibold text-center">
                             Edit
                         </a>
                         <form action="{{ route('hr.quizzes.questions.destroy', [$quiz, $question]) }}" method="POST" class="flex-1 lg:flex-none">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="w-full px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition text-sm font-semibold" onclick="return confirm('Delete this question?')">
+                            <button type="submit" class="w-full px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all duration-200 text-sm font-semibold" onclick="return confirm('Delete this question?')">
                                 Delete
                             </button>
                         </form>
@@ -141,7 +141,7 @@
 @else
     <div class="hr-card p-12 text-center">
         <div class="hr-empty__icon mx-auto mb-6" style="width:80px;height:80px;">
-            <svg class="w-10 h-10 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-10 h-10 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
         </div>
@@ -165,7 +165,7 @@
         $remainder = 100 % $total;
     @endphp
 
-    <div id="importPreview" class="mt-8 hr-card overflow-hidden border-2 border-emerald-200">
+    <div id="importPreview" class="mt-8 hr-card overflow-hidden border-2 border-emerald-200/80">
         <div class="px-6 sm:px-8 py-6 bg-gradient-to-r from-emerald-600 to-green-600 text-white">
             <h2 class="text-xl font-bold">Preview Imported Questions</h2>
             <p class="text-emerald-100 text-sm mt-0.5">Review {{ $total }} soal yang terdeteksi dari PDF</p>
@@ -174,7 +174,7 @@
         <form action="{{ route('hr.quizzes.questions.import.confirm', $quiz) }}" method="POST" class="p-6 sm:p-8">
             @csrf
 
-            <div class="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-3">
+            <div class="mb-4 p-4 bg-amber-50/80 border border-amber-200/80 rounded-xl flex items-start gap-3">
                 <svg class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                 </svg>
@@ -184,11 +184,11 @@
                 </div>
             </div>
 
-            <div class="mb-6 p-4 bg-indigo-50 border border-indigo-200 rounded-xl flex items-start gap-3">
-                <svg class="w-5 h-5 text-indigo-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="mb-6 p-4 bg-primary-50/80 border border-primary-200/80 rounded-xl flex items-start gap-3">
+                <svg class="w-5 h-5 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
-                <div class="text-sm text-indigo-800">
+                <div class="text-sm text-primary-800">
                     <p class="font-semibold">Auto-Calculate Points (Max 100)</p>
                     <p>Sistem akan otomatis membagi total <strong>100 poin</strong> ke {{ $total }} soal yang dipilih.</p>
                     <p class="mt-1 text-xs">
@@ -207,7 +207,7 @@
                     @php
                         $autoPoints = $base + ($index < $remainder ? 1 : 0);
                     @endphp
-                    <div class="border border-slate-200 rounded-xl p-5 hover:shadow-md transition bg-white">
+                    <div class="border border-slate-200/80 rounded-xl p-5 hover:shadow-soft transition-all duration-200 bg-white">
                         <div class="flex flex-wrap items-start justify-between gap-2 mb-3">
                             <div class="flex flex-wrap items-center gap-3">
                                 <input type="checkbox" name="questions[{{ $index }}][import]" value="1" checked class="w-5 h-5 text-emerald-600 rounded focus:ring-emerald-500">
@@ -230,7 +230,7 @@
                         <textarea name="questions[{{ $index }}][question_text]" rows="2" class="hr-input mb-3">{{ $question['question_text'] }}</textarea>
 
                         @if(!empty($question['options']))
-                            <div class="bg-slate-50 rounded-xl p-3 mb-3 space-y-2">
+                            <div class="bg-slate-50/80 rounded-xl p-3 mb-3 space-y-2">
                                 <p class="text-xs font-semibold text-slate-600">Pilihan Jawaban:</p>
                                 @foreach($question['options'] as $optIndex => $option)
                                     <div class="flex items-center gap-2">
@@ -256,7 +256,7 @@
                                 <div class="hr-input bg-slate-100 text-slate-500 italic mt-1">Jawaban essay dinilai manual</div>
                                 <input type="hidden" name="questions[{{ $index }}][correct_answer]" value="{{ $question['correct_answer'] }}">
                             @else
-                                <textarea name="questions[{{ $index }}][correct_answer]" rows="{{ $question['question_type'] === 'short_answer' ? 1 : 2 }}" class="hr-input border-emerald-300 bg-emerald-50 mt-1">{{ $question['correct_answer'] }}</textarea>
+                                <textarea name="questions[{{ $index }}][correct_answer]" rows="{{ $question['question_type'] === 'short_answer' ? 1 : 2 }}" class="hr-input border-emerald-300 bg-emerald-50/80 mt-1">{{ $question['correct_answer'] }}</textarea>
                             @endif
                         </div>
 

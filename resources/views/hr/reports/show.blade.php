@@ -6,7 +6,7 @@
 
 @section('content')
 <div class="mb-6">
-    <a href="{{ route('hr.reports.index') }}" class="text-indigo-600 hover:text-indigo-700 text-sm font-semibold inline-flex items-center gap-1">
+    <a href="{{ route('hr.reports.index') }}" class="text-primary-600 hover:text-primary-700 text-sm font-semibold inline-flex items-center gap-1.5 transition-colors">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
@@ -15,23 +15,23 @@
 </div>
 
 {{-- Stats --}}
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8 animate-stagger">
     <div class="hr-stat">
         <p class="text-sm font-medium text-slate-500">Total Participants</p>
-        <p class="text-3xl font-bold text-slate-900 mt-1">{{ $attempts->count() }}</p>
+        <p class="text-3xl font-bold text-slate-900 mt-1 tracking-tight">{{ $attempts->count() }}</p>
     </div>
     <div class="hr-stat">
         <p class="text-sm font-medium text-slate-500">Average Score</p>
-        <p class="text-3xl font-bold text-slate-900 mt-1">{{ $attempts->count() > 0 ? number_format($attempts->avg('score'), 1) : '0' }}%</p>
+        <p class="text-3xl font-bold text-slate-900 mt-1 tracking-tight">{{ $attempts->count() > 0 ? number_format($attempts->avg('score'), 1) : '0' }}%</p>
     </div>
     <div class="hr-stat">
         <p class="text-sm font-medium text-slate-500">Pass Rate</p>
-        <p class="text-3xl font-bold text-slate-900 mt-1">{{ $attempts->count() > 0 ? number_format($attempts->where('score', '>=', 70)->count() / $attempts->count() * 100, 1) : '0' }}%</p>
+        <p class="text-3xl font-bold text-slate-900 mt-1 tracking-tight">{{ $attempts->count() > 0 ? number_format($attempts->where('score', '>=', 70)->count() / $attempts->count() * 100, 1) : '0' }}%</p>
     </div>
 </div>
 
 <div class="flex justify-between items-center mb-6">
-    <h3 class="text-base font-bold text-slate-900">Participants</h3>
+    <h3 class="text-base font-bold text-slate-900 tracking-tight">Participants</h3>
     <a href="{{ route('hr.reports.export', $quiz) }}" class="hr-btn-primary text-sm">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -91,7 +91,7 @@
     </div>
 
     @if($attempts instanceof \Illuminate\Pagination\AbstractPaginator && $attempts->hasPages())
-        <div class="px-6 py-4 border-t border-slate-100">
+        <div class="px-6 py-4 border-t border-slate-100/80">
             {{ $attempts->links() }}
         </div>
     @endif

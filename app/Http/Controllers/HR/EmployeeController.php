@@ -12,10 +12,16 @@ class EmployeeController extends Controller
 {
     public function index()
     {
+        $totalEmployees = User::where('role', 'employee')->count();
+        $activeEmployees = User::where('role', 'employee')->where('status', 'active')->count();
+        $withDivision = User::where('role', 'employee')->whereNotNull('division_id')->count();
+        $withoutDivision = User::where('role', 'employee')->whereNull('division_id')->count();
+
         $employees = User::where('role', 'employee')
             ->with('division')
             ->paginate(10);
-        return view('hr.employees.index', compact('employees'));
+
+        return view('hr.employees.index', compact('employees', 'totalEmployees', 'activeEmployees', 'withDivision', 'withoutDivision'));
     }
 
     public function create()

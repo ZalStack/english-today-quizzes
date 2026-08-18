@@ -12,11 +12,18 @@ class QuizController extends Controller
 {
     public function index()
     {
+        $totalQuizzes = Quiz::count();
+        $activeQuizzes = Quiz::where('status', 'active')->count();
+        $draftQuizzes = Quiz::where('status', 'draft')->count();
+        $completedQuizzes = Quiz::where('status', 'completed')->count();
+        $totalAttempts = \App\Models\UserQuizAttempt::where('status', 'completed')->count();
+
         $quizzes = Quiz::with(['category', 'creator'])
             ->withCount(['questions', 'attempts'])
             ->latest()
             ->paginate(10);
-        return view('hr.quizzes.index', compact('quizzes'));
+
+        return view('hr.quizzes.index', compact('quizzes', 'totalQuizzes', 'activeQuizzes', 'draftQuizzes', 'completedQuizzes', 'totalAttempts'));
     }
 
     public function create()

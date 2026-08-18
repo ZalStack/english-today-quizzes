@@ -10,8 +10,12 @@ class QuizCategoryController extends Controller
 {
     public function index()
     {
+        $totalCategories = QuizCategory::count();
+        $totalQuizzesInCategories = \App\Models\Quiz::count();
+        $averagePerCategory = $totalCategories > 0 ? round($totalQuizzesInCategories / $totalCategories, 1) : 0;
+
         $categories = QuizCategory::withCount('quizzes')->paginate(10);
-        return view('hr.categories.index', compact('categories'));
+        return view('hr.categories.index', compact('categories', 'totalCategories', 'totalQuizzesInCategories', 'averagePerCategory'));
     }
 
     public function create()

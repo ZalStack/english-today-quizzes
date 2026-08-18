@@ -2,12 +2,12 @@
     <div class="hr-header__inner">
         {{-- Left: Mobile menu toggle + Page title --}}
         <div class="hr-header__left">
-            <button @click="$dispatch('toggle-sidebar')" class="hr-header__menu-btn lg:hidden">
+            <button @click="$dispatch('toggle-sidebar')" class="hr-header__menu-btn lg:hidden" aria-label="Toggle sidebar">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>
             </button>
-            <button @click="$dispatch('toggle-sidebar')" class="hr-header__menu-btn hidden lg:flex">
+            <button @click="$dispatch('toggle-sidebar')" class="hr-header__menu-btn hidden lg:flex" aria-label="Toggle sidebar">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>

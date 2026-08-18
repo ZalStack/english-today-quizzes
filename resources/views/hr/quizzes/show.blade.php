@@ -6,7 +6,7 @@
 
 @section('content')
 <div class="mb-6">
-    <a href="{{ route('hr.quizzes.index') }}" class="text-indigo-600 hover:text-indigo-700 text-sm font-semibold inline-flex items-center gap-1">
+    <a href="{{ route('hr.quizzes.index') }}" class="text-primary-600 hover:text-primary-700 text-sm font-semibold inline-flex items-center gap-1.5 transition-colors">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
@@ -15,30 +15,30 @@
 </div>
 
 {{-- Quiz Info Card --}}
-<div class="bg-gradient-to-r from-indigo-600 to-violet-600 rounded-2xl p-6 sm:p-8 mb-8 text-white">
+<div class="bg-gradient-to-r from-primary-600 to-primary-500 rounded-2xl p-6 sm:p-8 mb-8 text-white shadow-glow-primary">
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-6">
         <div>
-            <p class="text-indigo-200 text-sm">Total Questions</p>
-            <p class="text-2xl font-bold mt-1">{{ $quiz->total_questions }}</p>
+            <p class="text-primary-200 text-sm font-medium">Total Questions</p>
+            <p class="text-2xl font-bold mt-1 tracking-tight">{{ $quiz->total_questions }}</p>
         </div>
         <div>
-            <p class="text-indigo-200 text-sm">Duration</p>
-            <p class="text-2xl font-bold mt-1">{{ $quiz->duration }} min</p>
+            <p class="text-primary-200 text-sm font-medium">Duration</p>
+            <p class="text-2xl font-bold mt-1 tracking-tight">{{ $quiz->duration }} min</p>
         </div>
         <div>
-            <p class="text-indigo-200 text-sm">Status</p>
-            <p class="text-2xl font-bold mt-1 capitalize">{{ $quiz->status }}</p>
+            <p class="text-primary-200 text-sm font-medium">Status</p>
+            <p class="text-2xl font-bold mt-1 tracking-tight capitalize">{{ $quiz->status }}</p>
         </div>
         <div>
-            <p class="text-indigo-200 text-sm">Enroll Key</p>
-            <p class="text-2xl font-bold mt-1">{{ $quiz->enroll_key ?? 'None' }}</p>
+            <p class="text-primary-200 text-sm font-medium">Enroll Key</p>
+            <p class="text-2xl font-bold mt-1 tracking-tight">{{ $quiz->enroll_key ?? 'None' }}</p>
         </div>
     </div>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <div class="hr-card p-6">
-        <h3 class="text-base font-bold text-slate-900 mb-4">Quiz Information</h3>
+        <h3 class="text-base font-bold text-slate-900 mb-4 tracking-tight">Quiz Information</h3>
         <dl class="space-y-3">
             <div class="flex justify-between">
                 <dt class="text-sm text-slate-500">Category</dt>
@@ -64,7 +64,7 @@
     </div>
 
     <div class="hr-card p-6">
-        <h3 class="text-base font-bold text-slate-900 mb-4">Actions</h3>
+        <h3 class="text-base font-bold text-slate-900 mb-4 tracking-tight">Actions</h3>
         <div class="space-y-3">
             <a href="{{ route('hr.quizzes.questions.index', $quiz) }}" class="hr-btn-primary w-full justify-center">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
