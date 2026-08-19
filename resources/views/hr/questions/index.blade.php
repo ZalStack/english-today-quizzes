@@ -51,15 +51,25 @@
 {{-- Import Preview Banner --}}
 @if(session('show_import_preview') && session('imported_questions'))
     @php $importedQuestions = session('imported_questions'); @endphp
-    <div class="hr-card overflow-hidden mb-8 border-2 border-emerald-200/80">
-        <div class="px-6 py-4 bg-gradient-to-r from-emerald-600 to-green-600 text-white">
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                <div>
-                    <h3 class="text-lg font-bold">Preview Import: {{ count($importedQuestions) }} Soal Terdeteksi</h3>
-                    <p class="text-emerald-100 text-sm mt-0.5">Review dan edit sebelum menyimpan ke database</p>
+    <div class="mb-8 rounded-2xl overflow-hidden border border-emerald-200/60 shadow-soft animate-fade-in">
+        <div class="px-6 py-5 bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 text-white relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+            <div class="absolute bottom-0 left-10 w-20 h-20 bg-white/5 rounded-full translate-y-1/2"></div>
+            <div class="relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold tracking-tight">{{ count($importedQuestions) }} Soal Siap Direview</h3>
+                        <p class="text-emerald-100 text-sm">Review dan edit sebelum menyimpan ke database</p>
+                    </div>
                 </div>
-                <button onclick="document.getElementById('importPreview').scrollIntoView({behavior: 'smooth'})" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm font-medium transition">
-                    Review Sekarang &darr;
+                <button onclick="document.getElementById('importPreview').scrollIntoView({behavior: 'smooth', block: 'start'})" class="bg-white/20 hover:bg-white/30 backdrop-blur-sm px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap flex items-center gap-2">
+                    Review Sekarang
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </button>
             </div>
         </div>
@@ -161,128 +171,291 @@
     @php
         $importedQuestions = session('imported_questions');
         $total = count($importedQuestions);
-        $base = floor(100 / $total);
-        $remainder = 100 % $total;
+        $base = floor(100 / max($total, 1));
+        $remainder = $total > 0 ? 100 % $total : 0;
+
+        $mcCount = collect($importedQuestions)->where('question_type', 'multiple_choice')->count();
+        $tfCount = collect($importedQuestions)->where('question_type', 'true_false')->count();
+        $saCount = collect($importedQuestions)->where('question_type', 'short_answer')->count();
+        $esCount = collect($importedQuestions)->where('question_type', 'essay')->count();
     @endphp
 
-    <div id="importPreview" class="mt-8 hr-card overflow-hidden border-2 border-emerald-200/80">
-        <div class="px-6 sm:px-8 py-6 bg-gradient-to-r from-emerald-600 to-green-600 text-white">
-            <h2 class="text-xl font-bold">Preview Imported Questions</h2>
-            <p class="text-emerald-100 text-sm mt-0.5">Review {{ $total }} soal yang terdeteksi dari PDF</p>
-        </div>
+    <div id="importPreview" class="mt-8 overflow-hidden"
+         x-data="{
+             allChecked: true,
+             expandedQuestions: {},
+             toggleAll() {
+                 document.querySelectorAll('.import-q-check').forEach(cb => cb.checked = this.allChecked);
+             },
+             toggleExpand(idx) {
+                 this.expandedQuestions[idx] = !this.expandedQuestions[idx];
+             },
+             isExpanded(idx) {
+                 return this.expandedQuestions[idx] === true;
+             },
+             countChecked() {
+                 return document.querySelectorAll('.import-q-check:checked').length;
+             }
+         }">
 
-        <form action="{{ route('hr.quizzes.questions.import.confirm', $quiz) }}" method="POST" class="p-6 sm:p-8">
-            @csrf
-
-            <div class="mb-4 p-4 bg-amber-50/80 border border-amber-200/80 rounded-xl flex items-start gap-3">
-                <svg class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                </svg>
-                <div class="text-sm text-amber-800">
-                    <p class="font-semibold">Review & Edit Sebelum Menyimpan</p>
-                    <p>Periksa setiap soal. Uncheck soal yang tidak ingin diimport.</p>
-                </div>
-            </div>
-
-            <div class="mb-6 p-4 bg-primary-50/80 border border-primary-200/80 rounded-xl flex items-start gap-3">
-                <svg class="w-5 h-5 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                <div class="text-sm text-primary-800">
-                    <p class="font-semibold">Auto-Calculate Points (Max 100)</p>
-                    <p>Sistem akan otomatis membagi total <strong>100 poin</strong> ke {{ $total }} soal yang dipilih.</p>
-                    <p class="mt-1 text-xs">
-                        <strong>Distribusi:</strong>
-                        @if($remainder > 0)
-                            {{ $remainder }} soal &times; {{ $base + 1 }} poin + {{ $total - $remainder }} soal &times; {{ $base }} poin = 100 poin
-                        @else
-                            {{ $total }} soal &times; {{ $base }} poin = 100 poin
-                        @endif
-                    </p>
-                </div>
-            </div>
-
-            <div class="space-y-4 max-h-[600px] overflow-y-auto pr-2">
-                @foreach($importedQuestions as $index => $question)
-                    @php
-                        $autoPoints = $base + ($index < $remainder ? 1 : 0);
-                    @endphp
-                    <div class="border border-slate-200/80 rounded-xl p-5 hover:shadow-soft transition-all duration-200 bg-white">
-                        <div class="flex flex-wrap items-start justify-between gap-2 mb-3">
-                            <div class="flex flex-wrap items-center gap-3">
-                                <input type="checkbox" name="questions[{{ $index }}][import]" value="1" checked class="w-5 h-5 text-emerald-600 rounded focus:ring-emerald-500">
-                                <span class="hr-avatar w-8 h-8 text-xs bg-gradient-to-br from-emerald-500 to-green-600">{{ $question['order_number'] }}</span>
-                                <select name="questions[{{ $index }}][question_type]" class="hr-badge hr-badge--success border-0 focus:ring-2 focus:ring-emerald-500 cursor-pointer">
-                                    <option value="multiple_choice" {{ $question['question_type'] === 'multiple_choice' ? 'selected' : '' }}>Multiple Choice</option>
-                                    <option value="short_answer" {{ $question['question_type'] === 'short_answer' ? 'selected' : '' }}>Short Answer</option>
-                                    <option value="true_false" {{ $question['question_type'] === 'true_false' ? 'selected' : '' }}>True/False</option>
-                                    <option value="essay" {{ $question['question_type'] === 'essay' ? 'selected' : '' }}>Essay</option>
-                                </select>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <label class="text-xs text-slate-500">Points:</label>
-                                <input type="number" name="questions[{{ $index }}][points]" value="{{ $autoPoints }}" min="1" class="hr-input w-20 text-sm">
-                            </div>
-                        </div>
-
-                        <input type="hidden" name="questions[{{ $index }}][order_number]" value="{{ $question['order_number'] }}">
-
-                        <textarea name="questions[{{ $index }}][question_text]" rows="2" class="hr-input mb-3">{{ $question['question_text'] }}</textarea>
-
-                        @if(!empty($question['options']))
-                            <div class="bg-slate-50/80 rounded-xl p-3 mb-3 space-y-2">
-                                <p class="text-xs font-semibold text-slate-600">Pilihan Jawaban:</p>
-                                @foreach($question['options'] as $optIndex => $option)
-                                    <div class="flex items-center gap-2">
-                                        <span class="hr-avatar w-6 h-6 text-xs bg-gradient-to-br from-emerald-400 to-green-500">{{ chr(65 + $optIndex) }}</span>
-                                        <input type="text" name="questions[{{ $index }}][options][{{ $optIndex }}]" value="{{ $option }}" class="flex-1 hr-input text-sm">
-                                    </div>
-                                @endforeach
-                            </div>
-                        @endif
-
-                        <div class="mb-3">
-                            <label class="text-xs font-semibold text-slate-600 flex items-center gap-1">
-                                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        {{-- Header --}}
+        <div class="rounded-t-2xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 text-white p-6 sm:p-8 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+            <div class="absolute bottom-0 left-0 w-40 h-40 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2"></div>
+            <div class="relative">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                 </svg>
-                                Jawaban Benar:
-                                @if($question['question_type'] === 'essay')
-                                    <span class="ml-1 text-xs text-amber-600 font-normal italic">(Essay dinilai manual)</span>
-                                @endif
-                            </label>
-
-                            @if($question['question_type'] === 'essay')
-                                <div class="hr-input bg-slate-100 text-slate-500 italic mt-1">Jawaban essay dinilai manual</div>
-                                <input type="hidden" name="questions[{{ $index }}][correct_answer]" value="{{ $question['correct_answer'] }}">
-                            @else
-                                <textarea name="questions[{{ $index }}][correct_answer]" rows="{{ $question['question_type'] === 'short_answer' ? 1 : 2 }}" class="hr-input border-emerald-300 bg-emerald-50/80 mt-1">{{ $question['correct_answer'] }}</textarea>
-                            @endif
-                        </div>
-
-                        <div>
-                            <label class="text-xs font-semibold text-slate-600">Pembahasan (Opsional):</label>
-                            <input type="text" name="questions[{{ $index }}][explanation]" value="{{ $question['explanation'] ?? '' }}" class="hr-input mt-1">
+                            </div>
+                            <div>
+                                <h2 class="text-xl sm:text-2xl font-bold tracking-tight">Review Import Soal</h2>
+                                <p class="text-emerald-100 text-sm mt-0.5">{{ $total }} soal terdeteksi dari PDF</p>
+                            </div>
                         </div>
                     </div>
-                @endforeach
+
+                    {{-- Stats Pills --}}
+                    <div class="flex flex-wrap gap-2">
+                        @if($mcCount > 0)
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-sm text-xs font-semibold">
+                                <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+                                {{ $mcCount }} Pilihan Ganda
+                            </span>
+                        @endif
+                        @if($tfCount > 0)
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-sm text-xs font-semibold">
+                                <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+                                {{ $tfCount }} Benar/Salah
+                            </span>
+                        @endif
+                        @if($saCount > 0)
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-sm text-xs font-semibold">
+                                <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+                                {{ $saCount }} Jawaban Singkat
+                            </span>
+                        @endif
+                        @if($esCount > 0)
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-sm text-xs font-semibold">
+                                <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+                                {{ $esCount }} Essay
+                            </span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Body --}}
+        <div class="bg-white rounded-b-2xl border border-t-0 border-emerald-200/60 shadow-soft-md">
+
+            {{-- Alert Info --}}
+            <div class="px-6 sm:px-8 pt-6">
+                <div class="flex items-start gap-3 p-4 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/60 rounded-2xl">
+                    <div class="w-9 h-9 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4.5 h-4.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                    </div>
+                    <div class="text-sm">
+                        <p class="font-semibold text-amber-800">Review & Edit Sebelum Menyimpan</p>
+                        <p class="text-amber-700/80 mt-0.5">Periksa setiap soal. Uncheck soal yang tidak ingin diimport. Klik judul soal untuk expand/collapse.</p>
+                    </div>
+                </div>
             </div>
 
-            <div class="flex flex-col sm:flex-row justify-between items-center pt-6 mt-6 border-t gap-3">
-                <a href="{{ route('hr.quizzes.questions.import.cancel', $quiz) }}" onclick="return confirm('Batalkan import? Data yang sudah diparse akan dihapus.')" class="hr-btn-secondary">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                    Batalkan Import
-                </a>
-                <button type="submit" class="hr-btn-primary">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
-                    Save All Questions
-                </button>
+            {{-- Point Distribution Info --}}
+            <div class="px-6 sm:px-8 pt-4">
+                <div class="flex items-start gap-3 p-4 bg-gradient-to-r from-primary-50 to-blue-50 border border-primary-200/60 rounded-2xl">
+                    <div class="w-9 h-9 rounded-xl bg-primary-100 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4.5 h-4.5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <div class="text-sm">
+                        <p class="font-semibold text-primary-800">Auto-Calculate Points (Total 100)</p>
+                        <p class="text-primary-700/80 mt-0.5">Sistem akan otomatis membagi <strong>100 poin</strong> ke semua soal yang dipilih.</p>
+                        <p class="mt-1.5 text-xs text-primary-600/80">
+                            @if($remainder > 0)
+                                <span class="font-semibold">Distribusi:</span> {{ $remainder }} soal &times; {{ $base + 1 }} pts + {{ $total - $remainder }} soal &times; {{ $base }} pts = 100 pts
+                            @else
+                                <span class="font-semibold">Distribusi:</span> {{ $total }} soal &times; {{ $base }} pts = 100 pts
+                            @endif
+                        </p>
+                    </div>
+                </div>
             </div>
-        </form>
+
+            <form action="{{ route('hr.quizzes.questions.import.confirm', $quiz) }}" method="POST">
+                @csrf
+
+                {{-- Toolbar --}}
+                <div class="px-6 sm:px-8 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <label class="flex items-center gap-2.5 cursor-pointer group">
+                            <input type="checkbox" x-model="allChecked" @change="toggleAll()" class="w-5 h-5 text-emerald-600 rounded-lg focus:ring-emerald-500 focus:ring-offset-0 border-slate-300 cursor-pointer">
+                            <span class="text-sm font-semibold text-slate-700 group-hover:text-slate-900 transition-colors">Pilih Semua</span>
+                        </label>
+                        <span class="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-lg font-medium" x-text="countChecked() + ' / {{ $total }} dipilih'"></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" @click="document.querySelectorAll('.import-q-card').forEach(c => c.classList.remove('hidden'))" class="text-xs font-medium text-primary-600 hover:text-primary-700 px-3 py-1.5 rounded-lg hover:bg-primary-50 transition-all">
+                            Expand All
+                        </button>
+                        <span class="text-slate-200">|</span>
+                        <button type="button" @click="expandedQuestions = {}; document.querySelectorAll('.import-q-detail').forEach(d => d.classList.add('hidden'))" class="text-xs font-medium text-slate-500 hover:text-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-all">
+                            Collapse All
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Questions List --}}
+                <div class="divide-y divide-slate-100 max-h-[700px] overflow-y-auto import-q-list">
+                    @foreach($importedQuestions as $index => $question)
+                        @php
+                            $autoPoints = $base + ($index < $remainder ? 1 : 0);
+                            $typeBadgeClass = match($question['question_type']) {
+                                'multiple_choice' => 'hr-badge--info',
+                                'true_false' => 'hr-badge--danger',
+                                'short_answer' => 'hr-badge--warning',
+                                'essay' => 'hr-badge--neutral',
+                                default => 'hr-badge--info'
+                            };
+                            $typeLabel = match($question['question_type']) {
+                                'multiple_choice' => 'PG',
+                                'true_false' => 'B/S',
+                                'short_answer' => 'Singkat',
+                                'essay' => 'Essay',
+                                default => ucfirst($question['question_type'])
+                            };
+                        @endphp
+                        <div class="import-q-item px-6 sm:px-8 py-4 hover:bg-slate-50/50 transition-colors" x-data="{ open: false }">
+                            {{-- Question Header --}}
+                            <div class="flex items-start gap-3 cursor-pointer select-none" @click="open = !open">
+                                <input type="checkbox" name="questions[{{ $index }}][import]" value="1" checked
+                                       class="import-q-check w-5 h-5 text-emerald-600 rounded-lg focus:ring-emerald-500 focus:ring-offset-0 border-slate-300 mt-0.5 flex-shrink-0 cursor-pointer"
+                                       onclick="event.stopPropagation()">
+
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex flex-wrap items-center gap-2 mb-1.5">
+                                        <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 text-white text-xs font-bold flex-shrink-0">{{ $question['order_number'] }}</span>
+                                        <span class="hr-badge {{ $typeBadgeClass }} text-[11px]">{{ $typeLabel }}</span>
+                                        <span class="hr-badge hr-badge--success text-[11px]">{{ $autoPoints }} pts</span>
+                                        @if(!empty($question['options']))
+                                            <span class="text-[11px] text-slate-400">{{ count($question['options']) }} opsi</span>
+                                        @endif
+                                    </div>
+                                    <p class="text-sm font-medium text-slate-800 leading-relaxed line-clamp-2">{{ $question['question_text'] }}</p>
+                                </div>
+
+                                <svg class="w-5 h-5 text-slate-300 flex-shrink-0 transition-transform duration-200" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </div>
+
+                            {{-- Question Detail (Expandable) --}}
+                            <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="mt-4 ml-8 space-y-4">
+
+                                {{-- Type & Points Row --}}
+                                <div class="flex flex-wrap items-center gap-3">
+                                    <div class="flex items-center gap-2">
+                                        <label class="text-xs font-semibold text-slate-500 whitespace-nowrap">Tipe:</label>
+                                        <select name="questions[{{ $index }}][question_type]" class="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 cursor-pointer transition-all">
+                                            <option value="multiple_choice" {{ $question['question_type'] === 'multiple_choice' ? 'selected' : '' }}>Multiple Choice</option>
+                                            <option value="short_answer" {{ $question['question_type'] === 'short_answer' ? 'selected' : '' }}>Short Answer</option>
+                                            <option value="true_false" {{ $question['question_type'] === 'true_false' ? 'selected' : '' }}>True/False</option>
+                                            <option value="essay" {{ $question['question_type'] === 'essay' ? 'selected' : '' }}>Essay</option>
+                                        </select>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <label class="text-xs font-semibold text-slate-500 whitespace-nowrap">Poin:</label>
+                                        <input type="number" name="questions[{{ $index }}][points]" value="{{ $autoPoints }}" min="1" class="w-20 text-xs px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all">
+                                    </div>
+                                </div>
+
+                                <input type="hidden" name="questions[{{ $index }}][order_number]" value="{{ $question['order_number'] }}">
+
+                                {{-- Question Text --}}
+                                <div>
+                                    <label class="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mb-1.5">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                        Teks Soal
+                                    </label>
+                                    <textarea name="questions[{{ $index }}][question_text]" rows="3" class="hr-input text-sm leading-relaxed">{{ $question['question_text'] }}</textarea>
+                                </div>
+
+                                {{-- Options --}}
+                                @if(!empty($question['options']))
+                                    <div>
+                                        <label class="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mb-2">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+                                            Pilihan Jawaban
+                                        </label>
+                                        <div class="space-y-2 pl-1">
+                                            @foreach($question['options'] as $optIndex => $option)
+                                                <div class="flex items-center gap-2.5">
+                                                    <span class="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-500 text-white text-xs font-bold flex items-center justify-center flex-shrink-0 shadow-sm">{{ chr(65 + $optIndex) }}</span>
+                                                    <input type="text" name="questions[{{ $index }}][options][{{ $optIndex }}]" value="{{ $option }}" class="flex-1 hr-input text-sm" placeholder="Opsi {{ chr(65 + $optIndex) }}">
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+
+                                {{-- Correct Answer --}}
+                                <div>
+                                    <label class="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mb-1.5">
+                                        <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        Jawaban Benar
+                                        @if($question['question_type'] === 'essay')
+                                            <span class="text-xs text-amber-500 font-normal italic ml-1">(Dinilai manual)</span>
+                                        @endif
+                                    </label>
+                                    @if($question['question_type'] === 'essay')
+                                        <div class="hr-input text-sm bg-slate-50 text-slate-400 italic border-dashed">Jawaban essay akan dinilai secara manual</div>
+                                        <input type="hidden" name="questions[{{ $index }}][correct_answer]" value="{{ $question['correct_answer'] }}">
+                                    @else
+                                        <textarea name="questions[{{ $index }}][correct_answer]" rows="{{ $question['question_type'] === 'short_answer' ? 1 : 2 }}" class="hr-input text-sm border-emerald-300 bg-emerald-50/50 focus:border-emerald-500">{{ $question['correct_answer'] }}</textarea>
+                                    @endif
+                                </div>
+
+                                {{-- Explanation --}}
+                                <div>
+                                    <label class="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mb-1.5">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        Pembahasan <span class="font-normal text-slate-400">(opsional)</span>
+                                    </label>
+                                    <input type="text" name="questions[{{ $index }}][explanation]" value="{{ $question['explanation'] ?? '' }}" class="hr-input text-sm" placeholder="Tambahkan pembahasan...">
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                {{-- Footer Actions --}}
+                <div class="px-6 sm:px-8 py-5 bg-slate-50/80 border-t border-slate-100 rounded-b-2xl">
+                    <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <a href="{{ route('hr.quizzes.questions.import.cancel', $quiz) }}"
+                           onclick="return confirm('Batalkan import? Semua data parsing akan dihapus.')"
+                           class="hr-btn-secondary w-full sm:w-auto justify-center">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                            Batalkan Import
+                        </a>
+                        <button type="submit" class="hr-btn-primary w-full sm:w-auto justify-center">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Simpan Semua Soal
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 @endif
 

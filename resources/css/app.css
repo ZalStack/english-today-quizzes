@@ -896,3 +896,69 @@
 .page-enter {
     animation: fadeIn 0.2s ease-out;
 }
+
+/* ========================================
+   Import Components
+   ======================================== */
+
+/* Dropzone */
+.import-dropzone {
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.import-dropzone::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    opacity: 0;
+    background: radial-gradient(circle at center, rgba(33, 150, 243, 0.08) 0%, transparent 70%);
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.import-dropzone:hover::before {
+    opacity: 1;
+}
+
+/* Import question item divider */
+.import-q-item + .import-q-item {
+    border-top: 1px solid #f1f5f9;
+}
+
+/* Import question checked state */
+.import-q-check:checked ~ .import-q-item-content {
+    opacity: 1;
+}
+
+.import-q-item:has(.import-q-check:not(:checked)) {
+    opacity: 0.6;
+}
+
+.import-q-item:has(.import-q-check:not(:checked)):hover {
+    opacity: 0.85;
+}
+
+/* Smooth expand/collapse for import questions */
+.import-q-detail {
+    transform-origin: top;
+}
+
+/* Custom scrollbar for import preview list */
+.import-q-list::-webkit-scrollbar {
+    width: 5px;
+}
+
+.import-q-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.import-q-list::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 3px;
+}
+
+.import-q-list::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
