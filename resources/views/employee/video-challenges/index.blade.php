@@ -40,7 +40,7 @@
                         <div class="p-4 sm:p-6 border-b border-gray-100">
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                 <div class="flex items-start sm:items-center gap-3 sm:gap-4">
-                                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shrink-0">
+                                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shrink-0">
                                         <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                                         </svg>
@@ -96,10 +96,10 @@
                                     @endif
 
                                     @if($kisiKisi)
-                                        <div class="bg-purple-50 rounded-xl p-3 sm:p-4 border border-purple-100">
+                                        <div class="bg-blue-50 rounded-xl p-3 sm:p-4 border border-blue-100">
                                             <div class="flex items-start justify-between">
                                                 <div class="flex-1 min-w-0">
-                                                    <h4 class="text-sm font-semibold text-purple-700 flex items-center gap-1">
+                                                    <h4 class="text-sm font-semibold text-blue-700 flex items-center gap-1">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                                         </svg>
@@ -109,7 +109,7 @@
                                                 </div>
                                                 <div class="flex gap-1 sm:gap-2 shrink-0 ml-2">
                                                     <a href="{{ $kisiKisi['link'] }}" target="_blank" rel="noopener"
-                                                       class="px-2 py-1 sm:px-3 sm:py-1.5 bg-purple-600 text-white text-[10px] sm:text-xs font-semibold rounded-lg hover:bg-purple-700 transition whitespace-nowrap">
+                                                       class="px-2 py-1 sm:px-3 sm:py-1.5 bg-blue-600 text-white text-[10px] sm:text-xs font-semibold rounded-lg hover:bg-blue-700 transition whitespace-nowrap">
                                                         Lihat
                                                     </a>
                                                     @if($kisiKisi['embed'])
@@ -141,7 +141,7 @@
                                                  style="width: {{ isset($div['total']) && $div['total'] > 0 ? round((($div['submitted'] ?? 0) / $div['total']) * 100) : 0 }}%"></div>
                                         </div>
                                         <button onclick="openDivisionModal({{ $index }}, {{ $divIndex }})"
-                                                class="w-full text-center text-xs text-indigo-600 hover:text-indigo-700 font-semibold py-1 hover:underline">
+                                                class="w-full text-center text-xs text-blue-600 hover:text-blue-700 font-semibold py-1 hover:underline">
                                             Lihat Detail ({{ $div['total'] ?? 0 }})
                                         </button>
                                     </div>
@@ -159,7 +159,7 @@
                                         @if($mySubmission && $thumb)
                                             <div class="mt-2 flex flex-wrap items-center gap-3">
                                                 <button onclick="playVideo('{{ $thumb['embed'] }}', '{{ $challenge->title }}')"
-                                                        class="flex items-center gap-2 px-3 py-1.5 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition">
+                                                        class="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition">
                                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                                                         <path d="M8 5v14l11-7z"/>
                                                     </svg>
@@ -170,7 +170,7 @@
                                         @elseif($mySubmission)
                                             <div class="mt-2">
                                                 <a href="{{ $mySubmission->link }}" target="_blank" rel="noopener"
-                                                   class="text-xs text-indigo-600 hover:text-indigo-700 font-semibold break-all">
+                                                   class="text-xs text-blue-600 hover:text-blue-700 font-semibold break-all">
                                                     {{ $mySubmission->link }}
                                                 </a>
                                             </div>
@@ -179,7 +179,7 @@
                                         @endif
                                     </div>
                                     <button type="button" onclick="openSubmitModal({{ $challenge->id }}, '{{ $mySubmission?->link ?? '' }}')"
-                                            class="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-semibold rounded-xl hover:shadow-lg transition-all duration-300">
+                                            class="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold rounded-xl hover:shadow-lg transition-all duration-300">
                                         {{ $mySubmission ? 'Perbarui Link' : 'Kumpulkan Video' }}
                                     </button>
                                 </div>
@@ -248,12 +248,12 @@
             <div class="mb-3 sm:mb-4">
                 <label class="block text-sm font-semibold text-gray-700 mb-1 sm:mb-2">Link Video</label>
                 <input type="url" name="link" id="linkInput" required
-                       class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-sm sm:text-base"
+                       class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition text-sm sm:text-base"
                        placeholder="https://drive.google.com/... atau https://youtube.com/...">
             </div>
             <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <button type="submit"
-                        class="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 font-semibold text-sm sm:text-base">
+                        class="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl hover:shadow-lg transition-all duration-300 font-semibold text-sm sm:text-base">
                     Kirim
                 </button>
                 <button type="button" onclick="closeModal('submitModal')"
@@ -332,7 +332,7 @@
 
             let nameHtml = `<p class="font-semibold text-gray-900 text-xs sm:text-sm truncate">${escapeHtml(emp.name)}`;
             if (emp.is_me) {
-                nameHtml += ` <span class="text-[10px] text-indigo-600 font-bold">(saya)</span>`;
+                nameHtml += ` <span class="text-[10px] text-blue-600 font-bold">(saya)</span>`;
             }
             nameHtml += `</p>`;
 
@@ -353,7 +353,7 @@
 
                 if (emp.embed) {
                     const btn = document.createElement('button');
-                    btn.className = 'px-2 py-1 sm:px-3 sm:py-1.5 bg-indigo-600 text-white text-[10px] sm:text-xs font-semibold rounded-lg hover:bg-indigo-700 transition';
+                    btn.className = 'px-2 py-1 sm:px-3 sm:py-1.5 bg-blue-600 text-white text-[10px] sm:text-xs font-semibold rounded-lg hover:bg-blue-700 transition';
                     btn.textContent = 'Lihat Video';
                     btn.dataset.embed = emp.embed;
                     btn.dataset.name = emp.name;
@@ -366,7 +366,7 @@
                     link.href = emp.link;
                     link.target = '_blank';
                     link.rel = 'noopener';
-                    link.className = 'text-[10px] sm:text-xs text-indigo-600 hover:underline truncate max-w-[120px] sm:max-w-[200px]';
+                    link.className = 'text-[10px] sm:text-xs text-blue-600 hover:underline truncate max-w-[120px] sm:max-w-[200px]';
                     link.textContent = 'Link';
                     right.appendChild(link);
                 }

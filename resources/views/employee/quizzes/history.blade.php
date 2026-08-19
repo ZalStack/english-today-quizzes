@@ -31,7 +31,7 @@
                                         <span class="font-medium text-gray-900 text-xs sm:text-sm">{{ $attempt->quiz->title }}</span>
                                     </td>
                                     <td class="hidden sm:table-cell px-3 sm:px-6 py-3 sm:py-4">
-                                        <span class="px-2 py-0.5 sm:px-2.5 sm:py-1 bg-indigo-100 text-indigo-700 text-[10px] sm:text-xs rounded-full">
+                                        <span class="px-2 py-0.5 sm:px-2.5 sm:py-1 bg-blue-100 text-blue-700 text-[10px] sm:text-xs rounded-full">
                                             {{ $attempt->quiz->category->name }}
                                         </span>
                                     </td>
@@ -57,7 +57,7 @@
                                     <td class="px-3 sm:px-6 py-3 sm:py-4">
                                         @if($attempt->status === 'completed')
                                             <a href="{{ route('employee.quizzes.result', $attempt->id) }}"
-                                               class="text-indigo-600 hover:text-indigo-800 font-medium text-xs sm:text-sm">
+                                               class="text-blue-600 hover:text-blue-800 font-medium text-xs sm:text-sm">
                                                 View Result →
                                             </a>
                                         @elseif($attempt->status === 'in_progress')
@@ -81,15 +81,15 @@
             </div>
         @else
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 sm:p-16 text-center">
-                <div class="w-16 h-16 sm:w-24 sm:h-24 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-                    <svg class="w-8 h-8 sm:w-12 sm:h-12 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-16 h-16 sm:w-24 sm:h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                    <svg class="w-8 h-8 sm:w-12 sm:h-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
                 <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2">No Quiz History</h3>
                 <p class="text-gray-500 text-sm sm:text-base mb-4 sm:mb-6">You haven't taken any quizzes yet. Join a quiz to get started!</p>
                 <a href="{{ route('employee.quizzes.join') }}"
-                   class="inline-flex items-center px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 font-bold text-sm sm:text-base">
+                   class="inline-flex items-center px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl hover:shadow-lg transition-all duration-300 font-bold text-sm sm:text-base">
                     <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
                     </svg>

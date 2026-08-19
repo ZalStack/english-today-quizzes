@@ -8,7 +8,7 @@
         <!-- Welcome -->
         <div class="mb-6 sm:mb-8">
             <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">
-                Welcome back, <span class="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{{ auth()->user()->full_name }}</span>!
+                Welcome back, <span class="bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">{{ auth()->user()->full_name }}</span>!
             </h1>
             <p class="text-gray-500 text-sm sm:text-base mt-1">Track your progress and continue learning.</p>
         </div>
@@ -49,8 +49,8 @@
                         <p class="text-xs sm:text-sm font-medium text-gray-500">Highest Score</p>
                         <p class="text-2xl sm:text-3xl font-bold text-gray-900 mt-1 sm:mt-2">{{ $statistics['highest_score'] }}%</p>
                     </div>
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
                         </svg>
                     </div>
@@ -64,7 +64,7 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
                     <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 flex flex-wrap justify-between items-center gap-2">
                         <h3 class="text-base sm:text-lg font-bold text-gray-900">Available Quizzes</h3>
-                        <a href="{{ route('employee.quizzes.join') }}" class="text-sm text-indigo-600 hover:text-indigo-700 font-medium flex items-center">
+                        <a href="{{ route('employee.quizzes.join') }}" class="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center">
                             Join with Key
                             <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
@@ -75,11 +75,11 @@
                         @if($availableQuizzes->count() > 0)
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 @foreach($availableQuizzes as $quiz)
-                                    <div class="border border-gray-200 rounded-xl p-4 sm:p-5 hover:shadow-lg transition-all duration-300 hover:border-indigo-300">
+                                    <div class="border border-gray-200 rounded-xl p-4 sm:p-5 hover:shadow-lg transition-all duration-300 hover:border-blue-300">
                                         <div class="flex items-start justify-between mb-2 sm:mb-3">
                                             <div class="flex-1 min-w-0">
                                                 <h4 class="font-semibold text-gray-900 text-sm sm:text-base truncate">{{ $quiz->title }}</h4>
-                                                <span class="text-[10px] sm:text-xs px-2 py-0.5 sm:py-1 bg-indigo-100 text-indigo-700 rounded-full inline-block">{{ $quiz->category->name }}</span>
+                                                <span class="text-[10px] sm:text-xs px-2 py-0.5 sm:py-1 bg-blue-100 text-blue-700 rounded-full inline-block">{{ $quiz->category->name }}</span>
                                             </div>
                                         </div>
                                         <p class="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4 line-clamp-2">{{ Str::limit($quiz->description, 80) }}</p>
@@ -95,7 +95,7 @@
                                                     <span class="text-[10px] sm:text-xs text-gray-800 font-medium bg-orange-600 px-2 py-0.5 rounded">Key: {{ $quiz->enroll_key }}</span>
                                                 @endif
                                                 <a href="{{ route('employee.quizzes.join') }}"
-                                                   class="px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs sm:text-sm rounded-lg hover:shadow-lg transition-all duration-300 whitespace-nowrap">
+                                                   class="px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white text-xs sm:text-sm rounded-lg hover:shadow-lg transition-all duration-300 whitespace-nowrap">
                                                     Join
                                                 </a>
                                             </div>
@@ -105,14 +105,14 @@
                             </div>
                         @else
                             <div class="text-center py-6 sm:py-8">
-                                <div class="w-16 h-16 sm:w-20 sm:h-20 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                                    <svg class="w-8 h-8 sm:w-10 sm:h-10 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="w-16 h-16 sm:w-20 sm:h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                                    <svg class="w-8 h-8 sm:w-10 sm:h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
                                     </svg>
                                 </div>
                                 <p class="text-gray-500 text-sm sm:text-base font-medium">No quizzes available</p>
                                 <p class="text-gray-400 text-xs sm:text-sm mt-1">Join a quiz using an enrollment key</p>
-                                <a href="{{ route('employee.quizzes.join') }}" class="mt-3 sm:mt-4 inline-block px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 text-sm sm:text-base">
+                                <a href="{{ route('employee.quizzes.join') }}" class="mt-3 sm:mt-4 inline-block px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl hover:shadow-lg transition-all duration-300 text-sm sm:text-base">
                                     Join with Key
                                 </a>
                             </div>
@@ -170,7 +170,7 @@
                                 @endforeach
                             </div>
                             <div class="mt-3 sm:mt-4 text-center">
-                                <a href="{{ route('employee.quizzes.history') }}" class="text-xs sm:text-sm text-indigo-600 hover:text-indigo-800 font-medium">
+                                <a href="{{ route('employee.quizzes.history') }}" class="text-xs sm:text-sm text-blue-600 hover:text-blue-800 font-medium">
                                     View All History →
                                 </a>
                             </div>
@@ -200,25 +200,25 @@
                                             default => null,
                                         };
                                     @endphp
-                                    <div class="flex items-center justify-between p-2 sm:p-3 rounded-xl transition {{ $isCurrentUser ? 'bg-indigo-50 border border-indigo-200' : 'bg-gray-50 hover:bg-gray-100' }}">
+                                    <div class="flex items-center justify-between p-2 sm:p-3 rounded-xl transition {{ $isCurrentUser ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50 hover:bg-gray-100' }}">
                                         <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
                                             <div class="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0 flex items-center justify-center font-bold text-xs sm:text-sm rounded-full {{ $rank <= 3 ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-200 text-gray-500' }}">
                                                 {{ $medal ?? $rank }}
                                             </div>
-                                            <div class="w-7 h-7 sm:w-9 sm:h-9 flex-shrink-0 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-bold">
+                                            <div class="w-7 h-7 sm:w-9 sm:h-9 flex-shrink-0 bg-gradient-to-br from-blue-600 to-blue-500 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-bold">
                                                 {{ strtoupper(substr($entry->full_name, 0, 1)) }}
                                             </div>
                                             <div class="min-w-0">
                                                 <p class="font-medium text-gray-900 text-xs sm:text-sm truncate">
                                                     {{ $entry->full_name }}
                                                     @if($isCurrentUser)
-                                                        <span class="text-[10px] sm:text-xs text-indigo-500 font-normal">(You)</span>
+                                                        <span class="text-[10px] sm:text-xs text-blue-500 font-normal">(You)</span>
                                                     @endif
                                                 </p>
                                                 <p class="text-[10px] sm:text-xs text-gray-400">{{ $entry->completed_quizzes_count ?? 0 }} quiz selesai</p>
                                             </div>
                                         </div>
-                                        <span class="px-2 py-0.5 sm:px-3 sm:py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap">
+                                        <span class="px-2 py-0.5 sm:px-3 sm:py-1 bg-blue-100 text-blue-700 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap">
                                             {{ number_format($entry->total_score ?? 0) }} pts
                                         </span>
                                     </div>
@@ -227,20 +227,20 @@
 
                             @if(isset($currentUserRank) && $currentUserRank && $currentUserRank['rank'] > 5)
                                 <div class="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-dashed border-gray-200">
-                                    <div class="flex items-center justify-between p-2 sm:p-3 rounded-xl bg-indigo-50 border border-indigo-200">
+                                    <div class="flex items-center justify-between p-2 sm:p-3 rounded-xl bg-blue-50 border border-blue-200">
                                         <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
                                             <div class="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0 flex items-center justify-center font-bold text-xs sm:text-sm rounded-full bg-gray-200 text-gray-500">
                                                 {{ $currentUserRank['rank'] }}
                                             </div>
-                                            <div class="w-7 h-7 sm:w-9 sm:h-9 flex-shrink-0 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-bold">
+                                            <div class="w-7 h-7 sm:w-9 sm:h-9 flex-shrink-0 bg-gradient-to-br from-blue-600 to-blue-500 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-bold">
                                                 {{ strtoupper(substr(auth()->user()->full_name, 0, 1)) }}
                                             </div>
                                             <div class="min-w-0">
-                                                <p class="font-medium text-gray-900 text-xs sm:text-sm truncate">{{ auth()->user()->full_name }} <span class="text-[10px] sm:text-xs text-indigo-500 font-normal">(You)</span></p>
+                                                <p class="font-medium text-gray-900 text-xs sm:text-sm truncate">{{ auth()->user()->full_name }} <span class="text-[10px] sm:text-xs text-blue-500 font-normal">(You)</span></p>
                                                 <p class="text-[10px] sm:text-xs text-gray-400">Peringkat kamu saat ini</p>
                                             </div>
                                         </div>
-                                        <span class="px-2 py-0.5 sm:px-3 sm:py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap">
+                                        <span class="px-2 py-0.5 sm:px-3 sm:py-1 bg-blue-100 text-blue-700 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap">
                                             {{ number_format($currentUserRank['total_score'] ?? 0) }} pts
                                         </span>
                                     </div>

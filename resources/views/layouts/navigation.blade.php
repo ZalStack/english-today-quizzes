@@ -7,12 +7,12 @@
             <!-- Logo -->
             <div class="flex items-center">
                 <a href="{{ route('dashboard') }}" class="flex items-center space-x-2 sm:space-x-3 group">
-                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-300">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-600 to-blue-500 rounded-xl flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-300">
                         <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
                     </div>
-                    <span class="text-base sm:text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent hidden xs:inline">ET-Quizzes</span>
+                    <span class="text-base sm:text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent hidden xs:inline">ET-Quizzes</span>
                 </a>
 
                 <!-- Desktop Navigation -->
@@ -117,7 +117,7 @@
                     <!-- User Dropdown -->
                     <div class="hidden sm:flex items-center" x-data="{ open: false }" @click.outside="open = false">
                         <button @click="open = !open" class="flex items-center space-x-2 p-1.5 rounded-lg hover:bg-gray-50 transition-colors duration-200">
-                            <div class="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-xs sm:text-sm">
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-blue-600 to-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-xs sm:text-sm">
                                 {{ strtoupper(substr(auth()->user()->full_name ?? auth()->user()->name, 0, 1)) }}
                             </div>
                             <div class="text-left hidden lg:block">

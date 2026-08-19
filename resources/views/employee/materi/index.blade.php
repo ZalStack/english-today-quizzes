@@ -64,7 +64,7 @@
                                         Detail
                                     </a>
                                     <a href="{{ route('employee.materi.download', $item) }}"
-                                       class="px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-semibold rounded-lg hover:shadow-lg transition-all duration-300">
+                                       class="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white text-xs font-semibold rounded-lg hover:shadow-lg transition-all duration-300">
                                         Download
                                     </a>
                                 </div>

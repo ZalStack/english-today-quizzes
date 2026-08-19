@@ -11,7 +11,7 @@
     <style>
         [x-cloak] { display: none !important; }
         .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1976D2 0%, #42A5F5 100%);
         }
         .card-hover {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
