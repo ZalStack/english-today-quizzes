@@ -9,9 +9,11 @@ use App\Http\Controllers\HR\QuizController as HRQuizController;
 use App\Http\Controllers\HR\QuestionController;
 use App\Http\Controllers\HR\ReportController;
 use App\Http\Controllers\HR\VideoChallengeController as HRVideoChallengeController;
+use App\Http\Controllers\HR\MateriController as HRMateriController;
 use App\Http\Controllers\Employee\DashboardController as EmployeeDashboardController;
 use App\Http\Controllers\Employee\QuizController as EmployeeQuizController;
 use App\Http\Controllers\Employee\VideoChallengeController as EmployeeVideoChallengeController;
+use App\Http\Controllers\Employee\MateriController as EmployeeMateriController;
 use App\Http\Controllers\Employee\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -70,6 +72,11 @@ Route::middleware(['auth', 'role:hr'])->prefix('hr')->name('hr.')->group(functio
 
     // Video Challenges
     Route::resource('video-challenges', HRVideoChallengeController::class);
+    Route::get('/video-challenges/{videoChallenge}/export-submissions', [HRVideoChallengeController::class, 'exportSubmissions'])->name('video-challenges.export-submissions');
+
+    // Materi Management
+    Route::get('/materi/{materi}/download', [HRMateriController::class, 'download'])->name('materi.download');
+    Route::resource('materi', HRMateriController::class);
 });
 
 // Employee Routes
@@ -95,6 +102,11 @@ Route::middleware(['auth', 'role:employee'])->prefix('employee')->name('employee
     // Video Challenges
     Route::get('/video-challenges', [EmployeeVideoChallengeController::class, 'index'])->name('video-challenges.index');
     Route::post('/video-challenges/{videoChallenge}/submit', [EmployeeVideoChallengeController::class, 'submit'])->name('video-challenges.submit');
+
+    // Materi
+    Route::get('/materi', [EmployeeMateriController::class, 'index'])->name('materi.index');
+    Route::get('/materi/{materi}', [EmployeeMateriController::class, 'show'])->name('materi.show');
+    Route::get('/materi/{materi}/download', [EmployeeMateriController::class, 'download'])->name('materi.download');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

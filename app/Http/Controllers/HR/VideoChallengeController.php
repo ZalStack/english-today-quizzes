@@ -244,4 +244,44 @@ class VideoChallengeController extends Controller
 
         return redirect()->route('hr.video-challenges.index')->with('success', 'Video Challenge deleted successfully.');
     }
+
+    public function exportSubmissions(VideoChallenge $videoChallenge)
+    {
+        $videoChallenge->load('submissions.user.division');
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $videoChallenge->title . '_submissions.csv"',
+        ];
+
+        $callback = function () use ($videoChallenge) {
+            $file = fopen('php://output', 'w');
+
+            fputcsv($file, ['No', 'Nama', 'Email', 'Divisi', 'Link Video', 'Status', 'Tanggal Submit']);
+
+            $no = 1;
+            $allEmployees = \App\Models\User::where('role', 'employee')
+                ->where('status', 'active')
+                ->with('division')
+                ->get();
+
+            foreach ($allEmployees as $employee) {
+                $submission = $videoChallenge->submissions->firstWhere('user_id', $employee->id);
+
+                fputcsv($file, [
+                    $no++,
+                    $employee->full_name ?? $employee->name,
+                    $employee->email,
+                    $employee->division?->name ?? 'Tanpa Divisi',
+                    $submission ? $submission->link : '-',
+                    $submission ? 'Sudah Submit' : 'Belum Submit',
+                    $submission ? $submission->created_at->format('d M Y H:i') : '-',
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }

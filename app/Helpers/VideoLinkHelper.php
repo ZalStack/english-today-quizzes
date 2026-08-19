@@ -104,4 +104,18 @@ class VideoLinkHelper
         }
         return null;
     }
+
+    /**
+     * Get Google Drive direct download URL
+     */
+    public static function getDriveDownloadUrl(?string $link): ?string
+    {
+        if (!$link) {
+            return null;
+        }
+        if (preg_match('/drive\.google\.com\/file\/d\/([^\/\?]+)/', $link, $m)) {
+            return 'https://drive.google.com/uc?export=download&id=' . $m[1];
+        }
+        return null;
+    }
 }
