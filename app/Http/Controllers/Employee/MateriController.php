@@ -26,8 +26,9 @@ class MateriController extends Controller
         }
 
         $materi->load('uploader');
+        $fileUrl = asset('storage/' . $materi->file_path);
 
-        return view('employee.materi.show', compact('materi'));
+        return view('employee.materi.show', compact('materi', 'fileUrl'));
     }
 
     public function download(Materi $materi)

@@ -299,7 +299,7 @@
             div.appendChild(left);
 
             const right = document.createElement('div');
-            right.className = 'flex items-center gap-2 mt-2 sm:mt-0';
+            right.className = 'flex items-center gap-2 mt-2 sm:mt-0 flex-wrap';
 
             if (isSubmitted) {
                 const badge = document.createElement('span');
@@ -317,6 +317,27 @@
                         playVideo(this.dataset.embed, this.dataset.name);
                     });
                     right.appendChild(btn);
+
+                    if (emp.link) {
+                        const downloadInfo = getDriveDownloadUrl(emp.link);
+                        if (downloadInfo) {
+                            const dlBtn = document.createElement('a');
+                            dlBtn.href = downloadInfo;
+                            dlBtn.target = '_blank';
+                            dlBtn.rel = 'noopener';
+                            dlBtn.className = 'inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-50 text-emerald-600 text-xs font-semibold rounded-lg hover:bg-emerald-100 transition-all';
+                            dlBtn.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg> Download';
+                            right.appendChild(dlBtn);
+                        } else {
+                            const openBtn = document.createElement('a');
+                            openBtn.href = emp.link;
+                            openBtn.target = '_blank';
+                            openBtn.rel = 'noopener';
+                            openBtn.className = 'inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 text-xs font-semibold rounded-lg hover:bg-blue-100 transition-all';
+                            openBtn.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg> Buka';
+                            right.appendChild(openBtn);
+                        }
+                    }
                 } else if (emp.link) {
                     const link = document.createElement('a');
                     link.href = emp.link;
@@ -339,6 +360,15 @@
 
         body.appendChild(list);
         document.getElementById('employeeModal').style.display = 'flex';
+    }
+
+    function getDriveDownloadUrl(link) {
+        if (!link) return null;
+        const match = link.match(/drive\.google\.com\/file\/d\/([^\/\?]+)/);
+        if (match) {
+            return 'https://drive.google.com/uc?export=download&id=' + match[1];
+        }
+        return null;
     }
 
     function playVideo(embedUrl, name) {
