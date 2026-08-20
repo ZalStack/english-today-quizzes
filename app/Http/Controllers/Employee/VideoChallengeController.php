@@ -10,6 +10,7 @@ use App\Models\VideoSubmission;
 use App\Helpers\VideoLinkHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use App\Helpers\NotificationHelper;
 
 class VideoChallengeController extends Controller
 {
@@ -159,6 +160,7 @@ class VideoChallengeController extends Controller
         if ($existing) {
             $existing->update(['link' => $request->link]);
             Cache::forget('active_employees_v2');
+            NotificationHelper::notifyVideoSubmission(auth()->user());
 
             return redirect()->route('employee.video-challenges.index')
                 ->with('success', 'Link video berhasil diperbarui.');
@@ -171,6 +173,7 @@ class VideoChallengeController extends Controller
         ]);
 
         Cache::forget('active_employees_v2');
+        NotificationHelper::notifyVideoSubmission(auth()->user());
 
         return redirect()->route('employee.video-challenges.index')
             ->with('success', 'Link video berhasil dikumpulkan.');

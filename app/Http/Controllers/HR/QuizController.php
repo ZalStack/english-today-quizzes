@@ -7,6 +7,7 @@ use App\Models\Quiz;
 use App\Models\QuizCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Helpers\NotificationHelper;
 
 class QuizController extends Controller
 {
@@ -56,6 +57,8 @@ class QuizController extends Controller
         }
 
         Quiz::create($validated);
+
+        NotificationHelper::notifyQuizUpload(auth()->user(), Quiz::latest()->first());
 
         return redirect()->route('hr.quizzes.index')->with('success', 'Quiz created successfully.');
     }

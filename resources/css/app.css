@@ -962,3 +962,34 @@
 .import-q-list::-webkit-scrollbar-thumb:hover {
     background: #9ca3af;
 }
+
+/* ========================================
+   Notification Styles
+   ======================================== */
+
+/* Notification dropdown positioning fix for HR header */
+.hr-header .relative > .absolute.right-0.top-full {
+    right: 0;
+}
+
+/* Notification item hover effect */
+.notification-item-enter {
+    animation: slideDown 0.2s ease-out;
+}
+
+/* Pulse animation for notification badge */
+@keyframes notificationPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+.notification-badge-pulse {
+    animation: notificationPulse 2s ease-in-out infinite;
+}
+
+/* Notification page responsive */
+@media (max-width: 640px) {
+    .notification-card {
+        padding: 12px;
+    }
+}

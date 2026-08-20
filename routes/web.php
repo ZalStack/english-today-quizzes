@@ -15,6 +15,7 @@ use App\Http\Controllers\Employee\QuizController as EmployeeQuizController;
 use App\Http\Controllers\Employee\VideoChallengeController as EmployeeVideoChallengeController;
 use App\Http\Controllers\Employee\MateriController as EmployeeMateriController;
 use App\Http\Controllers\Employee\ProfileController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 // Welcome Page
@@ -26,6 +27,15 @@ Route::get('/', function () {
 
 // Authentication Routes (Breeze)
 require __DIR__.'/auth.php';
+
+// Notification Routes (shared by both HR and Employee)
+Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->group(function () {
+    Route::get('/', [NotificationController::class, 'index'])->name('index');
+    Route::get('/unread-count', [NotificationController::class, 'getUnreadCount'])->name('unread-count');
+    Route::get('/latest', [NotificationController::class, 'getLatest'])->name('latest');
+    Route::post('/{notification}/read', [NotificationController::class, 'markAsRead'])->name('read');
+    Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('mark-all-read');
+});
 
 // HR Routes
 Route::middleware(['auth', 'role:hr'])->prefix('hr')->name('hr.')->group(function () {

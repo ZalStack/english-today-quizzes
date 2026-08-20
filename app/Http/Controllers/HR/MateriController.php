@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Materi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Helpers\NotificationHelper;
 
 class MateriController extends Controller
 {
@@ -48,6 +49,8 @@ class MateriController extends Controller
         unset($validated['file']);
 
         Materi::create($validated);
+
+        NotificationHelper::notifyMaterialUpload(auth()->user(), $materi ?? Materi::latest()->first());
 
         return redirect()->route('hr.materi.index')->with('success', 'Materi berhasil diupload.');
     }

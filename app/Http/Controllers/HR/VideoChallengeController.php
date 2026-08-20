@@ -9,6 +9,7 @@ use App\Models\VideoChallenge;
 use App\Models\VideoSubmission;
 use App\Helpers\VideoLinkHelper;
 use Illuminate\Http\Request;
+use App\Helpers\NotificationHelper;
 
 class VideoChallengeController extends Controller
 {
@@ -85,6 +86,8 @@ class VideoChallengeController extends Controller
             'kisi_kisi_title' => $request->kisi_kisi_title,
             'created_by' => auth()->id(),
         ]);
+
+        NotificationHelper::notifyChallengeUpload(auth()->user(), VideoChallenge::latest()->first());
 
         return redirect()->route('hr.video-challenges.index')->with('success', 'Video Challenge created successfully.');
     }
