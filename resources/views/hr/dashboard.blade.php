@@ -7,6 +7,29 @@
 @endsection
 
 @section('content')
+{{-- SIKEKAR Quick Access --}}
+<a href="https://sikekar.read1kpmseikhlasnya.com" target="_blank" rel="noopener noreferrer"
+   class="group flex items-center justify-between gap-3 sm:gap-4 p-4 sm:p-5 mb-6 rounded-2xl bg-gradient-to-r from-[#161758] via-[#27438D] to-[#2196F3] text-white shadow-lg shadow-blue-900/10 hover:shadow-xl hover:shadow-blue-900/20 transition-all duration-300 hover:-translate-y-0.5 animate-stagger"
+   title="Buka SIKEKAR di tab baru">
+    <div class="flex items-center gap-3 sm:gap-4 min-w-0">
+        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white/15 backdrop-blur-sm flex items-center justify-center flex-shrink-0 group-hover:bg-white/25 group-hover:scale-105 transition-all duration-300">
+            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-8.995-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+        </div>
+        <div class="min-w-0">
+            <p class="font-bold text-sm sm:text-base tracking-tight leading-tight">SIKEKAR</p>
+            <p class="text-[11px] sm:text-xs text-white/70 truncate">Akses cepat ke portal SIKEKAR</p>
+        </div>
+    </div>
+    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 bg-white/15 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap group-hover:bg-white/25 transition-colors duration-300 flex-shrink-0">
+        Buka
+        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+        </svg>
+    </span>
+</a>
+
 {{-- Stats Grid --}}
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8 animate-stagger">
     <div class="hr-stat">

@@ -239,6 +239,74 @@
             padding-inline: 0.5rem;
         }
 
+        /* SIKEKAR Quick Access */
+        .sikekar-divider {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .sikekar-divider::before,
+        .sikekar-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #E4E4EE;
+        }
+        .sikekar-divider span {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            font-weight: 600;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: #8a8aa0;
+        }
+
+        .sikekar-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            width: 100%;
+            min-height: 48px;
+            padding: 0.7rem 1rem;
+            border-radius: 0.75rem;
+            border: 1.5px solid #E4E4EE;
+            background: linear-gradient(135deg, rgba(22, 23, 88, 0.03), rgba(0, 162, 233, 0.05));
+            color: var(--blue);
+            font-weight: 600;
+            font-size: 0.925rem;
+            letter-spacing: 0.01em;
+            text-decoration: none;
+            transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s, background 0.2s;
+        }
+        .sikekar-btn:hover {
+            border-color: var(--cyan);
+            background: linear-gradient(135deg, rgba(22, 23, 88, 0.06), rgba(0, 162, 233, 0.1));
+            box-shadow: 0 6px 18px rgba(0, 162, 233, 0.15);
+            transform: translateY(-1px);
+        }
+        .sikekar-btn:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+        .sikekar-btn:focus-visible {
+            outline: 2px solid var(--cyan);
+            outline-offset: 3px;
+        }
+        .sikekar-btn__icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.75rem;
+            height: 1.75rem;
+            border-radius: 0.5rem;
+            background: var(--ink);
+            color: #fff;
+            flex-shrink: 0;
+        }
+
         @media (max-width: 400px) {
             body {
                 padding: 0.5rem;
@@ -440,6 +508,31 @@
                     Log in
                 </button>
             </form>
+
+            <!-- SIKEKAR Quick Access -->
+            <div class="sikekar-divider" aria-hidden="true">
+                <span>Quick Access</span>
+            </div>
+            <a
+                href="https://sikekar.read1kpmseikhlasnya.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="sikekar-btn"
+                title="Buka SIKEKAR di tab baru"
+            >
+                <span class="sikekar-btn__icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="7" width="20" height="14" rx="2"></rect>
+                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                    </svg>
+                </span>
+                SIKEKAR
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-60">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+            </a>
         </div>
 
         <!-- Footer -->

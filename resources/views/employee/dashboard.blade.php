@@ -7,10 +7,29 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Welcome -->
         <div class="mb-6 sm:mb-8">
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">
-                Welcome back, <span class="bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">{{ auth()->user()->full_name }}</span>!
-            </h1>
-            <p class="text-gray-500 text-sm sm:text-base mt-1">Track your progress and continue learning.</p>
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div class="min-w-0">
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">
+                        Welcome back, <span class="bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">{{ auth()->user()->full_name }}</span>!
+                    </h1>
+                    <p class="text-gray-500 text-sm sm:text-base mt-1">Track your progress and continue learning.</p>
+                </div>
+
+                <!-- SIKEKAR Quick Access -->
+                <a href="https://sikekar.read1kpmseikhlasnya.com" target="_blank" rel="noopener noreferrer"
+                   class="group inline-flex items-center justify-center gap-2.5 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl bg-gradient-to-r from-[#161758] via-[#27438D] to-[#2196F3] text-white shadow-lg shadow-blue-900/10 hover:shadow-xl hover:shadow-blue-900/20 transition-all duration-300 hover:-translate-y-0.5 whitespace-nowrap flex-shrink-0"
+                   title="Buka SIKEKAR di tab baru">
+                    <span class="w-7 h-7 rounded-lg bg-white/15 flex items-center justify-center flex-shrink-0 group-hover:bg-white/25 group-hover:scale-105 transition-all duration-300">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-8.995-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                    </span>
+                    <span class="font-bold text-sm tracking-tight">SIKEKAR</span>
+                    <svg class="w-3.5 h-3.5 opacity-70 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                    </svg>
+                </a>
+            </div>
         </div>
 
         <!-- Statistics Cards -->
