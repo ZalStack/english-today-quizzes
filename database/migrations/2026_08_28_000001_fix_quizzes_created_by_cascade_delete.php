@@ -9,6 +9,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('quizzes', function (Blueprint $table) {
+            $table->foreignId('created_by')->nullable()->change();
+        });
+
+        Schema::table('quizzes', function (Blueprint $table) {
             $table->dropForeign(['created_by']);
             $table->foreign('created_by')->references('id')->on('users')->nullOnDelete();
         });
@@ -19,6 +23,10 @@ return new class extends Migration
         Schema::table('quizzes', function (Blueprint $table) {
             $table->dropForeign(['created_by']);
             $table->foreign('created_by')->references('id')->on('users')->cascadeOnDelete();
+        });
+
+        Schema::table('quizzes', function (Blueprint $table) {
+            $table->foreignId('created_by')->nullable(false)->change();
         });
     }
 };
