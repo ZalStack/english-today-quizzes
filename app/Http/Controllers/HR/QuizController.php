@@ -47,6 +47,7 @@ class QuizController extends Controller
             'show_correct_answer' => 'boolean',
             'show_wrong_answer' => 'boolean',
             'show_explanation' => 'boolean',
+            'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
         ]);
 
         $validated['created_by'] = auth()->id();
@@ -97,6 +98,7 @@ class QuizController extends Controller
             'show_correct_answer' => 'nullable|boolean',
             'show_wrong_answer' => 'nullable|boolean',
             'show_explanation' => 'nullable|boolean',
+            'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
         ]);
 
         // ✅ PERBAIKAN: Set default value untuk checkbox yang tidak terkirim

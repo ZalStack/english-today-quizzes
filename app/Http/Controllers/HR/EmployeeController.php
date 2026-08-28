@@ -42,11 +42,12 @@ class EmployeeController extends Controller
         ]);
 
         $validated['name'] = $validated['full_name'];
-        $validated['role'] = 'employee';
         $validated['status'] = 'active';
         $validated['password'] = Hash::make($validated['password']);
 
-        User::create($validated);
+        $user = new User($validated);
+        $user->role = 'employee';
+        $user->save();
 
         return redirect()->route('hr.employees.index')
             ->with('success', 'Employee created successfully. They can now login with their credentials.');

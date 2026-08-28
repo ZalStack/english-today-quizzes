@@ -11,8 +11,7 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
-    Route::post('register', [RegisteredUserController::class, 'store']);
+    // Registration removed - only HR can create accounts
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
@@ -27,6 +26,7 @@ Route::middleware('guest')->group(function () {
     // Step 2: Captcha
     Route::get('forgot-password/captcha', [PasswordVerificationController::class, 'showCaptcha'])->name('password.captcha');
     Route::post('forgot-password/captcha', [PasswordVerificationController::class, 'verifyCaptcha'])
+        ->middleware('throttle:6,1')
         ->name('password.captcha.verify');
 
     // Step 3: Set password baru

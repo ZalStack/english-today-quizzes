@@ -34,7 +34,7 @@ class DashboardController extends Controller
             ->get();
 
         $ongoingQuizzes = UserQuizAttempt::where('user_id', $user->id)
-            ->where('status', 'ongoing')
+            ->where('status', 'in_progress')
             ->with('quiz')
             ->latest('started_at')
             ->get();

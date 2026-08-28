@@ -48,9 +48,9 @@ class MateriController extends Controller
 
         unset($validated['file']);
 
-        Materi::create($validated);
+        $materi = Materi::create($validated);
 
-        NotificationHelper::notifyMaterialUpload(auth()->user(), $materi ?? Materi::latest()->first());
+        NotificationHelper::notifyMaterialUpload(auth()->user(), $materi);
 
         return redirect()->route('hr.materi.index')->with('success', 'Materi berhasil diupload.');
     }

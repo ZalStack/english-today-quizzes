@@ -25,12 +25,13 @@ class ReportController extends Controller
     {
         $attempts = $quiz->attempts()->with('user.division')->where('status', 'completed')->paginate(20);
 
+        $allAttempts = $quiz->attempts()->where('status', 'completed');
         $statistics = [
-            'total_attempts' => $attempts->total(),
-            'average_score' => $attempts->avg('score'),
-            'highest_score' => $attempts->max('score'),
-            'lowest_score' => $attempts->min('score'),
-            'passing_rate' => $attempts->where('score', '>=', 70)->count(),
+            'total_attempts' => $allAttempts->count(),
+            'average_score' => round($allAttempts->avg('score') ?? 0, 2),
+            'highest_score' => $allAttempts->max('score') ?? 0,
+            'lowest_score' => $allAttempts->min('score') ?? 0,
+            'passing_rate' => $allAttempts->where('score', '>=', 70)->count(),
         ];
 
         return view('hr.reports.show', compact('quiz', 'attempts', 'statistics'));

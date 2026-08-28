@@ -31,9 +31,10 @@ class EmployeeController extends Controller
             'avatar' => 'nullable|string',
         ]);
         $validated['password'] = Hash::make($validated['password']);
-        $validated['role'] = 'employee';
         $validated['status'] = 'active';
-        $user = User::create($validated);
+        $user = new User($validated);
+        $user->role = 'employee';
+        $user->save();
         return $this->success($user, 'Employee created', 201);
     }
 

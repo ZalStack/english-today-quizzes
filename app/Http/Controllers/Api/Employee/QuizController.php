@@ -22,7 +22,6 @@ class QuizController extends Controller
     public function enroll(Request $request)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
             'enroll_key' => 'required|string',
         ]);
 
@@ -48,16 +47,12 @@ class QuizController extends Controller
 
     public function start(Request $request, $quizId)
     {
-        $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
-        ]);
-
         $quiz = Quiz::find($quizId);
         if (!$quiz) {
             return $this->error('Quiz not found', 404);
         }
 
-        if ($quiz->status !== 'published') {
+        if ($quiz->status !== 'active') {
             return $this->error('Quiz is not available', 403);
         }
         if ($quiz->start_date && $quiz->start_date > now()) {
@@ -68,7 +63,7 @@ class QuizController extends Controller
         }
 
         $attempt = UserQuizAttempt::create([
-            'user_id' => $validated['user_id'],
+            'user_id' => auth()->id(),
             'quiz_id' => $quizId,
             'started_at' => now(),
             'ends_at' => $quiz->duration ? now()->addMinutes($quiz->duration) : null,
@@ -148,17 +143,22 @@ class QuizController extends Controller
         if (!$attempt) {
             return $this->error('Attempt not found', 404);
         }
+        if ($attempt->user_id !== auth()->id()) {
+            return $this->error('Unauthorized', 403);
+        }
         if ($attempt->status !== 'in_progress') {
             return $this->error('Attempt already submitted', 403);
         }
 
         $totalCorrect = $attempt->answers->where('is_correct', true)->count();
         $totalWrong = $attempt->answers->where('is_correct', false)->count();
-        $totalPoints = $attempt->answers->sum('points_earned');
+        $totalPoints = $attempt->quiz->questions()->sum('points');
+        $earnedPoints = $attempt->answers->sum('points_earned');
+        $score = $totalPoints > 0 ? round(($earnedPoints / $totalPoints) * 100) : 0;
 
         $attempt->update([
             'completed_at' => now(),
-            'score' => $totalPoints,
+            'score' => $score,
             'total_correct' => $totalCorrect,
             'total_wrong' => $totalWrong,
             'status' => 'completed',
@@ -166,7 +166,7 @@ class QuizController extends Controller
 
         return $this->success([
             'attempt' => $attempt,
-            'score' => $totalPoints,
+            'score' => $score,
             'correct' => $totalCorrect,
             'wrong' => $totalWrong,
         ], 'Quiz submitted');
@@ -201,12 +201,7 @@ class QuizController extends Controller
 
     public function history(Request $request)
     {
-        $userId = $request->input('user_id');
-        if (!$userId) {
-            return $this->error('user_id required', 400);
-        }
-
-        $attempts = UserQuizAttempt::where('user_id', $userId)
+        $attempts = UserQuizAttempt::where('user_id', auth()->id())
             ->with('quiz')
             ->orderBy('created_at', 'desc')
             ->get();

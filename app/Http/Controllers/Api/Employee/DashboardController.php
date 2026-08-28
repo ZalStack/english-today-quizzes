@@ -15,12 +15,9 @@ class DashboardController extends Controller
 
     public function index(Request $request)
     {
-        $userId = $request->input('user_id');
-        if (!$userId) {
-            return $this->error('user_id required', 400);
-        }
+        $userId = auth()->id();
 
-        $availableQuizzes = Quiz::where('status', 'published')
+        $availableQuizzes = Quiz::where('status', 'active')
             ->where(function ($q) {
                 $q->whereNull('start_date')->orWhere('start_date', '<=', now());
             })
@@ -39,7 +36,7 @@ class DashboardController extends Controller
             'available_quizzes' => $availableQuizzes,
             'total_attempts' => $attempts,
             'completed_quizzes' => $completed,
-            'average_score' => round($averageScore, 2),
+            'average_score' => round($averageScore ?? 0, 2),
             'active_video_challenges' => $videoChallenges,
         ]);
     }

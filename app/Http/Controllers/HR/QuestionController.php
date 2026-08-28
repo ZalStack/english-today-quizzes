@@ -69,6 +69,7 @@ class QuestionController extends Controller
             'explanation' => 'nullable|string',
             'points' => 'nullable|integer|min:1', // ✅ nullable, akan di-calculate otomatis
             'order_number' => 'nullable|integer|min:1',
+            'question_image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
         ]);
 
         if ($request->hasFile('question_image')) {
@@ -119,6 +120,7 @@ class QuestionController extends Controller
             'explanation' => 'nullable|string',
             'points' => 'required|integer|min:1',
             'order_number' => 'required|integer|min:1',
+            'question_image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
         ]);
 
         if ($request->hasFile('question_image')) {

@@ -16,7 +16,6 @@ class User extends Authenticatable
         'email',
         'password',
         'division_id',
-        'role',
         'status',
         'phone',
         'address',

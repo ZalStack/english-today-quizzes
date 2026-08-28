@@ -33,7 +33,7 @@ class QuestionController extends Controller
         $validated = $request->validate([
             'question_text' => 'required|string',
             'question_image' => 'nullable|string',
-            'question_type' => 'required|in:multiple_choice,true_false,essay',
+            'question_type' => 'required|in:multiple_choice,true_false,short_answer,essay',
             'options' => 'nullable|array',
             'correct_answer' => 'required|string',
             'explanation' => 'nullable|string',
@@ -63,7 +63,7 @@ class QuestionController extends Controller
         $validated = $request->validate([
             'question_text' => 'sometimes|string',
             'question_image' => 'nullable|string',
-            'question_type' => 'sometimes|in:multiple_choice,true_false,essay',
+            'question_type' => 'sometimes|in:multiple_choice,true_false,short_answer,essay',
             'options' => 'nullable|array',
             'correct_answer' => 'sometimes|string',
             'explanation' => 'nullable|string',

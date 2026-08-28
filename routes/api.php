@@ -22,7 +22,7 @@ use App\Http\Controllers\Api\Employee\ProfileController as EmployeeProfileContro
 | API Routes untuk HR
 |--------------------------------------------------------------------------
 */
-Route::prefix('hr')->group(function () {
+Route::middleware(['auth', 'role:hr', 'throttle:60,1'])->prefix('hr')->group(function () {
     Route::get('/dashboard', [HrDashboardController::class, 'index']);
 
     Route::apiResource('divisions', DivisionController::class);
@@ -62,7 +62,7 @@ Route::prefix('hr')->group(function () {
 | API Routes untuk Employee
 |--------------------------------------------------------------------------
 */
-Route::prefix('employee')->group(function () {
+Route::middleware(['auth', 'role:employee', 'throttle:60,1'])->prefix('employee')->group(function () {
     Route::get('/dashboard', [EmployeeDashboardController::class, 'index']);
 
     Route::get('/quizzes/join', [EmployeeQuizController::class, 'join']);

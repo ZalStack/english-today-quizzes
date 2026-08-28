@@ -23,11 +23,10 @@ class QuizController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'thumbnail' => 'nullable|string',
-            'category_id' => 'nullable|exists:quiz_categories,id',
-            'created_by' => 'required|exists:users,id',
+            'category_id' => 'required|exists:quiz_categories,id',
             'duration' => 'nullable|integer',
             'total_questions' => 'nullable|integer',
-            'status' => 'sometimes|in:draft,published,closed',
+            'status' => 'sometimes|in:draft,active,completed',
             'enroll_key' => 'nullable|string',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date',
@@ -36,6 +35,7 @@ class QuizController extends Controller
             'show_wrong_answer' => 'boolean',
             'show_explanation' => 'boolean',
         ]);
+        $validated['created_by'] = auth()->id();
         $quiz = Quiz::create($validated);
         return $this->success($quiz, 'Quiz created', 201);
     }
@@ -59,11 +59,10 @@ class QuizController extends Controller
             'title' => 'sometimes|string|max:255',
             'description' => 'nullable|string',
             'thumbnail' => 'nullable|string',
-            'category_id' => 'nullable|exists:quiz_categories,id',
-            'created_by' => 'sometimes|exists:users,id',
+            'category_id' => 'required|exists:quiz_categories,id',
             'duration' => 'nullable|integer',
             'total_questions' => 'nullable|integer',
-            'status' => 'sometimes|in:draft,published,closed',
+            'status' => 'sometimes|in:draft,active,completed',
             'enroll_key' => 'nullable|string',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date',

@@ -24,6 +24,7 @@ class ProfileController extends Controller
             'address' => 'nullable|string|max:500',
             'current_password' => 'nullable|required_with:new_password',
             'new_password' => 'nullable|min:8|confirmed',
+            'avatar' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
         ]);
 
         if ($request->filled('current_password')) {

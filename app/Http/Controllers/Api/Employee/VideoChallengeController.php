@@ -21,7 +21,6 @@ class VideoChallengeController extends Controller
     public function submit(Request $request, $challengeId)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
             'link' => 'required|url',
             'notes' => 'nullable|string',
         ]);
@@ -32,7 +31,7 @@ class VideoChallengeController extends Controller
         }
 
         $existing = VideoSubmission::where('challenge_id', $challengeId)
-            ->where('user_id', $validated['user_id'])
+            ->where('user_id', auth()->id())
             ->first();
         if ($existing) {
             return $this->error('You have already submitted for this challenge', 409);
@@ -40,7 +39,7 @@ class VideoChallengeController extends Controller
 
         $submission = VideoSubmission::create([
             'challenge_id' => $challengeId,
-            'user_id' => $validated['user_id'],
+            'user_id' => auth()->id(),
             'link' => $validated['link'],
             'notes' => $validated['notes'] ?? null,
         ]);
