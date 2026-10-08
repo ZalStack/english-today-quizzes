@@ -223,6 +223,18 @@ class QuizController extends Controller
             'total_wrong' => $answers->where('is_correct', false)->count(),
             'status' => 'completed',
         ]);
+
+        // Award EXP / Growth points to 3D Pet
+        try {
+            $petService = app(\App\Services\PetService::class);
+            $pointsGained = 25 + ($score >= 80 ? 15 : ($score >= 60 ? 10 : 5));
+            $user = \App\Models\User::find($attempt->user_id);
+            if ($user) {
+                $petService->awardGrowth($user, $pointsGained, 'quiz_completed', "Menyelesaikan Quiz '{$attempt->quiz->title}' dengan skor {$score}%");
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to award pet growth on quiz completion: ' . $e->getMessage());
+        }
     }
 
     public function unansweredCount(UserQuizAttempt $attempt)

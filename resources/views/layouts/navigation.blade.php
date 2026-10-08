@@ -98,6 +98,10 @@
                                 </svg>
                                 Materi
                             </x-nav-link>
+                            <x-nav-link :href="route('employee.pet.index')" :active="request()->routeIs('employee.pet.*')">
+                                <span class="mr-1.5 text-base leading-none">🐾</span>
+                                3D Pet
+                            </x-nav-link>
                         @endif
                     </div>
                 @endauth
@@ -217,6 +221,9 @@
                     </x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('employee.materi.index')" :active="request()->routeIs('employee.materi.*')">
                         📚 Materi
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('employee.pet.index')" :active="request()->routeIs('employee.pet.*')">
+                        🐾 3D Virtual Pet
                     </x-responsive-nav-link>
                 @endif
             </div>

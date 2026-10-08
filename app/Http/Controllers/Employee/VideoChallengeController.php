@@ -172,10 +172,18 @@ class VideoChallengeController extends Controller
             'link' => $request->link,
         ]);
 
+        // Award EXP / Growth points to 3D Pet
+        try {
+            $petService = app(\App\Services\PetService::class);
+            $petService->awardGrowth(auth()->user(), 40, 'video_submitted', "Mengumpulkan Video Challenge '{$videoChallenge->title}'");
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to award pet growth on video submission: ' . $e->getMessage());
+        }
+
         Cache::forget('active_employees_v2');
         NotificationHelper::notifyVideoSubmission(auth()->user());
 
         return redirect()->route('employee.video-challenges.index')
-            ->with('success', 'Link video berhasil dikumpulkan.');
+            ->with('success', 'Link video berhasil dikumpulkan. (+40 Pet EXP!)');
     }
 }

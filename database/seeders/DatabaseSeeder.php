@@ -10,22 +10,11 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Buat akun HR (jika belum ada)
-        User::updateOrCreate(
-            ['email' => 'hr@etquizzes.com'],
-            [
-                'name'              => 'HR Admin',
-                'full_name'         => 'HR Administrator',
-                'password'          => Hash::make('password123'),
-                'role'              => 'hr',
-                'status'            => 'active',
-                'division_id'       => null,
-                'phone'             => '081234567890',
-                'address'           => 'HR Department',
-                'avatar'            => null,
-                'email_verified_at' => now(),
-            ]
-        );
+        // Buat akun Admin / HR
+        $this->call(AdminUserSeeder::class);
+
+        // Buat data Master Hewan / Pets
+        $this->call(PetSeeder::class);
 
         // Data karyawan (65 orang) sesuai daftar
         $employees = [

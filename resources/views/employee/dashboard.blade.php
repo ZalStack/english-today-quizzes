@@ -168,6 +168,9 @@
 
             <!-- Right Sidebar -->
             <div class="space-y-6 sm:space-y-8">
+                <!-- 3D Virtual Pet Companion Widget -->
+                <x-pet-3d-widget :compact="true" />
+
                 <!-- Recent Scores -->
                 @if($recentScores->count() > 0)
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100">

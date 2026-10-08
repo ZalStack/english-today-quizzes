@@ -16,6 +16,7 @@ class User extends Authenticatable
         'email',
         'password',
         'division_id',
+        'role',
         'status',
         'phone',
         'address',
@@ -58,5 +59,10 @@ class User extends Authenticatable
     public function isEmployee()
     {
         return $this->role === 'employee';
+    }
+
+    public function userPet()
+    {
+        return $this->hasOne(UserPet::class);
     }
 }

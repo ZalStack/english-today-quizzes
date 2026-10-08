@@ -14,6 +14,7 @@ use App\Http\Controllers\Employee\DashboardController as EmployeeDashboardContro
 use App\Http\Controllers\Employee\QuizController as EmployeeQuizController;
 use App\Http\Controllers\Employee\VideoChallengeController as EmployeeVideoChallengeController;
 use App\Http\Controllers\Employee\MateriController as EmployeeMateriController;
+use App\Http\Controllers\Employee\PetController as EmployeePetController;
 use App\Http\Controllers\Employee\ProfileController;
 use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
@@ -122,6 +123,15 @@ Route::middleware(['auth', 'role:employee'])->prefix('employee')->name('employee
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+
+    // Pet Sanctuary & 3D Gamification
+    Route::get('/pet', [EmployeePetController::class, 'index'])->name('pet.index');
+    Route::get('/pet/status', [EmployeePetController::class, 'getStatus'])->name('pet.status');
+    Route::post('/pet/hatch', [EmployeePetController::class, 'hatch'])->name('pet.hatch');
+    Route::post('/pet/feed', [EmployeePetController::class, 'feed'])->name('pet.feed');
+    Route::post('/pet/pet', [EmployeePetController::class, 'pet'])->name('pet.pet');
+    Route::post('/pet/add-points', [EmployeePetController::class, 'addPoints'])->name('pet.add-points');
+    Route::post('/pet/new-egg', [EmployeePetController::class, 'newEgg'])->name('pet.new-egg');
 
     Route::get('/quizzes/{quiz}/start', function (\App\Models\Quiz $quiz) {
         return redirect()->route('employee.quizzes.preview', $quiz);
