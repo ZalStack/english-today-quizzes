@@ -1,95 +1,98 @@
 @extends('layouts.app')
 
-@section('title', 'Materi')
+@section('title', 'Materi Pembelajaran')
 
 @section('content')
-<div class="py-4 sm:py-6 lg:py-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="mb-6 sm:mb-8">
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">Materi</h1>
-            <p class="text-gray-500 text-sm sm:text-base mt-1">Akses materi yang sudah di-share oleh HRD</p>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-14 sm:pb-16">
+
+    {{-- ================= HEADER ================= --}}
+    <header class="et-reveal mb-6 sm:mb-8">
+        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+            <div class="min-w-0">
+                <p class="et-eyebrow">📚 Perpustakaan Materi</p>
+                <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Materi Pembelajaran</h1>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Akses materi yang sudah dibagikan oleh HRD kapan saja.</p>
+            </div>
+
+            @if($materi->total() > 0)
+                <span class="et-badge et-badge-info self-start sm:self-auto shrink-0">🗂️ {{ $materi->total() }} materi tersedia</span>
+            @endif
         </div>
+    </header>
 
-        @if(session('success'))
-            <div class="bg-green-100 border border-green-200 text-green-700 px-4 sm:px-5 py-3 rounded-xl mb-4 sm:mb-6 text-sm sm:text-base">
-                {{ session('success') }}
-            </div>
-        @endif
+    {{-- ================= DAFTAR MATERI ================= --}}
+    @if($materi->count() > 0)
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+            @foreach($materi as $i => $item)
+                @php
+                    $isPdf = strtolower($item->file_type) === 'pdf';
+                    $isPpt = in_array(strtolower($item->file_type), ['ppt', 'pptx']);
+                    $fileIcon = $isPdf ? '📄' : ($isPpt ? '📊' : '📁');
+                    $typeBadge = $isPdf ? 'et-badge-danger' : ($isPpt ? 'et-badge-warning' : 'et-badge-info');
+                    $accentBar = $isPdf
+                        ? 'from-rose-500 to-orange-400'
+                        : ($isPpt ? 'from-amber-500 to-yellow-400' : 'from-lime-500 to-emerald-400');
+                    $fileTile = $isPdf
+                        ? 'bg-rose-100 text-rose-600 dark:bg-rose-500/15 dark:text-rose-400'
+                        : ($isPpt ? 'bg-amber-100 text-amber-600 dark:bg-amber-500/15 dark:text-amber-400' : 'bg-lime-100 text-lime-600 dark:bg-lime-500/15 dark:text-lime-400');
+                @endphp
 
-        @if(session('error'))
-            <div class="bg-red-100 border border-red-200 text-red-700 px-4 sm:px-5 py-3 rounded-xl mb-4 sm:mb-6 text-sm sm:text-base">
-                {{ session('error') }}
-            </div>
-        @endif
+                <article class="et-card et-card-hover et-focus-ring et-reveal et-delay-{{ min(8, $i + 1) }} overflow-hidden flex flex-col">
+                    <div class="h-1.5 bg-gradient-to-r {{ $accentBar }}"></div>
 
-        @if($materi->count() > 0)
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-                @foreach($materi as $item)
-                    @php
-                        $isPdf = strtolower($item->file_type) === 'pdf';
-                    @endphp
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden card-hover group">
-                        <div class="h-2 bg-gradient-to-r {{ $isPdf ? 'from-red-500 to-orange-400' : 'from-orange-500 to-amber-400' }}"></div>
-                        <div class="p-5">
-                            <div class="flex items-start gap-3 mb-3">
-                                <div class="w-11 h-11 {{ $isPdf ? 'bg-red-50' : 'bg-orange-50' }} rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
-                                    <svg class="w-5 h-5 {{ $isPdf ? 'text-red-600' : 'text-orange-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                                    </svg>
-                                </div>
-                                <div class="min-w-0 flex-1">
-                                    <h3 class="font-bold text-gray-900 text-sm leading-tight">{{ $item->title }}</h3>
-                                    <div class="flex items-center gap-2 mt-1">
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold {{ $isPdf ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700' }}">
-                                            {{ strtoupper($item->file_type) }}
-                                        </span>
-                                        <span class="text-[11px] text-gray-400">{{ $item->file_size_formatted }}</span>
-                                    </div>
-                                </div>
+                    <div class="p-4 sm:p-5 flex flex-col flex-1">
+                        <div class="flex items-start gap-3">
+                            <div class="w-12 h-12 rounded-2xl shrink-0 flex items-center justify-center text-2xl border border-transparent et-hover-pop {{ $fileTile }}">
+                                {{ $fileIcon }}
                             </div>
-
-                            @if($item->description)
-                                <p class="text-gray-500 text-xs leading-relaxed mb-4 line-clamp-2">{{ $item->description }}</p>
-                            @else
-                                <div class="mb-4"></div>
-                            @endif
-
-                            <div class="flex items-center justify-between pt-3 border-t border-gray-100">
-                                <div class="text-[11px] text-gray-400">
-                                    {{ $item->created_at->format('d M Y') }}
-                                </div>
-                                <div class="flex gap-2">
-                                    <a href="{{ route('employee.materi.show', $item) }}"
-                                       class="px-3 py-1.5 bg-gray-100 text-gray-600 text-xs font-semibold rounded-lg hover:bg-gray-200 transition-all duration-200">
-                                        Detail
-                                    </a>
-                                    <a href="{{ route('employee.materi.download', $item) }}"
-                                       class="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white text-xs font-semibold rounded-lg hover:shadow-lg transition-all duration-300">
-                                        Download
-                                    </a>
+                            <div class="min-w-0 flex-1">
+                                <h3 class="font-extrabold text-[15px] leading-snug text-slate-900 dark:text-slate-100 line-clamp-2">{{ $item->title }}</h3>
+                                <div class="mt-1.5 flex flex-wrap items-center gap-1.5">
+                                    <span class="et-badge {{ $typeBadge }}">{{ strtoupper($item->file_type) }}</span>
+                                    <span class="et-badge et-badge-neutral">💾 {{ $item->file_size_formatted }}</span>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                @endforeach
-            </div>
 
-            @if($materi->hasPages())
-                <div class="mt-6">
-                    {{ $materi->links() }}
-                </div>
-            @endif
-        @else
-            <div class="text-center py-10 sm:py-16 bg-white rounded-2xl border border-gray-100">
-                <div class="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                    <svg class="w-8 h-8 sm:w-10 sm:h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                    </svg>
-                </div>
-                <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-1">Belum Ada Materi</h3>
-                <p class="text-gray-500 text-sm sm:text-base">Tunggu materi terbaru dari HRD</p>
+                        <p class="mt-3 text-[13px] leading-relaxed text-slate-500 dark:text-slate-400 line-clamp-2">
+                            {{ $item->description ?: 'Materi ini belum memiliki deskripsi.' }}
+                        </p>
+
+                        <div class="mt-auto pt-4 border-t border-dashed border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2.5">
+                            <span class="inline-flex items-center gap-1.5 text-[11.5px] font-semibold text-slate-400 dark:text-slate-500">
+                                📅 {{ $item->created_at->format('d M Y') }}
+                            </span>
+                            <div class="flex items-center gap-2">
+                                <a href="{{ route('employee.materi.show', $item) }}"
+                                   class="et-btn et-btn-soft et-btn-sm et-press">
+                                    Detail
+                                </a>
+                                <a href="{{ route('employee.materi.download', $item) }}"
+                                   class="et-btn et-btn-primary et-btn-sm et-press">
+                                    ⬇️ Download
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            @endforeach
+        </div>
+
+        @if($materi->hasPages())
+            <div class="mt-6 sm:mt-8 et-reveal et-delay-1">
+                {{ $materi->links() }}
             </div>
         @endif
-    </div>
+    @else
+        {{-- ================= EMPTY STATE ================= --}}
+        <div class="et-panel et-reveal">
+            <div class="et-empty">
+                <div class="et-empty__icon et-mascot et-mascot--bounce">📚</div>
+                <p class="et-empty__title">Belum ada materi</p>
+                <p class="et-empty__text">Belum ada materi yang dibagikan. Pantau terus, ya — materi baru dari HRD akan muncul di halaman ini.</p>
+                <a href="{{ route('employee.dashboard') }}" class="et-btn et-btn-primary mt-5 et-press">🏠 Kembali ke Dashboard</a>
+            </div>
+        </div>
+    @endif
 </div>
 @endsection

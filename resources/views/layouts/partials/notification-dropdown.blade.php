@@ -1,7 +1,7 @@
 {{-- Notification Dropdown Component --}}
 <div class="relative" x-data="notificationDropdown()" x-init="init()" @click.outside="close()">
     {{-- Bell Button --}}
-    <button @click="toggle()" class="relative p-1.5 sm:p-2 text-gray-400 hover:text-gray-600 transition-colors duration-200 tap-target rounded-xl hover:bg-gray-100">
+    <button @click="toggle()" class="relative p-1.5 sm:p-2 text-gray-400 dark:text-slate-400 hover:text-gray-600 dark:hover:text-slate-200 transition-colors duration-200 tap-target rounded-xl hover:bg-gray-100 dark:hover:bg-slate-800">
         <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
         </svg>
@@ -18,12 +18,12 @@
          x-transition:leave="transition ease-in duration-150"
          x-transition:leave-start="opacity-100 scale-100 translate-y-0"
          x-transition:leave-end="opacity-0 scale-95 translate-y-1"
-         class="absolute right-0 top-full mt-2 w-[340px] sm:w-[380px] bg-white rounded-2xl shadow-soft-lg border border-gray-100/80 z-50 overflow-hidden">
+         class="absolute right-0 top-full mt-2 w-[340px] sm:w-[380px] bg-white dark:bg-slate-900 rounded-2xl shadow-soft-lg border border-gray-100/80 dark:border-slate-800 z-50 overflow-hidden">
 
         {{-- Header --}}
-        <div class="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
+        <div class="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 dark:border-slate-800">
             <div class="flex items-center gap-2">
-                <h3 class="text-sm font-bold text-gray-900">Notifikasi</h3>
+                <h3 class="text-sm font-bold text-gray-900 dark:text-slate-100">Notifikasi</h3>
                 <span x-show="unreadCount > 0" x-cloak
                       class="px-1.5 py-0.5 bg-primary-50 text-primary-600 text-[10px] font-bold rounded-full"
                       x-text="unreadCount"></span>
@@ -52,8 +52,8 @@
 
         {{-- Empty State --}}
         <div x-show="!loading && items.length === 0" class="py-10 text-center px-4">
-            <div class="w-14 h-14 mx-auto bg-gray-50 rounded-full flex items-center justify-center mb-3">
-                <svg class="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-14 h-14 mx-auto bg-gray-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-3">
+                <svg class="w-7 h-7 text-gray-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                 </svg>
             </div>
@@ -65,8 +65,8 @@
         <div x-show="!loading && items.length > 0" class="max-h-[360px] overflow-y-auto custom-scrollbar">
             <template x-for="(item, index) in items" :key="item.id">
                 <div @click="handleClick(item)"
-                     class="flex items-start gap-3 px-5 py-3.5 border-b border-gray-50 last:border-0 cursor-pointer transition-all duration-150 hover:bg-gray-50/80"
-                     :class="{ 'bg-primary-50/30': !item.is_read }">
+                     class="flex items-start gap-3 px-5 py-3.5 border-b border-gray-50 dark:border-slate-800/60 last:border-0 cursor-pointer transition-all duration-150 hover:bg-gray-50/80 dark:hover:bg-slate-800/60"
+                     :class="{ 'bg-primary-50/30 dark:bg-indigo-500/10': !item.is_read }">
                     {{-- Icon --}}
                     <div class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center mt-0.5"
                          :class="item.color">
@@ -75,18 +75,18 @@
                     {{-- Content --}}
                     <div class="flex-1 min-w-0">
                         <div class="flex items-start justify-between gap-2">
-                            <p class="text-[13px] font-semibold text-gray-900 leading-snug" x-text="item.title"></p>
+                            <p class="text-[13px] font-semibold text-gray-900 dark:text-slate-100 leading-snug" x-text="item.title"></p>
                             <div x-show="!item.is_read" class="flex-shrink-0 w-2 h-2 bg-primary-500 rounded-full mt-1.5"></div>
                         </div>
-                        <p class="text-xs text-gray-500 mt-0.5 line-clamp-2 leading-relaxed" x-text="item.message"></p>
-                        <p class="text-[11px] text-gray-400 mt-1" x-text="item.created_at"></p>
+                        <p class="text-xs text-gray-500 dark:text-slate-400 mt-0.5 line-clamp-2 leading-relaxed" x-text="item.message"></p>
+                        <p class="text-[11px] text-gray-400 dark:text-slate-500 mt-1" x-text="item.created_at"></p>
                     </div>
                 </div>
             </template>
         </div>
 
         {{-- Footer --}}
-        <div x-show="!loading && totalNotifications > 0" class="border-t border-gray-100 px-5 py-3 bg-gray-50/50">
+        <div x-show="!loading && totalNotifications > 0" class="border-t border-gray-100 dark:border-slate-800 px-5 py-3 bg-gray-50/50 dark:bg-slate-800/40">
             <a href="{{ url(auth()->user()->isHR() ? 'hr' : 'employee') }}/notifications"
                class="flex items-center justify-center gap-1.5 text-xs font-semibold text-primary-600 hover:text-primary-700 transition-colors py-1.5 rounded-lg hover:bg-primary-50">
                 <span>Lihat Semua Notifikasi</span>
@@ -184,4 +184,6 @@ function notificationDropdown() {
 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
 .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+html.dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; }
+html.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
 </style>

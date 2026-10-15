@@ -21,6 +21,8 @@ class User extends Authenticatable
         'phone',
         'address',
         'avatar',
+        'points',
+        'welcome_pack_claimed_at',
     ];
 
     protected $hidden = [
@@ -33,6 +35,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'points' => 'integer',
+            'welcome_pack_claimed_at' => 'datetime',
         ];
     }
 
@@ -64,5 +68,20 @@ class User extends Authenticatable
     public function userPet()
     {
         return $this->hasOne(UserPet::class);
+    }
+
+    public function pointTransactions()
+    {
+        return $this->hasMany(PointTransaction::class);
+    }
+
+    public function userItems()
+    {
+        return $this->hasMany(UserItem::class);
+    }
+
+    public function petArchive()
+    {
+        return $this->hasMany(UserPetArchive::class);
     }
 }

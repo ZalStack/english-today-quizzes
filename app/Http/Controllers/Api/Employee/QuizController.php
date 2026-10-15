@@ -164,11 +164,46 @@ class QuizController extends Controller
             'status' => 'completed',
         ]);
 
+        // ── POIN: hanya attempt completed PERTAMA per kuis (anti-farm) ──
+        $pointsEarned = 0;
+        try {
+            $user = auth()->user();
+            $isFirstCompleted = !UserQuizAttempt::where('user_id', $user->id)
+                ->where('quiz_id', $attempt->quiz_id)
+                ->where('status', 'completed')
+                ->where('id', '!=', $attempt->id)
+                ->exists();
+
+            if ($isFirstCompleted) {
+                $base = 20;
+                $bonus = $score >= 80 ? 15 : ($score >= 60 ? 10 : 5);
+                $pointsEarned = $base + $bonus;
+                app(\App\Services\PointService::class)->earn(
+                    $user,
+                    $pointsEarned,
+                    'quiz_first_attempt',
+                    "Kuis '{$attempt->quiz->title}' (skor {$score}%) — +{$base} poin dasar + {$bonus} bonus"
+                );
+            }
+
+            // EXP pet (melatih peliharaan yang sudah menetas)
+            app(\App\Services\PetService::class)->awardGrowth(
+                $user,
+                25 + ($score >= 80 ? 15 : ($score >= 60 ? 10 : 5)),
+                'quiz_completed',
+                "Menyelesaikan Quiz '{$attempt->quiz->title}' dengan skor {$score}%"
+            );
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to award points on API quiz completion: ' . $e->getMessage());
+        }
+
         return $this->success([
             'attempt' => $attempt,
             'score' => $score,
             'correct' => $totalCorrect,
             'wrong' => $totalWrong,
+            'points_earned' => $pointsEarned,
+            'points_balance' => (int) auth()->user()->fresh()->points,
         ], 'Quiz submitted');
     }
 

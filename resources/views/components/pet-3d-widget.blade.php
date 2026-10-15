@@ -8,7 +8,7 @@
     $userPet = $userPet ?? app(\App\Services\PetService::class)->getOrCreateUserPet(auth()->user());
 @endphp
 
-<div class="bg-gradient-to-br from-indigo-950 via-[#161758] to-slate-950 rounded-2xl shadow-xl border border-indigo-500/25 p-4 sm:p-5 text-white relative overflow-hidden mb-6"
+<div class="bg-gradient-to-br from-[#0b2a3d] via-[#0f2042] to-slate-950 rounded-3xl shadow-xl border-2 border-sky-500/30 p-4 sm:p-5 text-white relative overflow-hidden mb-6"
      x-data="petGameWidget()"
      x-init="initWidget()">
 
@@ -40,23 +40,28 @@
                         </span>
                     </template>
                 </div>
-                <p class="text-[11px] text-indigo-200/70 truncate"
-                   x-text="petState.status === 'hatched' ? (petState.pet?.species + ' • Lv.' + petState.level) : 'Kuis & video menambah EXP!'">
-                    Kuis & video menambah EXP!
+                <p class="text-[11px] text-sky-200/70 truncate"
+                   x-text="petState.status === 'hatched' ? (petState.pet?.species + ' • Lv.' + petState.level) : 'Kumpulkan poin, beli alat, pecahkan telur!'">
+                    Kumpulkan poin, beli alat, pecahkan telur!
                 </p>
             </div>
         </div>
 
-        <!-- Sound & Fullscreen Controls -->
+        <!-- Sound, Toko & Fullscreen Controls -->
         <div class="flex items-center gap-1 flex-shrink-0">
             <button type="button"
                     @click="toggleSound()"
-                    class="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-indigo-200 hover:text-white transition-all text-xs"
+                    class="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-sky-200 hover:text-white transition-all text-xs"
                     :title="soundOn ? 'Mute' : 'Unmute'">
                 <span x-text="soundOn ? '🔊' : '🔇'">🔊</span>
             </button>
+            <a href="{{ route('employee.shop.index') }}"
+               class="p-1.5 rounded-lg bg-amber-500/70 hover:bg-amber-500 text-white transition-all text-xs font-semibold flex items-center gap-1 border border-amber-300/40 et-press"
+               title="🛒 Beli Alat & Makanan di Toko">
+                🛒
+            </a>
             <a href="{{ route('employee.pet.index') }}"
-               class="p-1.5 rounded-lg bg-indigo-600/60 hover:bg-indigo-600 text-white transition-all text-xs font-semibold flex items-center gap-1 border border-indigo-400/30"
+               class="p-1.5 rounded-lg bg-sky-600/70 hover:bg-sky-600 text-white transition-all text-xs font-semibold flex items-center gap-1 border border-sky-400/40 et-press"
                title="Buka Sanctuary Mode Penuh">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
@@ -66,18 +71,18 @@
     </div>
 
     <!-- 3D Interactive WebGL Canvas Container -->
-    <div class="relative w-full h-56 sm:h-64 rounded-xl bg-gradient-to-b from-indigo-950/40 to-slate-950/70 border border-indigo-500/30 overflow-hidden shadow-inner flex items-center justify-center group cursor-grab active:cursor-grabbing mb-3.5">
+    <div class="relative w-full h-56 sm:h-64 rounded-xl bg-gradient-to-b from-[#0b2a3d]/50 to-slate-950/70 border-2 border-sky-500/30 overflow-hidden shadow-inner flex items-center justify-center group cursor-grab active:cursor-grabbing mb-3.5">
 
         <!-- 3D Canvas Mount Point -->
         <div id="pet-3d-canvas-container" class="w-full h-full"></div>
 
         <!-- 3D Hint Badge -->
-        <div class="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/50 backdrop-blur-md border border-white/10 text-[10px] text-indigo-200/80 pointer-events-none flex items-center gap-1">
+        <div class="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/50 backdrop-blur-md border border-white/10 text-[10px] text-sky-200/80 pointer-events-none flex items-center gap-1">
             <span>👆 Putar 360° • Klik interaksi</span>
         </div>
 
         <!-- Ready to Hatch Floating Banner -->
-        <template x-if="petState.status === 'ready_to_hatch' || petState.growthPercentage >= 100">
+        <template x-if="petState.status !== 'hatched' && (petState.status === 'ready_to_hatch' || petState.crack_percentage >= 100)">
             <div class="absolute top-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 text-slate-950 font-black text-[11px] shadow-lg shadow-amber-500/50 animate-bounce flex items-center gap-1 pointer-events-none whitespace-nowrap">
                 <span>⚡ SIAP MENETAS!</span>
             </div>
@@ -87,21 +92,27 @@
     <!-- Stats & Action Controls -->
     <div class="space-y-3 relative z-10">
 
-        <!-- EGG PROGRESS BAR (If egg) -->
+        <!-- EGG CRACK METER (If egg) -->
         <template x-if="petState.status !== 'hatched'">
             <div class="bg-white/5 rounded-xl p-3 border border-white/10">
                 <div class="flex items-center justify-between text-xs font-semibold mb-1.5">
-                    <span class="text-indigo-200 text-[11px] flex items-center gap-1">
-                        <span>🌱</span> Inkubasi Telur
+                    <span class="text-sky-200 text-[11px] flex items-center gap-1">
+                        <span>🔨</span> Keretakan Telur
                     </span>
-                    <span class="text-amber-300 font-bold font-mono text-xs" x-text="petState.growthPercentage + '%'">0%</span>
+                    <span class="font-bold font-mono text-xs"
+                          :class="petState.crack_percentage >= 75 ? 'text-amber-200 animate-pulse' : 'text-amber-300'"
+                          x-text="petState.crack_percentage + '%'">0%</span>
                 </div>
 
                 <!-- Progress Bar Track -->
                 <div class="w-full h-2.5 bg-black/40 rounded-full overflow-hidden p-0.5 border border-white/10 relative">
-                    <div class="h-full rounded-full bg-gradient-to-r from-amber-500 via-yellow-400 to-emerald-400 transition-all duration-500 relative"
-                         :style="`width: ${Math.min(100, petState.growthPercentage)}%`"></div>
+                    <div class="h-full rounded-full bg-gradient-to-r from-amber-500 via-yellow-400 to-orange-400 transition-all duration-500 relative"
+                         :style="`width: ${Math.min(100, petState.crack_percentage)}%`"></div>
                 </div>
+
+                <p class="mt-1.5 text-[10.5px] text-sky-200/70 leading-snug">
+                    Pukul telur pakai alat dari 🛒 Toko — kumpulkan poin dari kuis &amp; video challenge!
+                </p>
             </div>
         </template>
 
@@ -111,7 +122,7 @@
                 <!-- EXP Bar -->
                 <div>
                     <div class="flex items-center justify-between text-[11px] mb-1">
-                        <span class="text-indigo-200">EXP Level Up</span>
+                        <span class="text-lime-300">EXP Level Up</span>
                         <span class="text-cyan-300 font-mono text-[10px]" x-text="petState.experience + ' / ' + petState.maxExperience + ' XP'"></span>
                     </div>
                     <div class="w-full h-2 bg-black/40 rounded-full overflow-hidden border border-white/10">
@@ -123,11 +134,11 @@
                 <!-- Happiness & Energy Meters -->
                 <div class="grid grid-cols-2 gap-1.5">
                     <div class="bg-black/25 rounded-lg px-2 py-1.5 border border-white/5 flex items-center justify-between">
-                        <span class="text-[10px] text-indigo-300/80">Joy</span>
+                        <span class="text-[10px] text-sky-300/80">Joy</span>
                         <span class="text-xs font-bold text-pink-300" x-text="petState.happiness + '% ❤️'"></span>
                     </div>
                     <div class="bg-black/25 rounded-lg px-2 py-1.5 border border-white/5 flex items-center justify-between">
-                        <span class="text-[10px] text-indigo-300/80">Energy</span>
+                        <span class="text-[10px] text-sky-300/80">Energy</span>
                         <span class="text-xs font-bold text-yellow-300" x-text="petState.energy + '% ⚡'"></span>
                     </div>
                 </div>
@@ -137,7 +148,7 @@
         <!-- ACTION BUTTONS -->
         <div>
             <!-- EGG HATCH BUTTON (When Ready) -->
-            <template x-if="petState.status === 'ready_to_hatch' || petState.growthPercentage >= 100">
+            <template x-if="petState.status !== 'hatched' && (petState.status === 'ready_to_hatch' || petState.crack_percentage >= 100)">
                 <button type="button"
                         @click="triggerHatch()"
                         :disabled="isProcessing"
@@ -148,7 +159,7 @@
             </template>
 
             <!-- EGG WOBBLE BUTTON (When not ready) -->
-            <template x-if="petState.status === 'egg' && petState.growthPercentage < 100">
+            <template x-if="petState.status === 'egg' && petState.crack_percentage < 100">
                 <button type="button"
                         @click="triggerWobble()"
                         class="w-full py-2 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs transition-all flex items-center justify-center gap-1.5 border border-white/10">
@@ -178,12 +189,12 @@
         </div>
 
         <!-- QUICK DEV / TEST TOOLBAR -->
-        <div class="pt-1.5 border-t border-white/10 flex items-center justify-between text-[10px] text-indigo-300/70">
+        <div class="pt-1.5 border-t border-white/10 flex items-center justify-between text-[10px] text-sky-300/70">
             <span>Tes:</span>
             <div class="flex items-center gap-1">
                 <button type="button"
                         @click="addDevPoints(25)"
-                        class="px-1.5 py-0.5 rounded bg-white/10 hover:bg-white/20 text-indigo-200 text-[10px] font-mono transition">
+                        class="px-1.5 py-0.5 rounded bg-white/10 hover:bg-white/20 text-sky-200 text-[10px] font-mono transition">
                     +25 EXP
                 </button>
                 <button type="button"
@@ -219,6 +230,8 @@
                 growthPercentage: {{ $userPet->growth_percentage }},
                 growthPoints: {{ $userPet->growth_points }},
                 maxGrowthPoints: {{ $userPet->max_growth_points }},
+                crack_points: {{ (int) $userPet->crack_points }},
+                crack_percentage: {{ (int) $userPet->crack_percentage }},
                 crack_stage: {{ $userPet->crack_stage }},
                 level: {{ $userPet->level }},
                 experience: {{ $userPet->experience }},

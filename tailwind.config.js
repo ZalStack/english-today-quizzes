@@ -3,6 +3,7 @@ import forms from '@tailwindcss/forms';
 
 /** @type {import('tailwindcss').Config} */
 export default {
+    darkMode: 'class',
     content: [
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',
@@ -17,6 +18,7 @@ export default {
         extend: {
             fontFamily: {
                 sans: ['Plus Jakarta Sans', ...defaultTheme.fontFamily.sans],
+                display: ['"Baloo 2"', 'Nunito', ...defaultTheme.fontFamily.sans],
             },
             colors: {
                 primary: {
@@ -48,6 +50,9 @@ export default {
                 'slide-up': 'slideUp 0.4s ease-out',
                 'slide-down': 'slideDown 0.3s ease-out',
                 'scale-in': 'scaleIn 0.2s ease-out',
+                'float': 'float 4s ease-in-out infinite',
+                'shimmer': 'shimmer 2.5s linear infinite',
+                'pulse-ring': 'pulseRing 1.6s ease-out infinite',
             },
             keyframes: {
                 fadeIn: {
@@ -65,6 +70,18 @@ export default {
                 scaleIn: {
                     '0%': { opacity: '0', transform: 'scale(0.95)' },
                     '100%': { opacity: '1', transform: 'scale(1)' },
+                },
+                float: {
+                    '0%, 100%': { transform: 'translateY(0)' },
+                    '50%': { transform: 'translateY(-6px)' },
+                },
+                shimmer: {
+                    '0%': { backgroundPosition: '-200% 0' },
+                    '100%': { backgroundPosition: '200% 0' },
+                },
+                pulseRing: {
+                    '0%': { transform: 'scale(0.9)', opacity: '1' },
+                    '100%': { transform: 'scale(1.6)', opacity: '0' },
                 },
             },
         },

@@ -15,6 +15,7 @@ use App\Http\Controllers\Employee\QuizController as EmployeeQuizController;
 use App\Http\Controllers\Employee\VideoChallengeController as EmployeeVideoChallengeController;
 use App\Http\Controllers\Employee\MateriController as EmployeeMateriController;
 use App\Http\Controllers\Employee\PetController as EmployeePetController;
+use App\Http\Controllers\Employee\ShopController as EmployeeShopController;
 use App\Http\Controllers\Employee\ProfileController;
 use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
@@ -132,6 +133,18 @@ Route::middleware(['auth', 'role:employee'])->prefix('employee')->name('employee
     Route::post('/pet/pet', [EmployeePetController::class, 'pet'])->name('pet.pet');
     Route::post('/pet/add-points', [EmployeePetController::class, 'addPoints'])->name('pet.add-points');
     Route::post('/pet/new-egg', [EmployeePetController::class, 'newEgg'])->name('pet.new-egg');
+    Route::post('/pet/crack', [EmployeePetController::class, 'crack'])->name('pet.crack');
+    Route::post('/pet/use-tool', [EmployeePetController::class, 'useTool'])->name('pet.use-tool');
+    Route::post('/pet/breed', [EmployeePetController::class, 'breed'])->name('pet.breed');
+
+    // Toko Alat & Makanan + Dompet Poin
+    Route::get('/shop', [EmployeeShopController::class, 'index'])->name('shop.index');
+    Route::post('/shop/buy', [EmployeeShopController::class, 'buy'])->name('shop.buy');
+    Route::post('/shop/use-food', [EmployeeShopController::class, 'useFood'])->name('shop.use-food');
+    Route::get('/points/history', [EmployeeShopController::class, 'pointsHistory'])->name('points.history');
+
+    // Misi Harian
+    Route::post('/quests/claim', [\App\Http\Controllers\Employee\DashboardController::class, 'claimQuest'])->name('quests.claim');
 
     Route::get('/quizzes/{quiz}/start', function (\App\Models\Quiz $quiz) {
         return redirect()->route('employee.quizzes.preview', $quiz);

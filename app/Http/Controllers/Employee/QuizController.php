@@ -201,6 +201,12 @@ class QuizController extends Controller
             abort(403);
         }
 
+        // Cegah submit ulang (double-award poin/EXP)
+        if ($attempt->status !== 'in_progress') {
+            return redirect()->route('employee.quizzes.result', $attempt->id)
+                ->with('info', 'Kuis ini sudah kamu selesaikan.');
+        }
+
         $this->submitQuiz($attempt);
 
         return redirect()->route('employee.quizzes.result', $attempt->id)
@@ -224,16 +230,47 @@ class QuizController extends Controller
             'status' => 'completed',
         ]);
 
-        // Award EXP / Growth points to 3D Pet
-        try {
-            $petService = app(\App\Services\PetService::class);
-            $pointsGained = 25 + ($score >= 80 ? 15 : ($score >= 60 ? 10 : 5));
-            $user = \App\Models\User::find($attempt->user_id);
-            if ($user) {
-                $petService->awardGrowth($user, $pointsGained, 'quiz_completed', "Menyelesaikan Quiz '{$attempt->quiz->title}' dengan skor {$score}%");
+        // Award Poin (mata uang belanja) + EXP untuk 3D Pet
+        $user = \App\Models\User::find($attempt->user_id);
+        if ($user) {
+            // ── POIN: hanya attempt completed PERTAMA per kuis (anti-farm) ──
+            try {
+                $isFirstCompleted = !UserQuizAttempt::where('user_id', $user->id)
+                    ->where('quiz_id', $attempt->quiz_id)
+                    ->where('status', 'completed')
+                    ->where('id', '!=', $attempt->id)
+                    ->exists();
+
+                if ($isFirstCompleted) {
+                    $base = 20;
+                    $bonus = $score >= 80 ? 15 : ($score >= 60 ? 10 : 5);
+                    app(\App\Services\PointService::class)->earn(
+                        $user,
+                        $base + $bonus,
+                        'quiz_first_attempt',
+                        "Kuis '{$attempt->quiz->title}' (skor {$score}%) — +{$base} poin dasar + {$bonus} bonus"
+                    );
+                    session()->flash('quiz_points', $base + $bonus);
+                    session()->flash('quiz_points_bonus', $bonus);
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Failed to award points on quiz completion: ' . $e->getMessage());
             }
-        } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('Failed to award pet growth on quiz completion: ' . $e->getMessage());
+
+            // ── EXP PET: melatih peliharaan yang sudah menetas ──
+            try {
+                $petService = app(\App\Services\PetService::class);
+                $pointsGained = 25 + ($score >= 80 ? 15 : ($score >= 60 ? 10 : 5));
+                $petService->awardGrowth($user, $pointsGained, 'quiz_completed', "Menyelesaikan Quiz '{$attempt->quiz->title}' dengan skor {$score}%");
+
+                if ($petService->lastStageUp) {
+                    $up = $petService->lastStageUp;
+                    $nickname = optional($user->userPet()->first())->nickname ?: 'Peliharaanmu';
+                    session()->flash('pet_stage_up', "{$up['to_icon']} {$nickname} naik tahap ke {$up['to_label']}!");
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Failed to award pet growth on quiz completion: ' . $e->getMessage());
+            }
         }
     }
 

@@ -1,70 +1,134 @@
 @extends('layouts.app')
 
-@section('title', 'Quiz History')
+@section('title', 'Riwayat Kuis')
 
 @section('content')
-<div class="py-4 sm:py-6 lg:py-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="mb-6 sm:mb-8">
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">Quiz History</h1>
-            <p class="text-gray-500 text-sm sm:text-base mt-1">View all your past and ongoing assessments</p>
-        </div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-14 sm:pb-16">
 
-        @if($attempts->count() > 0)
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="table-responsive">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
+    {{-- Page header --}}
+    <header class="et-reveal mb-6 sm:mb-8">
+        <p class="et-eyebrow">🕒 Riwayat</p>
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Riwayat Kuis</h1>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Semua kuis yang pernah kamu ikuti — selesai maupun sedang berjalan.</p>
+    </header>
+
+    @if($attempts->count() > 0)
+        <section class="et-panel et-reveal et-delay-1">
+            <div class="px-5 sm:px-6 py-4 border-b border-slate-200/70 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
+                <div>
+                    <h2 class="et-section-title">📚 Daftar Percobaan</h2>
+                    <p class="et-section-sub">Klik "Lihat Hasil" untuk review, atau "Lanjutkan" untuk kuis berjalan</p>
+                </div>
+                <span class="et-badge et-badge-info">{{ $attempts->count() }} data di halaman ini</span>
+            </div>
+
+            <div class="p-4 sm:p-5">
+
+                {{-- ================= MOBILE: card list ================= --}}
+                <div class="md:hidden space-y-3">
+                    @foreach($attempts as $attempt)
+                        @php
+                            $statusLabel = match ($attempt->status) {
+                                'completed' => '✅ Selesai',
+                                'in_progress' => '⏳ Berjalan',
+                                default => ucfirst(str_replace('_', ' ', $attempt->status)),
+                            };
+                            $statusClass = match ($attempt->status) {
+                                'completed' => 'et-badge-success',
+                                'in_progress' => 'et-badge-warning',
+                                default => 'et-badge-neutral',
+                            };
+                            $scoreClass = $attempt->score === null ? 'et-badge-neutral' : ($attempt->score >= 70 ? 'et-badge-success' : 'et-badge-danger');
+                        @endphp
+
+                        <article class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40 p-4 et-lift">
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="min-w-0">
+                                    <p class="text-[14.5px] font-extrabold leading-snug text-slate-900 dark:text-slate-100 break-words">{{ $attempt->quiz->title }}</p>
+                                    <p class="text-[11.5px] text-slate-500 dark:text-slate-400 mt-1">
+                                        {{ $attempt->completed_at?->format('d M Y, H:i') ?? $attempt->started_at->format('d M Y, H:i') }}
+                                    </p>
+                                </div>
+                                <span class="et-badge {{ $scoreClass }} shrink-0">
+                                    {{ $attempt->score !== null ? $attempt->score . '%' : 'N/A' }}
+                                </span>
+                            </div>
+
+                            <div class="mt-3 flex flex-wrap items-center gap-2">
+                                <span class="et-badge et-badge-purple truncate max-w-[60%]">
+                                    🗂️ {{ $attempt->quiz->category?->name ?? '—' }}
+                                </span>
+                                <span class="et-badge {{ $statusClass }}">{{ $statusLabel }}</span>
+                            </div>
+
+                            <div class="mt-3.5 pt-3 border-t border-dashed border-slate-200 dark:border-slate-800">
+                                @if($attempt->status === 'completed')
+                                    <a href="{{ route('employee.quizzes.result', $attempt->id) }}"
+                                       class="et-btn et-btn-primary et-btn-block et-press">👁️ Lihat Hasil</a>
+                                @elseif($attempt->status === 'in_progress')
+                                    <a href="{{ route('employee.quizzes.take', $attempt->id) }}"
+                                       class="et-btn et-btn-warning et-btn-block et-press">▶️ Lanjutkan</a>
+                                @endif
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+
+                {{-- ================= DESKTOP: table ================= --}}
+                <div class="hidden md:block overflow-x-auto">
+                    <table class="et-table min-w-full">
+                        <thead>
                             <tr>
-                                <th class="px-3 sm:px-6 py-3 sm:py-4 text-left text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">Quiz</th>
-                                <th class="hidden sm:table-cell px-3 sm:px-6 py-3 sm:py-4 text-left text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">Category</th>
-                                <th class="px-3 sm:px-6 py-3 sm:py-4 text-left text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">Score</th>
-                                <th class="hidden md:table-cell px-3 sm:px-6 py-3 sm:py-4 text-left text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                                <th class="hidden lg:table-cell px-3 sm:px-6 py-3 sm:py-4 text-left text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
-                                <th class="px-3 sm:px-6 py-3 sm:py-4 text-left text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">Action</th>
+                                <th>Quiz</th>
+                                <th>Category</th>
+                                <th>Score</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-200 bg-white">
+                        <tbody>
                             @foreach($attempts as $attempt)
-                                <tr class="hover:bg-gray-50 transition">
-                                    <td class="px-3 sm:px-6 py-3 sm:py-4">
-                                        <span class="font-medium text-gray-900 text-xs sm:text-sm">{{ $attempt->quiz->title }}</span>
+                                @php
+                                    $statusLabel = match ($attempt->status) {
+                                        'completed' => '✅ Selesai',
+                                        'in_progress' => '⏳ Berjalan',
+                                        default => ucfirst(str_replace('_', ' ', $attempt->status)),
+                                    };
+                                    $statusClass = match ($attempt->status) {
+                                        'completed' => 'et-badge-success',
+                                        'in_progress' => 'et-badge-warning',
+                                        default => 'et-badge-neutral',
+                                    };
+                                    $scoreClass = $attempt->score === null ? 'et-badge-neutral' : ($attempt->score >= 70 ? 'et-badge-success' : 'et-badge-danger');
+                                @endphp
+                                <tr>
+                                    <td class="min-w-[200px]">
+                                        <span class="font-bold text-slate-900 dark:text-slate-100 text-[13.5px]">{{ $attempt->quiz->title }}</span>
                                     </td>
-                                    <td class="hidden sm:table-cell px-3 sm:px-6 py-3 sm:py-4">
-                                        <span class="px-2 py-0.5 sm:px-2.5 sm:py-1 bg-blue-100 text-blue-700 text-[10px] sm:text-xs rounded-full">
-                                            {{ $attempt->quiz->category->name }}
+                                    <td>
+                                        <span class="et-badge et-badge-purple truncate max-w-[160px]">{{ $attempt->quiz->category?->name ?? '—' }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="et-badge {{ $scoreClass }}">
+                                            {{ $attempt->score !== null ? $attempt->score . '%' : 'N/A' }}
                                         </span>
                                     </td>
-                                    <td class="px-3 sm:px-6 py-3 sm:py-4">
-                                        @if($attempt->score !== null)
-                                            <span class="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-bold {{ $attempt->score >= 70 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
-                                                {{ $attempt->score }}%
-                                            </span>
-                                        @else
-                                            <span class="text-gray-400 text-xs sm:text-sm">N/A</span>
-                                        @endif
+                                    <td>
+                                        <span class="et-badge {{ $statusClass }}">{{ $statusLabel }}</span>
                                     </td>
-                                    <td class="hidden md:table-cell px-3 sm:px-6 py-3 sm:py-4">
-                                        <span class="px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-xs font-semibold rounded-full
-                                            {{ $attempt->status === 'completed' ? 'bg-green-100 text-green-700' :
-                                               ($attempt->status === 'in_progress' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-700') }}">
-                                            {{ ucfirst(str_replace('_', ' ', $attempt->status)) }}
-                                        </span>
+                                    <td class="whitespace-nowrap text-slate-500 dark:text-slate-400">
+                                        {{ $attempt->completed_at?->format('d M Y, H:i') ?? $attempt->started_at->format('d M Y, H:i') }}
                                     </td>
-                                    <td class="hidden lg:table-cell px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm text-gray-500">
-                                        {{ $attempt->completed_at?->format('M d, Y H:i') ?? $attempt->started_at->format('M d, Y H:i') }}
-                                    </td>
-                                    <td class="px-3 sm:px-6 py-3 sm:py-4">
+                                    <td class="whitespace-nowrap">
                                         @if($attempt->status === 'completed')
                                             <a href="{{ route('employee.quizzes.result', $attempt->id) }}"
-                                               class="text-blue-600 hover:text-blue-800 font-medium text-xs sm:text-sm">
-                                                View Result →
-                                            </a>
+                                               class="et-btn et-btn-primary et-btn-sm et-press">Lihat Hasil →</a>
                                         @elseif($attempt->status === 'in_progress')
                                             <a href="{{ route('employee.quizzes.take', $attempt->id) }}"
-                                               class="text-yellow-600 hover:text-yellow-800 font-medium text-xs sm:text-sm">
-                                                Continue →
-                                            </a>
+                                               class="et-btn et-btn-warning et-btn-sm et-press">Lanjutkan →</a>
+                                        @else
+                                            <span class="text-[12.5px] text-slate-400 dark:text-slate-500">—</span>
                                         @endif
                                     </td>
                                 </tr>
@@ -74,29 +138,22 @@
                 </div>
 
                 @if($attempts instanceof \Illuminate\Pagination\AbstractPaginator && $attempts->hasPages())
-                    <div class="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-100">
+                    <div class="mt-5 pt-4 border-t border-slate-200/70 dark:border-slate-800">
                         {{ $attempts->links() }}
                     </div>
                 @endif
             </div>
-        @else
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 sm:p-16 text-center">
-                <div class="w-16 h-16 sm:w-24 sm:h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-                    <svg class="w-8 h-8 sm:w-12 sm:h-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </div>
-                <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2">No Quiz History</h3>
-                <p class="text-gray-500 text-sm sm:text-base mb-4 sm:mb-6">You haven't taken any quizzes yet. Join a quiz to get started!</p>
-                <a href="{{ route('employee.quizzes.join') }}"
-                   class="inline-flex items-center px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl hover:shadow-lg transition-all duration-300 font-bold text-sm sm:text-base">
-                    <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
-                    </svg>
-                    Join a Quiz
-                </a>
+        </section>
+    @else
+        <div class="et-panel et-reveal et-delay-1">
+            <div class="et-empty">
+                <span class="et-mascot et-mascot--bounce w-20 h-20 text-4xl mx-auto mb-4" aria-hidden="true">🦉</span>
+                <div class="et-empty__icon">🧭</div>
+                <p class="et-empty__title">Belum ada riwayat kuis</p>
+                <p class="et-empty__text">Kamu belum pernah mengikuti kuis. Masukkan kode enrollment untuk memulai kuis pertamamu!</p>
+                <a href="{{ route('employee.quizzes.join') }}" class="et-btn et-btn-primary et-btn-lg mt-5 et-press et-wiggle">🔑 Gabung Kuis</a>
             </div>
-        @endif
-    </div>
+        </div>
+    @endif
 </div>
 @endsection

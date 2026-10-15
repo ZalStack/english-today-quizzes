@@ -44,6 +44,30 @@ class VideoChallengeController extends Controller
             'notes' => $validated['notes'] ?? null,
         ]);
 
-        return $this->success($submission, 'Submission successful', 201);
+        // Award Poin (mata uang belanja) + EXP untuk 3D Pet
+        $pointsEarned = 0;
+        try {
+            app(\App\Services\PointService::class)->earn(
+                auth()->user(),
+                40,
+                'video_submitted',
+                "Mengumpulkan Video Challenge '{$challenge->title}' — +40 poin 🎬"
+            );
+            app(\App\Services\PetService::class)->awardGrowth(
+                auth()->user(),
+                40,
+                'video_submitted',
+                "Mengumpulkan Video Challenge '{$challenge->title}'"
+            );
+            $pointsEarned = 40;
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to award points on API video submission: ' . $e->getMessage());
+        }
+
+        return $this->success([
+            'submission' => $submission,
+            'points_earned' => $pointsEarned,
+            'points_balance' => (int) auth()->user()->fresh()->points,
+        ], 'Submission successful', 201);
     }
 }

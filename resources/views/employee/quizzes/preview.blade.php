@@ -1,90 +1,156 @@
 @extends('layouts.app')
 
-@section('title', 'Quiz Preview - ' . $quiz->title)
+@section('title', 'Detail Kuis - ' . $quiz->title)
 
 @section('content')
-<div class="py-4 sm:py-6 lg:py-8">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="px-4 sm:px-8 py-4 sm:py-6 bg-gradient-to-r from-blue-600 to-blue-500">
-                <h2 class="text-xl sm:text-2xl font-bold text-white">{{ $quiz->title }}</h2>
-                <p class="text-blue-100 text-sm mt-1">Review the quiz details before starting</p>
-            </div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-14 sm:pb-16">
 
-            <div class="p-4 sm:p-8">
-                @if(session('error'))
-                    <div class="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl flex items-center text-sm sm:text-base">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        {{ session('error') }}
-                    </div>
-                @endif
+    {{-- Page header --}}
+    <header class="et-reveal mb-6 sm:mb-8">
+        <p class="et-eyebrow">🧩 Detail Kuis</p>
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white break-words">{{ $quiz->title }}</h1>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Tinjau detail di bawah ini sebelum memulai pengerjaan.</p>
+    </header>
 
-                @if(session('info'))
-                    <div class="mb-4 sm:mb-6 p-3 sm:p-4 bg-blue-50 border border-blue-200 text-blue-700 rounded-xl flex items-center text-sm sm:text-base">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        {{ session('info') }}
-                    </div>
-                @endif
-
-                <!-- Quiz Info -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
-                    <div class="bg-gray-50 rounded-xl p-3 sm:p-4 text-center">
-                        <p class="text-[10px] sm:text-xs text-gray-500 font-medium">Questions</p>
-                        <p class="text-xl sm:text-2xl font-bold text-gray-900">{{ $quiz->questions()->count() }}</p>
-                    </div>
-                    <div class="bg-gray-50 rounded-xl p-3 sm:p-4 text-center">
-                        <p class="text-[10px] sm:text-xs text-gray-500 font-medium">Duration</p>
-                        <p class="text-xl sm:text-2xl font-bold text-gray-900">{{ $quiz->duration }} min</p>
-                    </div>
-                    <div class="bg-gray-50 rounded-xl p-3 sm:p-4 text-center">
-                        <p class="text-[10px] sm:text-xs text-gray-500 font-medium">Status</p>
-                        <p class="text-xl sm:text-2xl font-bold text-green-600">Active</p>
-                    </div>
+    {{-- Quick info: 3 stat cards --}}
+    <section class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
+        <div class="et-stat et-reveal et-delay-1">
+            <div class="flex items-center gap-3">
+                <div class="et-stat__icon bg-lime-100 text-lime-600 dark:bg-lime-500/15 dark:text-lime-400">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                 </div>
+                <span class="et-badge et-badge-info">Soal</span>
+            </div>
+            <p class="et-stat__value mt-3">{{ $quiz->questions()->count() }}</p>
+            <p class="et-stat__label mt-0.5">Jumlah soal</p>
+        </div>
 
-                <!-- Description -->
-                @if($quiz->description)
-                    <div class="mb-6 sm:mb-8 p-3 sm:p-4 bg-gray-50 rounded-xl">
-                        <h3 class="font-semibold text-gray-700 text-sm sm:text-base mb-1 sm:mb-2">Description</h3>
-                        <p class="text-gray-600 text-sm sm:text-base">{{ $quiz->description }}</p>
+        <div class="et-stat et-reveal et-delay-2">
+            <div class="flex items-center gap-3">
+                <div class="et-stat__icon bg-amber-100 text-amber-600 dark:bg-amber-500/15 dark:text-amber-400">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <span class="et-badge et-badge-warning">Waktu</span>
+            </div>
+            <p class="et-stat__value mt-3">{{ $quiz->duration }}<span class="text-base font-bold ml-1">menit</span></p>
+            <p class="et-stat__label mt-0.5">Durasi pengerjaan</p>
+        </div>
+
+        <div class="et-stat et-reveal et-delay-3">
+            <div class="flex items-center gap-3">
+                <div class="et-stat__icon bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <span class="et-badge et-badge-success">Status</span>
+            </div>
+            <p class="et-stat__value mt-3 text-emerald-600 dark:text-emerald-400">Aktif</p>
+            <p class="et-stat__label mt-0.5">Siap diikuti</p>
+        </div>
+    </section>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+        {{-- MAIN: description + instructions --}}
+        <div class="lg:col-span-2 space-y-6">
+            @if($quiz->description)
+                <section class="et-panel et-reveal et-delay-4">
+                    <div class="px-5 sm:px-6 py-4 border-b border-slate-200/70 dark:border-slate-800">
+                        <h2 class="et-section-title">📄 Deskripsi Kuis</h2>
+                        <p class="et-section-sub">Gambaran umum materi yang diuji</p>
                     </div>
-                @endif
+                    <div class="p-5 sm:p-6">
+                        <p class="text-sm sm:text-[15px] leading-relaxed text-slate-600 dark:text-slate-300">{{ $quiz->description }}</p>
+                    </div>
+                </section>
+            @endif
 
-                <!-- Instructions -->
-                <div class="mb-6 sm:mb-8 p-3 sm:p-4 bg-blue-50 rounded-xl border border-blue-200">
-                    <h3 class="font-semibold text-blue-900 text-sm sm:text-base mb-2">📋 Instructions</h3>
-                    <ul class="text-xs sm:text-sm text-blue-800 space-y-1 list-disc list-inside">
-                        <li>Read each question carefully before answering</li>
-                        <li>You have {{ $quiz->duration }} minutes to complete the quiz</li>
-                        <li>Your answers will be saved automatically</li>
-                        <li>You can review your answers before submitting</li>
-                        <li>Once submitted, you cannot change your answers</li>
+            <section class="et-panel et-reveal et-delay-5">
+                <div class="px-5 sm:px-6 py-4 border-b border-slate-200/70 dark:border-slate-800">
+                    <h2 class="et-section-title">📋 Petunjuk Pengerjaan</h2>
+                    <p class="et-section-sub">Baca baik-baik sebelum menekan tombol mulai</p>
+                </div>
+                <div class="p-5 sm:p-6">
+                    <ul class="space-y-3">
+                        @php
+                            $instructions = [
+                                'Baca setiap soal dengan cermat sebelum menjawab.',
+                                'Kamu punya waktu ' . $quiz->duration . ' menit untuk menyelesaikan kuis ini.',
+                                'Jawabanmu tersimpan otomatis selama pengerjaan berlangsung.',
+                                'Kamu bisa meninjau jawaban sebelum mengirim.',
+                                'Setelah dikirim, jawaban tidak dapat diubah lagi.',
+                            ];
+                        @endphp
+                        @foreach($instructions as $i => $text)
+                            <li class="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-800">
+                                <span class="shrink-0 w-7 h-7 rounded-xl bg-gradient-to-br from-lime-500 to-sky-500 text-white text-[12px] font-extrabold flex items-center justify-center shadow-md shadow-lime-500/30">{{ $i + 1 }}</span>
+                                <span class="text-[13.5px] leading-snug text-slate-600 dark:text-slate-300">{{ $text }}</span>
+                            </li>
+                        @endforeach
                     </ul>
                 </div>
+            </section>
+        </div>
 
-                <!-- Start Button -->
-                <div class="flex flex-col sm:flex-row justify-between items-center gap-3 pt-4 border-t border-gray-200">
-                    <a href="{{ route('employee.quizzes.join') }}" class="text-gray-500 hover:text-gray-700 transition text-sm sm:text-base">
-                        ← Back to Join
-                    </a>
-                    <form action="{{ route('employee.quizzes.start', $quiz) }}" method="POST" class="w-full sm:w-auto">
+        {{-- SIDEBAR: summary + start --}}
+        <aside class="space-y-6">
+            <div class="et-panel et-reveal et-delay-6">
+                <div class="px-5 sm:px-6 py-4 border-b border-slate-200/70 dark:border-slate-800">
+                    <h2 class="et-section-title">🚀 Siap Memulai?</h2>
+                    <p class="et-section-sub">Pastikan koneksi dan fokusmu stabil</p>
+                </div>
+                <div class="p-5 sm:p-6">
+                    <div class="flex flex-wrap gap-2">
+                        <span class="et-chip">❓ {{ $quiz->questions()->count() }} soal</span>
+                        <span class="et-chip">⏱️ {{ $quiz->duration }} menit</span>
+                        @if($quiz->category)
+                            <span class="et-chip">🗂️ {{ $quiz->category->name }}</span>
+                        @endif
+                    </div>
+
+                    <div class="mt-5 p-4 rounded-2xl border border-amber-200/70 dark:border-amber-500/25 bg-amber-50/70 dark:bg-amber-500/10">
+                        <p class="text-[13px] leading-snug text-amber-800 dark:text-amber-200">
+                            ⚠️ Timer langsung berjalan begitu kamu menekan tombol <strong>Mulai Kuis</strong>. Selesaikan dalam satu sesi.
+                        </p>
+                    </div>
+
+                    <form action="{{ route('employee.quizzes.start', $quiz) }}" method="POST" class="mt-5">
                         @csrf
                         <button type="submit"
-                                class="w-full sm:w-auto px-4 sm:px-8 py-2.5 sm:py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 font-medium text-sm sm:text-base flex items-center justify-center">
-                            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                class="et-btn et-btn-primary et-btn-lg et-btn-block et-press et-wiggle">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
-                            Start Quiz
+                            Mulai Kuis
                         </button>
                     </form>
+
+                    <a href="{{ route('employee.quizzes.join') }}"
+                       class="et-btn et-btn-outline et-btn-block et-press mt-3 justify-center">← Kembali ke Join</a>
+
+                    <p class="et-hint text-center mt-3">Butuh kuis lain? Masukkan kode enrollment yang berbeda.</p>
                 </div>
             </div>
-        </div>
+
+            <div class="et-panel et-reveal et-delay-7">
+                <div class="px-5 sm:px-6 py-4 border-b border-slate-200/70 dark:border-slate-800">
+                    <h2 class="et-section-title">🎯 Skor &amp; Pembahasan</h2>
+                </div>
+                <div class="p-5 sm:p-6 space-y-2.5">
+                    <div class="flex items-center justify-between gap-3 text-[13px]">
+                        <span class="text-slate-500 dark:text-slate-400">Nilai ditampilkan</span>
+                        <span class="et-badge {{ $quiz->show_score ? 'et-badge-success' : 'et-badge-neutral' }}">{{ $quiz->show_score ? 'Ya' : 'Tidak' }}</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-3 text-[13px]">
+                        <span class="text-slate-500 dark:text-slate-400">Kunci jawaban</span>
+                        <span class="et-badge {{ $quiz->show_correct_answer ? 'et-badge-success' : 'et-badge-neutral' }}">{{ $quiz->show_correct_answer ? 'Ditampilkan' : 'Disembunyikan' }}</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-3 text-[13px]">
+                        <span class="text-slate-500 dark:text-slate-400">Pembahasan soal</span>
+                        <span class="et-badge {{ $quiz->show_explanation ? 'et-badge-success' : 'et-badge-neutral' }}">{{ $quiz->show_explanation ? 'Ditampilkan' : 'Disembunyikan' }}</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
     </div>
 </div>
 @endsection

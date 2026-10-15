@@ -1,56 +1,87 @@
 @extends('layouts.app')
 
-@section('title', 'Join Quiz')
+@section('title', 'Gabung Kuis')
 
 @section('content')
-<div class="py-4 sm:py-6 lg:py-8">
-    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="px-4 sm:px-8 py-4 sm:py-6 bg-gradient-to-r from-blue-600 to-blue-500">
-                <h2 class="text-xl sm:text-2xl font-bold text-white">Join a Quiz</h2>
-                <p class="text-blue-100 text-sm mt-1">Enter the enrollment key to start your assessment</p>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-14 sm:pb-16">
+    <div class="max-w-2xl mx-auto w-full">
+
+        {{-- Page header --}}
+        <header class="et-reveal mb-6 sm:mb-8">
+            <p class="et-eyebrow">🔑 Join Kuis</p>
+            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Gabung Kuis dengan Kode</h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Masukkan kode enrollment dari HRD untuk membuka kuis barumu.</p>
+        </header>
+
+        {{-- Join card --}}
+        <div class="et-panel et-reveal et-delay-2">
+            {{-- Card hero --}}
+            <div class="et-hero">
+                <div class="et-hero__grid"></div>
+                <div class="relative z-10 p-6 sm:p-8 text-center">
+                    <span class="et-mascot et-mascot--bounce mx-auto w-16 h-16 sm:w-20 sm:h-20 text-4xl sm:text-5xl" aria-hidden="true">🦉</span>
+                    <h2 class="mt-4 text-xl sm:text-2xl font-extrabold tracking-tight">Satu Kode, Satu Kuis</h2>
+                    <p class="mt-1.5 text-sm text-white/80 max-w-md mx-auto">
+                        Kode enrollment bersifat unik untuk setiap kuis. Pastikan kamu mengetiknya dengan benar.
+                    </p>
+                    <div class="mt-4 flex flex-wrap justify-center gap-2">
+                        <span class="et-glass rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest">Enrollment Key</span>
+                        <span class="et-glass rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest">🔒 Data aman</span>
+                    </div>
+                </div>
             </div>
 
-            <div class="p-4 sm:p-8">
-                @if(session('error'))
-                    <div class="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl flex items-center text-sm sm:text-base">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        <span>{{ session('error') }}</span>
-                    </div>
-                @endif
-
-                <form action="{{ route('employee.quizzes.enroll') }}" method="POST" class="space-y-4 sm:space-y-6">
+            {{-- Form body --}}
+            <div class="p-5 sm:p-7">
+                <form action="{{ route('employee.quizzes.enroll') }}" method="POST" class="space-y-5">
                     @csrf
 
                     <div>
-                        <label for="enroll_key" class="block text-sm font-semibold text-gray-700 mb-1 sm:mb-2">Enrollment Key</label>
+                        <label for="enroll_key" class="et-label">Kode Enrollment</label>
                         <input type="text" name="enroll_key" id="enroll_key"
                             value="{{ old('enroll_key') }}" required
-                            class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-center text-xl sm:text-2xl font-bold tracking-widest uppercase"
-                            placeholder="e.g., ABC123">
-                        <p class="mt-1 sm:mt-2 text-xs sm:text-sm text-gray-500">Enter the key provided by your HR administrator.</p>
+                            autocomplete="off" autocapitalize="characters" spellcheck="false"
+                            class="et-input text-center text-xl sm:text-2xl font-extrabold uppercase tracking-[0.3em] sm:tracking-[0.4em] py-4 sm:py-5 placeholder:text-slate-300 dark:placeholder:text-slate-600"
+                            placeholder="AB12CD">
+                        <p class="et-hint">💡 Masukkan kode yang diberikan oleh admin HRD.</p>
                         @error('enroll_key')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            <p class="et-error-msg">⚠️ {{ $message }}</p>
                         @enderror
                     </div>
 
-                    <div class="flex justify-end">
-                        <button type="submit"
-                                class="w-full sm:w-auto px-4 sm:px-8 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl hover:shadow-lg transition-all duration-300 font-medium text-sm sm:text-base">
-                            Join Quiz
-                        </button>
-                    </div>
+                    <button type="submit"
+                            class="et-btn et-btn-primary et-btn-lg et-btn-block et-press et-wiggle">
+                        🚀 Gabung Kuis Sekarang
+                    </button>
                 </form>
 
-                <div class="mt-4 sm:mt-6 p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-xl">
-                    <h4 class="text-xs sm:text-sm font-semibold text-blue-900 mb-2">💡 How to get your enrollment key:</h4>
-                    <ul class="text-xs sm:text-sm text-blue-800 space-y-1 list-disc list-inside">
-                        <li>Ask your HR administrator for the quiz enrollment key</li>
-                        <li>The key is a unique code for each quiz</li>
-                        <li>You can only join active quizzes</li>
+                {{-- Tips --}}
+                <div class="mt-6 p-4 sm:p-5 rounded-2xl border-2 border-dashed border-amber-200/70 dark:border-amber-500/30 bg-amber-50/70 dark:bg-amber-500/10 et-lift">
+                    <h4 class="text-[12px] font-extrabold uppercase tracking-wider text-amber-800 dark:text-amber-300">
+                        💡 Cara mendapatkan kode enrollment
+                    </h4>
+                    <ul class="mt-3 space-y-2">
+                        @php
+                            $joinTips = [
+                                'Minta kode enrollment ke admin HRD penyelenggara kuis.',
+                                'Setiap kuis punya kode unik yang berbeda satu sama lain.',
+                                'Kamu hanya bisa mengikuti kuis yang masih berstatus aktif.',
+                            ];
+                        @endphp
+                        @foreach($joinTips as $tip)
+                            <li class="flex items-start gap-2.5 text-[13px] leading-snug text-slate-600 dark:text-slate-300">
+                                <span class="mt-0.5 w-5 h-5 shrink-0 rounded-full bg-lime-100 dark:bg-lime-500/25 text-lime-600 dark:text-lime-300 flex items-center justify-center text-[11px] font-extrabold">✓</span>
+                                <span>{{ $tip }}</span>
+                            </li>
+                        @endforeach
                     </ul>
+                </div>
+
+                <div class="mt-5 pt-4 border-t border-dashed border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-3">
+                    <a href="{{ route('employee.dashboard') }}"
+                       class="et-btn et-btn-ghost et-press justify-center">← Kembali ke Dashboard</a>
+                    <a href="{{ route('employee.quizzes.history') }}"
+                       class="et-btn et-btn-outline et-press justify-center">🕒 Lihat Riwayat Kuis</a>
                 </div>
             </div>
         </div>

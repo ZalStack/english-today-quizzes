@@ -61,6 +61,11 @@ class Pet3DGame {
         this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2();
 
+        // Burst hearts (breeding / celebration) & animation clock reference
+        this.heartsGroup = null;
+        this.burstHearts = [];
+        this.currentTime = 0;
+
         // Interaction & Physics
         this.isDragging = false;
         this.previousMousePosition = { x: 0, y: 0 };
@@ -363,7 +368,8 @@ class Pet3DGame {
         const eggGeo = new THREE.LatheGeometry(points, 32);
 
         // Egg Material (Slightly warm cream with iridescent shine)
-        const eggMat = new THREE.MeshStandardMaterial({
+        // NOTE: clearcoat / clearcoatRoughness hanya valid di MeshPhysicalMaterial
+        const eggMat = new THREE.MeshPhysicalMaterial({
             color: 0xfef9e7,
             roughness: 0.35,
             metalness: 0.15,
@@ -468,6 +474,24 @@ class Pet3DGame {
     /* -------------------------------------------------------------
      * 5. 3D CREATURE / PET PROCEDURAL BUILDER
      * -----------------------------------------------------------*/
+    /**
+     * Skala visual root group pet per tahap hidup (bayi → remaja → dewasa).
+     */
+    getStageScale(stage) {
+        switch (stage) {
+            case 'baby': return 0.55;
+            case 'juvenile': return 0.78;
+            case 'adult': return 1.0;
+            default: return 1.0;
+        }
+    }
+
+    /** Tahap hidup yang aman untuk visual (egg dianggap baby). */
+    resolveLifeStage() {
+        const stage = this.state.life_stage;
+        return (stage && stage !== 'egg') ? stage : 'baby';
+    }
+
     buildPet(petData) {
         if (this.eggGroup) {
             this.rootGroup.remove(this.eggGroup);
@@ -519,6 +543,10 @@ class Pet3DGame {
         }
 
         this.petGroup.position.y = 0.1;
+
+        // Skala root group pet mengikuti tahap hidup (bayi kecil → dewasa penuh)
+        const stageScale = this.getStageScale(this.resolveLifeStage());
+        this.petGroup.scale.set(stageScale, stageScale, stageScale);
     }
 
     buildFoxMesh(priMat, secMat, whiteMat, blackMat) {
@@ -1045,6 +1073,118 @@ class Pet3DGame {
         this.spawnSparks(6);
     }
 
+    /**
+     * Animasi pukulan alat (palu dsb) — dipanggil view setelah POST pet.use-tool sukses.
+     * Getarkan kamera, percikan, mainkan suara tap, lalu gambar ulang garis retak
+     * mengikuti crack_stage terbaru di state.
+     */
+    useToolStrike() {
+        if (!this.scene || !this.camera) return;
+
+        this.playSound('tap');
+        this.spawnSparks(14);
+        this.shakeCamera(0.16);
+        this.wobbleIntensity = Math.max(this.wobbleIntensity, 0.5);
+
+        const stage = (typeof this.state.crack_stage === 'number')
+            ? this.state.crack_stage
+            : ((typeof this.state.crackStage === 'number') ? this.state.crackStage : 0);
+
+        if (this.eggGroup) {
+            this.buildCrackLines(stage);
+        }
+    }
+
+    /**
+     * Semprotkan beberapa hati 3D yang melayang naik lalu menghilang (~2 detik).
+     * Untuk momen bertelur / hati bahagia — dipanggil view via window.PetGame.heartBurst().
+     */
+    heartBurst(count = 8) {
+        if (!this.scene) return;
+
+        if (!this.heartsGroup) {
+            this.heartsGroup = new THREE.Group();
+            this.scene.add(this.heartsGroup);
+        }
+
+        const now = (typeof this.currentTime === 'number') ? this.currentTime : 0;
+
+        for (let i = 0; i < count; i++) {
+            const geometry = this.buildHeartGeometry();
+            const material = new THREE.MeshBasicMaterial({
+                color: (i % 2 === 0) ? 0xff4081 : 0xff80ab,
+                transparent: true,
+                opacity: 0.95,
+                side: THREE.DoubleSide,
+                depthWrite: false,
+            });
+            const mesh = new THREE.Mesh(geometry, material);
+
+            const scale = 0.14 + Math.random() * 0.16;
+            mesh.scale.setScalar(0.01);
+            mesh.position.set(
+                (Math.random() - 0.5) * 1.5,
+                0.7 + Math.random() * 0.6,
+                (Math.random() - 0.5) * 0.8
+            );
+            mesh.rotation.z = (Math.random() - 0.5) * 0.7;
+            this.heartsGroup.add(mesh);
+
+            this.burstHearts.push({
+                mesh,
+                born: now,
+                life: 1.7 + Math.random() * 0.6,
+                scale,
+                vel: new THREE.Vector3(
+                    (Math.random() - 0.5) * 0.012,
+                    0.016 + Math.random() * 0.012,
+                    (Math.random() - 0.5) * 0.006
+                ),
+                spin: (Math.random() - 0.5) * 0.04,
+            });
+        }
+
+        this.playSound('happy');
+    }
+
+    /** Geometri hati 2D sederhana (bentuk bezier) untuk heartBurst(). */
+    buildHeartGeometry() {
+        const s = new THREE.Shape();
+        s.moveTo(0, 0.22);
+        s.bezierCurveTo(0.02, 0.34, 0.16, 0.44, 0.3, 0.44);
+        s.bezierCurveTo(0.56, 0.44, 0.6, 0.14, 0.6, 0.02);
+        s.bezierCurveTo(0.6, -0.2, 0.34, -0.42, 0, -0.62);
+        s.bezierCurveTo(-0.34, -0.42, -0.6, -0.2, -0.6, 0.02);
+        s.bezierCurveTo(-0.6, 0.14, -0.56, 0.44, -0.3, 0.44);
+        s.bezierCurveTo(-0.16, 0.44, -0.02, 0.34, 0, 0.22);
+        return new THREE.ShapeGeometry(s, 12);
+    }
+
+    /** Update loop untuk hati hasil heartBurst() — dipanggil tiap frame di animate(). */
+    updateBurstHearts() {
+        if (!this.burstHearts.length) return;
+
+        for (let i = this.burstHearts.length - 1; i >= 0; i--) {
+            const h = this.burstHearts[i];
+            const age = this.currentTime - h.born;
+
+            if (age >= h.life) {
+                this.heartsGroup.remove(h.mesh);
+                h.mesh.geometry.dispose();
+                h.mesh.material.dispose();
+                this.burstHearts.splice(i, 1);
+                continue;
+            }
+
+            const t = Math.max(0, age / h.life);
+            h.mesh.position.add(h.vel);
+            h.vel.y *= 0.985;
+            h.mesh.rotation.z += h.spin;
+            h.mesh.scale.setScalar(h.scale * (t < 0.18 ? t / 0.18 : 1));
+            h.mesh.material.opacity = (t < 0.6) ? 0.95 : 0.95 * (1 - (t - 0.6) / 0.4);
+        }
+    }
+
     async triggerHatchSequence() {
         if (this.state.isHatching) return;
         this.state.isHatching = true;
@@ -1096,6 +1236,7 @@ class Pet3DGame {
 
         // Update local state immediately
         this.state.status = 'hatched';
+        this.state.life_stage = hatchResult?.life_stage || 'baby';
         this.state.pet = pet;
         this.state.nickname = hatchResult?.user_pet?.nickname || pet.name;
         this.state.level = hatchResult?.user_pet?.level || 1;
@@ -1106,18 +1247,20 @@ class Pet3DGame {
         // Build the 3D Pet Creature immediately
         this.buildPet(pet);
 
-        // Pop up emergence animation (Scale 0.01 -> 1.0)
+        // Pop up emergence animation (Scale 0.01 -> skala tahap hidup)
         if (this.petGroup) {
+            const targetScale = this.petGroup.scale.x || 1;
             this.petGroup.scale.set(0.01, 0.01, 0.01);
             let s = 0.01;
             const popInterval = setInterval(() => {
                 s += 0.09;
                 if (s >= 1.0) {
                     clearInterval(popInterval);
-                    this.petGroup.scale.set(1, 1, 1);
+                    this.petGroup.scale.set(targetScale, targetScale, targetScale);
                     this.petJumpAnimation();
                 } else {
-                    this.petGroup.scale.set(s, s, s);
+                    const k = targetScale * s;
+                    this.petGroup.scale.set(k, k, k);
                 }
             }, 20);
         }
@@ -1458,6 +1601,7 @@ class Pet3DGame {
 
         const delta = this.clock.getDelta();
         const time = this.clock.getElapsedTime();
+        this.currentTime = time;
 
         // Smooth Orbit Rotation
         this.currentRotationY += (this.targetRotationY - this.currentRotationY) * 0.1;
@@ -1529,8 +1673,22 @@ class Pet3DGame {
             this.particlesGroup.rotation.y = time * 0.1;
         }
 
+        // Hati melayang hasil heartBurst()
+        this.updateBurstHearts();
+
         this.renderer.render(this.scene, this.camera);
     }
 }
 
 window.Pet3DGame = Pet3DGame;
+
+/**
+ * Instance aktif untuk dipakai view (window.PetGame.useToolStrike() dsb).
+ * Selalu ada agar aman dipanggil sekalipun instance belum siap.
+ */
+if (!window.PetGame) {
+    window.PetGame = {
+        useToolStrike() {},
+        heartBurst() {},
+    };
+}

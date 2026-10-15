@@ -16,6 +16,9 @@ class DatabaseSeeder extends Seeder
         // Buat data Master Hewan / Pets
         $this->call(PetSeeder::class);
 
+        // Buat katalog toko (alat pecah telur & makanan perawatan)
+        $this->call(ShopItemSeeder::class);
+
         // Data karyawan (65 orang) sesuai daftar
         $employees = [
             ['kode' => '1042001', 'name' => 'Dr. R. Ridwan Hasan Saputra, M.Si.', 'email' => 'ridwan.hasan@gmail.com'],
