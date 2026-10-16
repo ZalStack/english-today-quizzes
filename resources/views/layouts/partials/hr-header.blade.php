@@ -1,15 +1,15 @@
 <header class="hr-header" x-data="{ userDropdown: false }" @click.outside="userDropdown = false; $dispatch('close-notification-dropdown')">
     <div class="hr-header__inner">
-        {{-- Left: Mobile menu toggle + Page title --}}
+        {{-- Left: menu toggle + page title --}}
         <div class="hr-header__left">
-            <button @click="$dispatch('toggle-sidebar')" class="hr-header__menu-btn lg:hidden" aria-label="Toggle sidebar">
+            <button @click="$dispatch('toggle-sidebar-mobile')" class="hr-header__menu-btn lg:hidden" aria-label="Buka menu">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>
             </button>
-            <button @click="$dispatch('toggle-sidebar')" class="hr-header__menu-btn hidden lg:flex" aria-label="Toggle sidebar">
+            <button @click="$dispatch('toggle-sidebar-collapse')" class="hr-header__menu-btn hidden lg:flex" aria-label="Ciutkan sidebar" title="Ciutkan / buka sidebar">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h16"/>
                 </svg>
             </button>
             <div class="hr-header__title">
@@ -20,14 +20,14 @@
             </div>
         </div>
 
-        {{-- Right: Actions --}}
+        {{-- Right: actions --}}
         <div class="hr-header__right">
             {{-- Notifications --}}
             @include('layouts.partials.notification-dropdown')
 
             {{-- User Dropdown --}}
             <div class="hr-header__user" x-data="{ open: false }" @click.outside="open = false">
-                <button @click="open = !open" class="hr-header__user-btn">
+                <button @click="open = !open" class="hr-header__user-btn" aria-label="Menu akun">
                     <div class="hr-header__avatar">
                         {{ strtoupper(substr(auth()->user()->full_name ?? auth()->user()->name, 0, 1)) }}
                     </div>

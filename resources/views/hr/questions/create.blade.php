@@ -6,7 +6,7 @@
 
 @section('content')
 <div class="mb-6">
-    <a href="{{ route('hr.quizzes.questions.index', $quiz) }}" class="text-primary-600 hover:text-primary-700 text-sm font-semibold inline-flex items-center gap-1.5 transition-colors">
+    <a href="{{ route('hr.quizzes.questions.index', $quiz) }}" class="hr-back-link">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
@@ -99,7 +99,7 @@
                         <input type="number" name="points" id="points" value="{{ old('points', 10) }}" min="1" class="hr-input w-32">
                     </div>
 
-                    <div class="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-slate-100/80">
+                    <div class="hr-form-actions hr-form-actions--flush">
                         <a href="{{ route('hr.quizzes.questions.index', $quiz) }}" class="hr-btn-secondary">Cancel</a>
                         <button type="submit" class="hr-btn-primary">Add Question</button>
                     </div>
@@ -107,7 +107,7 @@
             </div>
 
             {{-- PDF Import Tab --}}
-            <div x-show="tab === 'pdf'" class="p-6 sm:p-8"
+            <div x-cloak x-show="tab === 'pdf'" class="p-6 sm:p-8"
                  x-data="{
                      dragging: false,
                      fileName: '',
@@ -263,7 +263,7 @@
                         </div>
                     @enderror
 
-                    <div class="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-slate-100/80">
+                    <div class="hr-form-actions hr-form-actions--flush">
                         <a href="{{ route('hr.quizzes.questions.index', $quiz) }}" class="hr-btn-secondary">Cancel</a>
                         <button type="submit" class="hr-btn-primary" :disabled="!fileReady || uploading" :class="(!fileReady || uploading) && 'opacity-50 cursor-not-allowed'">
                             <template x-if="!uploading">

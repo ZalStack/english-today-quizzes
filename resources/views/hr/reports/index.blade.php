@@ -13,7 +13,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                 </svg>
             </div>
-            <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-1 rounded-lg">Total</span>
+            <span class="hr-badge hr-badge--neutral">Total</span>
         </div>
         <p class="text-sm font-medium text-slate-500">Total Quizzes</p>
         <p class="text-2xl font-bold text-slate-900 mt-1 tracking-tight">{{ $totalQuizzes }}</p>
@@ -55,7 +55,7 @@
 
 <div class="hr-card overflow-hidden">
     <div class="px-6 py-4 border-b border-slate-100/80">
-        <h3 class="text-base font-bold text-slate-900 tracking-tight">Quiz Reports</h3>
+        <h3 class="hr-toolbar__title">Quiz Reports</h3>
     </div>
     <div class="table-responsive">
         <table class="hr-table">
@@ -88,10 +88,10 @@
                         </td>
                         <td class="text-right">
                             <div class="flex items-center justify-end gap-2">
-                                <a href="{{ route('hr.reports.show', $quiz) }}" class="px-3 py-1.5 text-xs bg-primary-50 text-primary-600 rounded-lg hover:bg-primary-100 transition-all duration-200 font-semibold">
+                                <a href="{{ route('hr.reports.show', $quiz) }}" class="hr-btn-xs hr-btn-xs--primary">
                                     View
                                 </a>
-                                <a href="{{ route('hr.reports.export', $quiz) }}" class="px-3 py-1.5 text-xs bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-100 transition-all duration-200 font-semibold">
+                                <a href="{{ route('hr.reports.export', $quiz) }}" class="hr-btn-xs hr-btn-xs--success">
                                     Export
                                 </a>
                             </div>

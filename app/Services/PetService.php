@@ -4,11 +4,12 @@ namespace App\Services;
 
 use App\Models\Pet;
 use App\Models\PetLog;
-use App\Models\ShopItem;
 use App\Models\User;
 use App\Models\UserItem;
 use App\Models\UserPet;
 use App\Models\UserPetArchive;
+use App\Models\UserQuizAttempt;
+use App\Models\VideoSubmission;
 use Illuminate\Support\Facades\DB;
 
 class PetService
@@ -30,8 +31,35 @@ class PetService
         'adult' => ['label' => 'Dewasa', 'icon' => '🧑'],
     ];
 
-    /** Isi paket selamat datang untuk employee baru. */
-    public const WELCOME_POINTS = 50;
+    /**
+     * Tier telur — naik otomatis mengikuti generasi ("case real":
+     * kumpulkan poin dari kuis & video, beli alat, pecahkan telur,
+     * rawat hingga dewasa, lalu bertelur → generasi & tier berikutnya).
+     *
+     * odds: peluang gacha hatch per rarity (berjumlah 100).
+     */
+    public const TIER_META = [
+        'bronze' => [
+            'label' => 'Perunggu', 'icon' => '🥉', 'color' => '#D7A26C',
+            'min_generation' => 1,
+            'odds' => ['common' => 60, 'rare' => 25, 'epic' => 12, 'legendary' => 3],
+        ],
+        'silver' => [
+            'label' => 'Perak', 'icon' => '🥈', 'color' => '#CBD5E1',
+            'min_generation' => 3,
+            'odds' => ['common' => 52, 'rare' => 28, 'epic' => 14, 'legendary' => 6],
+        ],
+        'gold' => [
+            'label' => 'Emas', 'icon' => '🥇', 'color' => '#FBBF24',
+            'min_generation' => 5,
+            'odds' => ['common' => 44, 'rare' => 30, 'epic' => 18, 'legendary' => 8],
+        ],
+        'crystal' => [
+            'label' => 'Kristal', 'icon' => '💎', 'color' => '#67E8F9',
+            'min_generation' => 8,
+            'odds' => ['common' => 35, 'rare' => 32, 'epic' => 21, 'legendary' => 12],
+        ],
+    ];
 
     /**
      * Terisi saat terjadi kenaikan tahap pada request berjalan
@@ -70,62 +98,64 @@ class PetService
             $userPet->load('pet');
         }
 
-        $this->claimWelcomePackIfNeeded($user);
-
         return $userPet;
     }
 
     /**
-     * Klaim paket selamat datang sekali seumur hidup:
-     * 50 poin modal + Palu Kayu + Susu Botol.
+     * Status gerbang "case real": karyawan harus menyelesaikan minimal
+     * 1 kuis DAN mengumpulkan 1 video challenge sebelum Sanctuary Pet & Toko terbuka.
+     *
+     * @return array{done_quiz: bool, done_video: bool, unlocked: bool}
      */
-    public function claimWelcomePackIfNeeded(User $user): void
+    public function participationStatus(User $user): array
     {
-        if ($user->welcome_pack_claimed_at !== null) {
-            return;
-        }
+        $doneQuiz = UserQuizAttempt::where('user_id', $user->id)
+            ->where('status', 'completed')
+            ->exists();
 
-        // Hindari klaim ganda pada request yang sama
-        if (User::whereKey($user->id)->value('welcome_pack_claimed_at') !== null) {
-            $user->welcome_pack_claimed_at = now();
-            return;
-        }
+        $doneVideo = VideoSubmission::where('user_id', $user->id)->exists();
 
-        DB::transaction(function () use ($user) {
-            app(PointService::class)->earn(
-                $user,
-                self::WELCOME_POINTS,
-                'welcome_pack',
-                'Paket Selamat Datang: modal poin pertamamu! 🎁'
-            );
+        return [
+            'done_quiz' => $doneQuiz,
+            'done_video' => $doneVideo,
+            'unlocked' => $doneQuiz && $doneVideo,
+        ];
+    }
 
-            $starterItems = [
-                ['slug' => 'palu-kayu', 'qty' => 8],
-                ['slug' => 'susu-botol', 'qty' => 2],
-            ];
+    /**
+     * True jika syarat "case real" (1 kuis + 1 video) sudah terpenuhi.
+     */
+    public function hasParticipated(User $user): bool
+    {
+        return $this->participationStatus($user)['unlocked'];
+    }
 
-            foreach ($starterItems as $starter) {
-                $item = ShopItem::where('slug', $starter['slug'])->first();
-                if (!$item) {
-                    continue;
-                }
-                $userItem = UserItem::firstOrCreate(
-                    ['user_id' => $user->id, 'shop_item_id' => $item->id],
-                    ['quantity' => 0]
-                );
-                $userItem->increment('quantity', $starter['qty']);
+    /**
+     * Tier telur untuk sebuah generasi (bronze → silver → gold → crystal).
+     */
+    public static function tierForGeneration(int $generation): string
+    {
+        $tier = 'bronze';
+
+        foreach (self::TIER_META as $key => $meta) {
+            if ($generation >= $meta['min_generation']) {
+                $tier = $key;
             }
+        }
 
-            PetLog::create([
-                'user_id' => $user->id,
-                'growth_gained' => 0,
-                'source_type' => 'welcome_pack',
-                'description' => 'Menerima Paket Selamat Datang: +50 poin, Palu Kayu ×8, Susu Botol ×2 🎁',
-            ]);
+        return $tier;
+    }
 
-            $user->welcome_pack_claimed_at = now();
-            $user->save();
-        });
+    /**
+     * Meta tampilan sebuah tier (label, ikon, warna, odds).
+     *
+     * @return array{key: string, label: string, icon: string, color: string, odds: array<string, int>, min_generation: int}
+     */
+    public static function tierMeta(?string $tier): array
+    {
+        $key = $tier && isset(self::TIER_META[$tier]) ? $tier : 'bronze';
+
+        return self::TIER_META[$key] + ['key' => $key];
     }
 
     /**
@@ -276,7 +306,7 @@ class PetService
             ];
         }
 
-        $rolledPet = $this->rollRandomPet();
+        $rolledPet = $this->rollRandomPet($userPet->egg_tier);
 
         if (!$rolledPet) {
             // Fallback pet if table was empty
@@ -504,6 +534,8 @@ class PetService
             ]);
 
             $newGeneration = (int) $userPet->generation + 1;
+            $newTier = self::tierForGeneration($newGeneration);
+            $tierMeta = self::tierMeta($newTier);
 
             $userPet->update([
                 'pet_id' => null,
@@ -511,6 +543,7 @@ class PetService
                 'status' => 'egg',
                 'life_stage' => 'egg',
                 'generation' => $newGeneration,
+                'egg_tier' => $newTier,
                 'crack_points' => 0,
                 'growth_points' => 0,
                 'level' => 1,
@@ -527,16 +560,21 @@ class PetService
                 'user_id' => $user->id,
                 'growth_gained' => 0,
                 'source_type' => 'breed_event',
-                'description' => "{$archived->nickname} (Gen {$archived->generation}, Lv{$archived->final_level}) bertelur — telur generasi ke-{$newGeneration} baru di sarang! 🥚",
+                'description' => "{$archived->nickname} (Gen {$archived->generation}, Lv{$archived->final_level}) bertelur — telur {$tierMeta['label']} generasi ke-{$newGeneration} baru di sarang! 🥚",
             ]);
         });
 
         $userPet->refresh();
+        $tierMeta = self::tierMeta($userPet->egg_tier);
 
         return [
             'success' => true,
-            'message' => "Telur generasi ke-{$userPet->generation} baru saja diletakkan di sarang! 🥚",
+            'message' => "Telur {$tierMeta['label']} generasi ke-{$userPet->generation} baru saja diletakkan di sarang! 🥚",
             'generation' => (int) $userPet->generation,
+            'egg_tier' => $userPet->egg_tier,
+            'egg_tier_label' => $tierMeta['label'],
+            'egg_tier_icon' => $tierMeta['icon'],
+            'egg_tier_color' => $tierMeta['color'],
             'archived' => $archived,
             'user_pet' => $userPet,
         ];
@@ -575,20 +613,23 @@ class PetService
     }
 
     /**
-     * Roll a random pet using weighted gacha probabilities.
+     * Roll a random pet using weighted gacha probabilities per egg tier.
+     * Tier lebih tinggi (generasi lebih tua) = peluang pet langka lebih besar.
      */
-    private function rollRandomPet(): ?Pet
+    private function rollRandomPet(?string $eggTier = 'bronze'): ?Pet
     {
+        $odds = self::tierMeta($eggTier)['odds'];
+
         $roll = mt_rand(1, 100);
 
-        if ($roll <= 3) {
-            $rarity = 'legendary'; // 3%
-        } elseif ($roll <= 15) {
-            $rarity = 'epic'; // 12%
-        } elseif ($roll <= 40) {
-            $rarity = 'rare'; // 25%
+        if ($roll <= $odds['legendary']) {
+            $rarity = 'legendary';
+        } elseif ($roll <= $odds['legendary'] + $odds['epic']) {
+            $rarity = 'epic';
+        } elseif ($roll <= $odds['legendary'] + $odds['epic'] + $odds['rare']) {
+            $rarity = 'rare';
         } else {
-            $rarity = 'common'; // 60%
+            $rarity = 'common';
         }
 
         $pet = Pet::where('rarity', $rarity)->inRandomOrder()->first();

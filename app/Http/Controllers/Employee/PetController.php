@@ -25,10 +25,19 @@ class PetController extends Controller
 
     /**
      * Display full-screen Pet Sanctuary view.
+     *
+     * Jika syarat "case real" (1 kuis + 1 video) belum terpenuhi,
+     * tampilkan halaman gerbang yang keren alih-alih game sanctuary.
      */
     public function index()
     {
         $user = auth()->user();
+        $participation = $this->petService->participationStatus($user);
+
+        if ($participation['unlocked'] === false) {
+            return view('employee.pet.locked', $participation);
+        }
+
         $userPet = $this->petService->getOrCreateUserPet($user);
         $archive = $this->petService->archive($user);
 
@@ -38,6 +47,19 @@ class PetController extends Controller
             'balance' => (int) $user->points,
             'tools' => $this->shopService->tools($user),
             'foods' => $this->shopService->foods($user),
+        ]);
+    }
+
+    /**
+     * Status gerbang untuk halaman lock & polling otomatisnya (JSON).
+     */
+    public function unlockStatus(): JsonResponse
+    {
+        $participation = $this->petService->participationStatus(auth()->user());
+
+        return response()->json([
+            'success' => true,
+            ...$participation,
         ]);
     }
 
@@ -54,6 +76,9 @@ class PetController extends Controller
             $nextStageLevel = PetService::STAGE_LEVELS[$userPet->life_stage] ?? null;
         }
 
+        $tier = PetService::tierMeta($userPet->egg_tier);
+        $nextTier = PetService::tierMeta(PetService::tierForGeneration((int) $userPet->generation + 1));
+
         return response()->json([
             'success' => true,
             'status' => $userPet->status,
@@ -65,6 +90,11 @@ class PetController extends Controller
             'life_stage_icon' => $userPet->life_stage_icon,
             'is_adult' => $userPet->isAdult(),
             'generation' => (int) $userPet->generation,
+            'egg_tier' => $tier['key'],
+            'egg_tier_label' => $tier['label'],
+            'egg_tier_icon' => $tier['icon'],
+            'egg_tier_color' => $tier['color'],
+            'next_egg_tier' => $nextTier['key'],
             'next_stage_level' => $nextStageLevel,
             'crack_points' => (int) $userPet->crack_points,
             'crack_percentage' => $userPet->crack_percentage,

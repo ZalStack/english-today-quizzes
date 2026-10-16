@@ -19,6 +19,9 @@ class DatabaseSeeder extends Seeder
         // Buat katalog toko (alat pecah telur & makanan perawatan)
         $this->call(ShopItemSeeder::class);
 
+        // Buat data kuis & video challenge aktif untuk case real
+        $this->call(RealCaseDataSeeder::class);
+
         // Data karyawan (65 orang) sesuai daftar
         $employees = [
             ['kode' => '1042001', 'name' => 'Dr. R. Ridwan Hasan Saputra, M.Si.', 'email' => 'ridwan.hasan@gmail.com'],

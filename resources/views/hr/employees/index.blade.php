@@ -13,7 +13,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
             </div>
-            <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-1 rounded-lg">Total</span>
+            <span class="hr-badge hr-badge--neutral">Total</span>
         </div>
         <p class="text-sm font-medium text-slate-500">Total Employees</p>
         <p class="text-2xl font-bold text-slate-900 mt-1 tracking-tight">{{ $totalEmployees }}</p>
@@ -25,7 +25,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
-            <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">Active</span>
+            <span class="hr-badge hr-badge--success">Active</span>
         </div>
         <p class="text-sm font-medium text-slate-500">Active</p>
         <p class="text-2xl font-bold text-slate-900 mt-1 tracking-tight">{{ $activeEmployees }}</p>
@@ -49,7 +49,7 @@
                 </svg>
             </div>
             @if($withoutDivision > 0)
-                <span class="text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-1 rounded-lg">Needs assign</span>
+                <span class="hr-badge hr-badge--warning">Needs assign</span>
             @endif
         </div>
         <p class="text-sm font-medium text-slate-500">No Division</p>
@@ -57,8 +57,8 @@
     </div>
 </div>
 
-<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-    <h3 class="text-base font-bold text-slate-900 tracking-tight">All Employees</h3>
+<div class="hr-toolbar">
+    <h3 class="hr-toolbar__title">All Employees</h3>
     <div class="flex flex-wrap gap-3 w-full sm:w-auto">
         <a href="{{ route('hr.employees.bulk.division') }}" class="hr-btn-secondary">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -107,13 +107,13 @@
                         </td>
                         <td class="text-right">
                             <div class="flex items-center justify-end gap-2">
-                                <a href="{{ route('hr.employees.edit', $employee) }}" class="px-3 py-1.5 text-xs bg-primary-50 text-primary-600 rounded-lg hover:bg-primary-100 transition-all duration-200 font-semibold">
+                                <a href="{{ route('hr.employees.edit', $employee) }}" class="hr-btn-xs hr-btn-xs--primary">
                                     Edit
                                 </a>
                                 <form action="{{ route('hr.employees.destroy', $employee) }}" method="POST" class="inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="px-3 py-1.5 text-xs bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all duration-200 font-semibold" onclick="return confirm('Are you sure?')">
+                                    <button type="submit" class="hr-btn-xs hr-btn-xs--danger" onclick="return confirm('Are you sure?')">
                                         Delete
                                     </button>
                                 </form>

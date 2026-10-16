@@ -9,7 +9,7 @@
 <div class="max-w-4xl mx-auto">
 
     {{-- Header Stats --}}
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div>
             <p class="text-sm text-gray-500">
                 <span class="font-semibold text-gray-700">{{ $notifications->total() }}</span> notifikasi total
@@ -19,7 +19,7 @@
             </p>
         </div>
         @if($unreadCount > 0)
-            <button onclick="markAllRead()" class="hr-btn-secondary text-sm !py-2 !px-4">
+            <button onclick="markAllRead()" class="hr-btn-secondary">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>

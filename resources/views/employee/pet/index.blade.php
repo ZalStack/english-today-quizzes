@@ -8,6 +8,18 @@
     $allPets = \App\Models\Pet::all();
     $logs = \App\Models\PetLog::where('user_id', auth()->id())->latest()->take(5)->get();
 
+    // Meta tier telur generasi saat ini (Perunggu → Perak → Emas → Kristal)
+    $eggTierMeta = \App\Services\PetService::tierMeta($userPet->egg_tier);
+    $tiersJson = collect(\App\Services\PetService::TIER_META)
+        ->map(fn (array $meta, string $key) => [
+            'key' => $key,
+            'label' => $meta['label'],
+            'icon' => $meta['icon'],
+            'color' => $meta['color'],
+            'min_generation' => $meta['min_generation'],
+        ])
+        ->values();
+
     // Inventaris alat & makanan (siap dipakai Alpine)
     $toolsJson = collect($tools)->map(fn ($t) => [
         'id' => (int) $t->shop_item_id,
@@ -105,6 +117,12 @@
                 </span>
                 <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-[11.5px] font-extrabold text-amber-700 dark:text-amber-300">
                     ✨ Generasi <span x-text="petState.generation">{{ $userPet->generation }}</span>
+                </span>
+                <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-[11.5px] font-extrabold text-slate-700 transition-colors dark:text-slate-200"
+                      :style="`border-color: ${petState.egg_tier_color}66; background: ${petState.egg_tier_color}1F;`">
+                    <span x-text="petState.egg_tier_icon">🥉</span>
+                    <span class="hidden sm:inline">Telur</span>
+                    <span x-text="petState.egg_tier_label">Perunggu</span>
                 </span>
             </div>
 
@@ -694,6 +712,53 @@
             @endif
         </section>
 
+        {{-- ================= MODAL KONFIRMASI BERTELUR ================= --}}
+        <div x-show="breedModal"
+             x-transition.opacity
+             @click.outside="breedModal = false"
+             class="fixed inset-0 z-[85] flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm"
+             role="dialog" aria-modal="true" aria-label="Konfirmasi bertelur">
+            <div x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 scale-90 translate-y-4"
+                 x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100 scale-100"
+                 x-transition:leave-end="opacity-0 scale-90"
+                 class="w-full max-w-md overflow-hidden rounded-[28px] border-4 border-pink-300 bg-gradient-to-br from-pink-100 via-rose-50 to-amber-100 text-center shadow-2xl dark:border-pink-400/60 dark:from-pink-300 dark:via-rose-200 dark:to-amber-200">
+                <div class="px-6 py-7">
+                    <p class="text-[12px] font-black uppercase tracking-[0.24em] text-pink-600">💕 Waktunya Bertelur</p>
+                    <div class="mt-3 flex items-center justify-center gap-3 text-4xl" aria-hidden="true">
+                        <span>🧑‍🍼</span>
+                        <span class="et-heart-pop text-xl font-black text-pink-500/80">❤️</span>
+                        <span>🥚</span>
+                    </div>
+                    <p class="mt-3 text-lg font-extrabold text-slate-900">
+                        <span x-text="petState.nickname || 'Peliharaanmu'">Peliharaanmu</span> akan pensiun ke 🏆 Koleksi
+                    </p>
+                    <p class="mt-1.5 text-[13px] font-bold leading-relaxed text-slate-700">
+                        Sebagai gantinya, telur Generasi
+                        <b x-text="(petState.generation + 1)">{{ (int) $userPet->generation + 1 }}</b>
+                        ber-tier <span x-text="nextTierMeta.icon + ' ' + nextTierMeta.label">🥉 Perunggu</span>
+                        akan diletakkan di sarangmu — tier lebih tinggi = peluang hewan langka lebih besar! ✨
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 gap-2 border-t-2 border-pink-200/70 bg-white/50 p-4 sm:grid-cols-2 dark:border-pink-400/30 dark:bg-slate-900/40">
+                    <button type="button"
+                            @click="confirmBreed()"
+                            :disabled="isProcessing"
+                            class="et-press et-wiggle flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 px-4 py-3.5 text-[13px] font-black text-slate-950 shadow-lg shadow-amber-500/40 transition hover:from-amber-300 hover:to-orange-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 disabled:cursor-not-allowed disabled:opacity-60">
+                        🥚 Bertelur Sekarang!
+                    </button>
+                    <button type="button"
+                            @click="breedModal = false"
+                            :disabled="isProcessing"
+                            class="et-press rounded-2xl border-2 border-slate-200 bg-white px-4 py-3.5 text-[13px] font-extrabold text-slate-600 transition hover:border-slate-300 hover:text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 disabled:opacity-60 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:text-white">
+                        Nanti Dulu
+                    </button>
+                </div>
+            </div>
+        </div>
+
         {{-- ================= TOAST GLOBAL ================= --}}
         <div x-show="toast.show"
              x-transition:enter="transition ease-out duration-300"
@@ -759,6 +824,8 @@
             archiveCount: {{ $archive->count() }},
             extraArchive: [],
             stageUp: null,
+            breedModal: false,
+            tiers: @json($tiersJson),
             toast: { show: false, message: '', type: 'success' },
             _toastTimer: null,
             _stageTimer: null,
@@ -768,6 +835,11 @@
                 life_stage_label: @json($userPet->life_stage_label),
                 life_stage_icon: @json($userPet->life_stage_icon),
                 generation: {{ (int) $userPet->generation }},
+                egg_tier: @json($userPet->egg_tier ?: 'bronze'),
+                egg_tier_label: @json($eggTierMeta['label']),
+                egg_tier_icon: @json($eggTierMeta['icon']),
+                egg_tier_color: @json($eggTierMeta['color']),
+                next_egg_tier: @json(\App\Services\PetService::tierForGeneration((int) $userPet->generation + 1)),
                 is_adult: {{ $userPet->isAdult() ? 'true' : 'false' }},
                 next_stage_level: @json($nextStageLevel),
                 crack_points: {{ (int) $userPet->crack_points }},
@@ -896,6 +968,11 @@
                 this.petState.life_stage_icon = d.life_stage_icon;
                 this.petState.is_adult = d.is_adult;
                 this.petState.generation = d.generation;
+                this.petState.egg_tier = d.egg_tier;
+                this.petState.egg_tier_label = d.egg_tier_label;
+                this.petState.egg_tier_icon = d.egg_tier_icon;
+                this.petState.egg_tier_color = d.egg_tier_color;
+                this.petState.next_egg_tier = d.next_egg_tier;
                 this.petState.next_stage_level = d.next_stage_level;
                 this.petState.crack_points = d.crack_points;
                 this.petState.crack_percentage = d.crack_percentage;
@@ -1066,10 +1143,26 @@
                 }
             },
 
+            /** Tier telur untuk generasi tertentu (mirror PetService::tierForGeneration). */
+            tierForGeneration(gen) {
+                let key = 'bronze';
+                this.tiers.forEach(t => { if (gen >= t.min_generation) key = t.key; });
+                return key;
+            },
+
+            /** Meta tier telur generasi berikutnya (untuk modal bertelur). */
+            get nextTierMeta() {
+                return this.tiers.find(t => t.key === this.petState.next_egg_tier) || this.tiers[0];
+            },
+
             async breedPet() {
                 if (this.isProcessing || !this.petState.is_adult) return;
-                if (!confirm('🧑 Peliharaan Dewasa kamu akan pensiun ke Koleksi dan meneruskan generasi baru. Bertelur sekarang?')) return;
+                this.breedModal = true;
+            },
 
+            async confirmBreed() {
+                if (this.isProcessing) return;
+                this.breedModal = false;
                 this.isProcessing = true;
                 try {
                     const res = await this.api('{{ route("employee.pet.breed") }}', {});
@@ -1099,6 +1192,11 @@
 
                     // Reset state lokal ke fase telur generasi baru
                     this.petState.generation = data.generation;
+                    this.petState.egg_tier = data.egg_tier;
+                    this.petState.egg_tier_label = data.egg_tier_label;
+                    this.petState.egg_tier_icon = data.egg_tier_icon;
+                    this.petState.egg_tier_color = data.egg_tier_color;
+                    this.petState.next_egg_tier = this.tierForGeneration(data.generation + 1);
                     this.petState.status = 'egg';
                     this.petState.life_stage = 'egg';
                     this.petState.life_stage_label = 'Telur';

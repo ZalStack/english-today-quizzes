@@ -367,12 +367,14 @@ class Pet3DGame {
         }
         const eggGeo = new THREE.LatheGeometry(points, 32);
 
-        // Egg Material (Slightly warm cream with iridescent shine)
+        // Egg Material — warna & kilau mengikuti tier telur
+        // (Perunggu → Perak → Emas → Kristal; tier naik per generasi)
         // NOTE: clearcoat / clearcoatRoughness hanya valid di MeshPhysicalMaterial
+        const tierStyle = this.eggTierStyle();
         const eggMat = new THREE.MeshPhysicalMaterial({
-            color: 0xfef9e7,
-            roughness: 0.35,
-            metalness: 0.15,
+            color: tierStyle.hex,
+            roughness: tierStyle.roughness,
+            metalness: tierStyle.metalness,
             clearcoat: 0.4,
             clearcoatRoughness: 0.2,
         });
@@ -390,9 +392,20 @@ class Pet3DGame {
         this.buildCrackLines(crackStage);
     }
 
+    /** Gaya visual telur berdasarkan tier (state.egg_tier). */
+    eggTierStyle() {
+        const map = {
+            bronze:  { hex: 0xE0A878, roughness: 0.35, metalness: 0.15, speck: 0x8D6E63 },
+            silver:  { hex: 0xE2E8F0, roughness: 0.25, metalness: 0.45, speck: 0x94A3B8 },
+            gold:    { hex: 0xFFD54F, roughness: 0.22, metalness: 0.65, speck: 0xF59E0B },
+            crystal: { hex: 0x7FE3EE, roughness: 0.12, metalness: 0.25, speck: 0x38BDF8 },
+        };
+        return map[this.state && this.state.egg_tier] || map.bronze;
+    }
+
     addEggSpeckles() {
         const speckleCount = 18;
-        const speckMat = new THREE.MeshBasicMaterial({ color: 0x8d6e63, transparent: true, opacity: 0.35 });
+        const speckMat = new THREE.MeshBasicMaterial({ color: this.eggTierStyle().speck, transparent: true, opacity: 0.35 });
         for (let i = 0; i < speckleCount; i++) {
             const phi = Math.random() * Math.PI;
             const theta = Math.random() * Math.PI * 2;
@@ -1285,7 +1298,7 @@ class Pet3DGame {
         this.rootGroup.add(this.shardsGroup);
 
         const shardMat = new THREE.MeshStandardMaterial({
-            color: 0xfef9e7,
+            color: this.eggTierStyle().hex,
             roughness: 0.4,
             flatShading: true,
             side: THREE.DoubleSide,

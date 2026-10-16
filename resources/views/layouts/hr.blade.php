@@ -9,7 +9,14 @@
     <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:300,400,500,600,700,800&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans antialiased bg-[#f8fafc]" x-data="{ sidebarCollapsed: false, sidebarMobile: false }" @toggle-sidebar.window="sidebarMobile = !sidebarMobile">
+<body class="font-sans antialiased bg-[#f6f8fc]"
+      x-data="{
+          sidebarCollapsed: localStorage.getItem('hr-sidebar-collapsed') === '1',
+          sidebarMobile: false
+      }"
+      @toggle-sidebar-mobile.window="sidebarMobile = !sidebarMobile"
+      @toggle-sidebar-collapse.window="sidebarCollapsed = !sidebarCollapsed; localStorage.setItem('hr-sidebar-collapsed', sidebarCollapsed ? '1' : '0')"
+      @keydown.escape.window="sidebarMobile = false">
 
     <div class="hr-layout" :class="{ 'hr-layout--collapsed': sidebarCollapsed }">
 
@@ -33,30 +40,61 @@
             @include('layouts.partials.hr-header')
 
             <main class="hr-layout__content page-enter">
+
                 @if(session('success'))
-                    <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200/80 text-emerald-700 rounded-xl flex items-center text-sm shadow-soft animate-slide-up">
-                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <span class="font-medium">{{ session('success') }}</span>
+                    <div class="hr-alert hr-alert--success" x-data="{ show: true }" x-show="show" x-cloak x-transition.opacity.duration.400ms>
+                        <div class="hr-alert__icon">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div class="hr-alert__body">
+                            <p class="hr-alert__title">Berhasil</p>
+                            <p class="hr-alert__text">{{ session('success') }}</p>
+                        </div>
+                        <button type="button" class="hr-alert__close" @click="show = false" aria-label="Tutup">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
                     </div>
                 @endif
 
                 @if(session('error'))
-                    <div class="mb-6 p-4 bg-red-50 border border-red-200/80 text-red-700 rounded-xl flex items-center text-sm shadow-soft animate-slide-up">
-                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <span class="font-medium">{{ session('error') }}</span>
+                    <div class="hr-alert hr-alert--error" x-data="{ show: true }" x-show="show" x-cloak x-transition.opacity.duration.400ms>
+                        <div class="hr-alert__icon">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div class="hr-alert__body">
+                            <p class="hr-alert__title">Terjadi Kesalahan</p>
+                            <p class="hr-alert__text">{{ session('error') }}</p>
+                        </div>
+                        <button type="button" class="hr-alert__close" @click="show = false" aria-label="Tutup">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
                     </div>
                 @endif
 
                 @if(session('info'))
-                    <div class="mb-6 p-4 bg-blue-50 border border-blue-200/80 text-blue-700 rounded-xl flex items-center text-sm shadow-soft animate-slide-up">
-                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <span class="font-medium">{{ session('info') }}</span>
+                    <div class="hr-alert hr-alert--info" x-data="{ show: true }" x-show="show" x-cloak x-transition.opacity.duration.400ms>
+                        <div class="hr-alert__icon">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div class="hr-alert__body">
+                            <p class="hr-alert__title">Informasi</p>
+                            <p class="hr-alert__text">{{ session('info') }}</p>
+                        </div>
+                        <button type="button" class="hr-alert__close" @click="show = false" aria-label="Tutup">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
                     </div>
                 @endif
 

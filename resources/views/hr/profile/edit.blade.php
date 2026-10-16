@@ -6,7 +6,7 @@
 
 @section('content')
 <div class="flex items-center justify-between mb-6">
-    <a href="{{ route('hr.dashboard') }}" class="text-primary-600 hover:text-primary-700 text-sm font-semibold inline-flex items-center gap-1.5 transition-colors">
+    <a href="{{ route('hr.dashboard') }}" class="hr-back-link">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
         Kembali ke Dashboard
     </a>
@@ -18,7 +18,7 @@
 
     <div class="hr-card overflow-hidden mb-6">
         <div class="px-6 py-4 border-b border-slate-100/80">
-            <h3 class="text-base font-bold text-slate-900 tracking-tight">Informasi Profil</h3>
+            <h3 class="hr-toolbar__title">Informasi Profil</h3>
             <p class="text-sm text-slate-500 mt-0.5">Data diri dan kontak</p>
         </div>
         <div class="p-6">
@@ -61,7 +61,7 @@
 
     <div class="hr-card overflow-hidden mb-6 mt-6">
         <div class="px-6 py-4 border-b border-slate-100/80">
-            <h3 class="text-base font-bold text-slate-900 tracking-tight">Ubah Password</h3>
+            <h3 class="hr-toolbar__title">Ubah Password</h3>
             <p class="text-sm text-slate-500 mt-0.5">Pastikan password baru minimal 8 karakter</p>
         </div>
         <div class="p-6">

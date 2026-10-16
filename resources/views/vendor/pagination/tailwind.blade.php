@@ -38,7 +38,7 @@
                     <span class="font-semibold text-gray-700">{{ $paginator->lastItem() }}</span>
                     dari
                     <span class="font-semibold text-gray-700">{{ $paginator->total() }}</span>
-                    notifikasi
+                    data
                 </p>
             </div>
 

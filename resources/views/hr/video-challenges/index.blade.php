@@ -13,7 +13,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                 </svg>
             </div>
-            <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-1 rounded-lg">Total</span>
+            <span class="hr-badge hr-badge--neutral">Total</span>
         </div>
         <p class="text-sm font-medium text-slate-500">Total Challenges</p>
         <p class="text-2xl font-bold text-slate-900 mt-1 tracking-tight">{{ $totalChallenges }}</p>
@@ -25,7 +25,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
-            <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">Active</span>
+            <span class="hr-badge hr-badge--success">Active</span>
         </div>
         <p class="text-sm font-medium text-slate-500">Active Challenges</p>
         <p class="text-2xl font-bold text-slate-900 mt-1 tracking-tight">{{ $activeChallenges }}</p>
@@ -43,8 +43,8 @@
     </div>
 </div>
 
-<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-    <h3 class="text-base font-bold text-slate-900 tracking-tight">All Challenges</h3>
+<div class="hr-toolbar">
+    <h3 class="hr-toolbar__title">All Challenges</h3>
     <a href="{{ route('hr.video-challenges.create') }}" class="hr-btn-primary w-full sm:w-auto">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -120,14 +120,14 @@
                 @endif
 
                 <div class="flex gap-2">
-                    <a href="{{ route('hr.video-challenges.show', $challenge) }}" class="flex-1 hr-btn-primary text-xs py-2 justify-center">
+                    <a href="{{ route('hr.video-challenges.show', $challenge) }}" class="flex-1 hr-btn-primary justify-center">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                         </svg>
                         Detail
                     </a>
-                    <a href="{{ route('hr.video-challenges.edit', $challenge) }}" class="px-3 py-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition-all duration-200 text-xs font-semibold">
+                    <a href="{{ route('hr.video-challenges.edit', $challenge) }}" class="hr-btn-xs hr-btn-xs--neutral">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                         </svg>
@@ -135,7 +135,7 @@
                     <form action="{{ route('hr.video-challenges.destroy', $challenge) }}" method="POST" class="inline">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="px-3 py-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition-all duration-200 text-xs font-semibold" onclick="return confirm('Delete this challenge?')">
+                        <button type="submit" class="hr-btn-xs hr-btn-xs--danger" onclick="return confirm('Delete this challenge?')">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                             </svg>

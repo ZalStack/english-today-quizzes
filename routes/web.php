@@ -126,22 +126,29 @@ Route::middleware(['auth', 'role:employee'])->prefix('employee')->name('employee
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
     // Pet Sanctuary & 3D Gamification
+    // Gerbang "case real": halaman gerbang selalu bisa dibuka;
+    // seluruh aksi pet & toko dijaga middleware 'participated'
+    // (wajib menyelesaikan 1 kuis + mengumpulkan 1 video challenge dulu).
     Route::get('/pet', [EmployeePetController::class, 'index'])->name('pet.index');
-    Route::get('/pet/status', [EmployeePetController::class, 'getStatus'])->name('pet.status');
-    Route::post('/pet/hatch', [EmployeePetController::class, 'hatch'])->name('pet.hatch');
-    Route::post('/pet/feed', [EmployeePetController::class, 'feed'])->name('pet.feed');
-    Route::post('/pet/pet', [EmployeePetController::class, 'pet'])->name('pet.pet');
-    Route::post('/pet/add-points', [EmployeePetController::class, 'addPoints'])->name('pet.add-points');
-    Route::post('/pet/new-egg', [EmployeePetController::class, 'newEgg'])->name('pet.new-egg');
-    Route::post('/pet/crack', [EmployeePetController::class, 'crack'])->name('pet.crack');
-    Route::post('/pet/use-tool', [EmployeePetController::class, 'useTool'])->name('pet.use-tool');
-    Route::post('/pet/breed', [EmployeePetController::class, 'breed'])->name('pet.breed');
+    Route::get('/pet/unlock-status', [EmployeePetController::class, 'unlockStatus'])->name('pet.unlock-status');
 
-    // Toko Alat & Makanan + Dompet Poin
-    Route::get('/shop', [EmployeeShopController::class, 'index'])->name('shop.index');
-    Route::post('/shop/buy', [EmployeeShopController::class, 'buy'])->name('shop.buy');
-    Route::post('/shop/use-food', [EmployeeShopController::class, 'useFood'])->name('shop.use-food');
-    Route::get('/points/history', [EmployeeShopController::class, 'pointsHistory'])->name('points.history');
+    Route::middleware('participated')->group(function () {
+        Route::get('/pet/status', [EmployeePetController::class, 'getStatus'])->name('pet.status');
+        Route::post('/pet/hatch', [EmployeePetController::class, 'hatch'])->name('pet.hatch');
+        Route::post('/pet/feed', [EmployeePetController::class, 'feed'])->name('pet.feed');
+        Route::post('/pet/pet', [EmployeePetController::class, 'pet'])->name('pet.pet');
+        Route::post('/pet/add-points', [EmployeePetController::class, 'addPoints'])->name('pet.add-points');
+        Route::post('/pet/new-egg', [EmployeePetController::class, 'newEgg'])->name('pet.new-egg');
+        Route::post('/pet/crack', [EmployeePetController::class, 'crack'])->name('pet.crack');
+        Route::post('/pet/use-tool', [EmployeePetController::class, 'useTool'])->name('pet.use-tool');
+        Route::post('/pet/breed', [EmployeePetController::class, 'breed'])->name('pet.breed');
+
+        // Toko Alat & Makanan + Dompet Poin
+        Route::get('/shop', [EmployeeShopController::class, 'index'])->name('shop.index');
+        Route::post('/shop/buy', [EmployeeShopController::class, 'buy'])->name('shop.buy');
+        Route::post('/shop/use-food', [EmployeeShopController::class, 'useFood'])->name('shop.use-food');
+        Route::get('/points/history', [EmployeeShopController::class, 'pointsHistory'])->name('points.history');
+    });
 
     // Misi Harian
     Route::post('/quests/claim', [\App\Http\Controllers\Employee\DashboardController::class, 'claimQuest'])->name('quests.claim');

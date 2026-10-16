@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\UserPet;
 use App\Models\UserQuizAttempt;
 use App\Models\VideoSubmission;
+use App\Services\PetService;
 use App\Services\PointService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -218,6 +219,15 @@ class DashboardController extends Controller
             ['key' => 'video_hari_ini', 'icon' => '🎬', 'title' => 'Video Challenge', 'desc' => 'Kumpulkan 1 video challenge hari ini', 'reward' => 40],
             ['key' => 'rawat_pet_hari_ini', 'icon' => '🍖', 'title' => 'Rawat Peliharaan', 'desc' => 'Beri makan peliharaanmu hari ini', 'reward' => 15],
         ];
+
+        // Gerbang "case real": quest perawatan pet hanya muncul
+        // setelah karyawan menyelesaikan 1 kuis + 1 video challenge.
+        if (app(PetService::class)->hasParticipated($user) === false) {
+            $definitions = array_values(array_filter(
+                $definitions,
+                fn (array $quest) => $quest['key'] !== 'rawat_pet_hari_ini'
+            ));
+        }
 
         return array_map(fn ($quest) => $quest + [
             'done' => $done[$quest['key']] ?? false,

@@ -6,7 +6,7 @@
 
 @section('content')
 <div class="flex items-center justify-between mb-6">
-    <a href="{{ route('hr.divisions.index') }}" class="text-primary-600 hover:text-primary-700 text-sm font-semibold inline-flex items-center gap-1.5 transition-colors">
+    <a href="{{ route('hr.divisions.index') }}" class="hr-back-link">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
         Kembali
     </a>
@@ -18,7 +18,7 @@
 
     <div class="hr-card overflow-hidden mb-6">
         <div class="px-6 py-4 border-b border-slate-100/80">
-            <h3 class="text-base font-bold text-slate-900 tracking-tight">Detail Divisi</h3>
+            <h3 class="hr-toolbar__title">Detail Divisi</h3>
             <p class="text-sm text-slate-500 mt-0.5">Perbarui informasi divisi</p>
         </div>
         <div class="p-6">
@@ -37,7 +37,7 @@
         </div>
     </div>
 
-    <div class="flex flex-col sm:flex-row justify-end gap-3">
+    <div class="hr-form-actions">
         <a href="{{ route('hr.divisions.index') }}" class="hr-btn-secondary">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             Cancel

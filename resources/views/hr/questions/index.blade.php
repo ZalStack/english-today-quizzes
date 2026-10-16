@@ -5,9 +5,9 @@
 @section('header-subtitle', 'Manage questions for this quiz')
 
 @section('content')
-<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+<div class="hr-toolbar">
     <div>
-        <a href="{{ route('hr.quizzes.show', $quiz) }}" class="text-primary-600 hover:text-primary-700 text-sm font-semibold inline-flex items-center gap-1.5 mb-2 transition-colors">
+        <a href="{{ route('hr.quizzes.show', $quiz) }}" class="hr-back-link mb-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
             </svg>
@@ -130,13 +130,13 @@
                     </div>
 
                     <div class="flex lg:flex-col flex-row gap-2">
-                        <a href="{{ route('hr.quizzes.questions.edit', [$quiz, $question]) }}" class="flex-1 lg:flex-none px-4 py-2 bg-primary-50 text-primary-600 rounded-lg hover:bg-primary-100 transition-all duration-200 text-sm font-semibold text-center">
+                        <a href="{{ route('hr.quizzes.questions.edit', [$quiz, $question]) }}" class="hr-btn-xs hr-btn-xs--primary flex-1 lg:flex-none justify-center">
                             Edit
                         </a>
                         <form action="{{ route('hr.quizzes.questions.destroy', [$quiz, $question]) }}" method="POST" class="flex-1 lg:flex-none">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="w-full px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all duration-200 text-sm font-semibold" onclick="return confirm('Delete this question?')">
+                            <button type="submit" class="hr-btn-xs hr-btn-xs--danger w-full" onclick="return confirm('Delete this question?')">
                                 Delete
                             </button>
                         </form>
@@ -183,15 +183,8 @@
     <div id="importPreview" class="mt-8 overflow-hidden"
          x-data="{
              allChecked: true,
-             expandedQuestions: {},
              toggleAll() {
                  document.querySelectorAll('.import-q-check').forEach(cb => cb.checked = this.allChecked);
-             },
-             toggleExpand(idx) {
-                 this.expandedQuestions[idx] = !this.expandedQuestions[idx];
-             },
-             isExpanded(idx) {
-                 return this.expandedQuestions[idx] === true;
              },
              countChecked() {
                  return document.querySelectorAll('.import-q-check:checked').length;
@@ -256,7 +249,7 @@
             <div class="px-6 sm:px-8 pt-6">
                 <div class="flex items-start gap-3 p-4 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/60 rounded-2xl">
                     <div class="w-9 h-9 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
-                        <svg class="w-4.5 h-4.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-[18px] h-[18px] text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                         </svg>
                     </div>
@@ -271,7 +264,7 @@
             <div class="px-6 sm:px-8 pt-4">
                 <div class="flex items-start gap-3 p-4 bg-gradient-to-r from-primary-50 to-blue-50 border border-primary-200/60 rounded-2xl">
                     <div class="w-9 h-9 rounded-xl bg-primary-100 flex items-center justify-center flex-shrink-0">
-                        <svg class="w-4.5 h-4.5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-[18px] h-[18px] text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                         </svg>
                     </div>
@@ -302,11 +295,11 @@
                         <span class="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-lg font-medium" x-text="countChecked() + ' / {{ $total }} dipilih'"></span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button type="button" @click="document.querySelectorAll('.import-q-card').forEach(c => c.classList.remove('hidden'))" class="text-xs font-medium text-primary-600 hover:text-primary-700 px-3 py-1.5 rounded-lg hover:bg-primary-50 transition-all">
+                        <button type="button" @click="$dispatch('expand-all')" class="text-xs font-medium text-primary-600 hover:text-primary-700 px-3 py-1.5 rounded-lg hover:bg-primary-50 transition-all">
                             Expand All
                         </button>
                         <span class="text-slate-200">|</span>
-                        <button type="button" @click="expandedQuestions = {}; document.querySelectorAll('.import-q-detail').forEach(d => d.classList.add('hidden'))" class="text-xs font-medium text-slate-500 hover:text-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-all">
+                        <button type="button" @click="$dispatch('collapse-all')" class="text-xs font-medium text-slate-500 hover:text-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-all">
                             Collapse All
                         </button>
                     </div>
@@ -332,7 +325,10 @@
                                 default => ucfirst($question['question_type'])
                             };
                         @endphp
-                        <div class="import-q-item px-6 sm:px-8 py-4 hover:bg-slate-50/50 transition-colors" x-data="{ open: false }">
+                        <div class="import-q-item px-6 sm:px-8 py-4 hover:bg-slate-50/50 transition-colors"
+                             x-data="{ open: false }"
+                             @expand-all.window="open = true"
+                             @collapse-all.window="open = false">
                             {{-- Question Header --}}
                             <div class="flex items-start gap-3 cursor-pointer select-none" @click="open = !open">
                                 <input type="checkbox" name="questions[{{ $index }}][import]" value="1" checked
@@ -357,7 +353,7 @@
                             </div>
 
                             {{-- Question Detail (Expandable) --}}
-                            <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="mt-4 ml-8 space-y-4">
+                            <div x-cloak x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="mt-4 ml-8 space-y-4">
 
                                 {{-- Type & Points Row --}}
                                 <div class="flex flex-wrap items-center gap-3">

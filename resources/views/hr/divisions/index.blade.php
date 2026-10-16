@@ -13,7 +13,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                 </svg>
             </div>
-            <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-1 rounded-lg">Total</span>
+            <span class="hr-badge hr-badge--neutral">Total</span>
         </div>
         <p class="text-sm font-medium text-slate-500">Total Divisions</p>
         <p class="text-2xl font-bold text-slate-900 mt-1 tracking-tight">{{ $totalDivisions }}</p>
@@ -42,8 +42,8 @@
     </div>
 </div>
 
-<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-    <h3 class="text-base font-bold text-slate-900 tracking-tight">All Divisions</h3>
+<div class="hr-toolbar">
+    <h3 class="hr-toolbar__title">All Divisions</h3>
     <a href="{{ route('hr.divisions.create') }}" class="hr-btn-primary w-full sm:w-auto">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -80,13 +80,13 @@
                         </td>
                         <td class="text-right">
                             <div class="flex items-center justify-end gap-2">
-                                <a href="{{ route('hr.divisions.edit', $division) }}" class="px-3 py-1.5 text-xs bg-primary-50 text-primary-600 rounded-lg hover:bg-primary-100 transition-all duration-200 font-semibold">
+                                <a href="{{ route('hr.divisions.edit', $division) }}" class="hr-btn-xs hr-btn-xs--primary">
                                     Edit
                                 </a>
                                 <form action="{{ route('hr.divisions.destroy', $division) }}" method="POST" class="inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="px-3 py-1.5 text-xs bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all duration-200 font-semibold" onclick="return confirm('Delete this division?')">
+                                    <button type="submit" class="hr-btn-xs hr-btn-xs--danger" onclick="return confirm('Delete this division?')">
                                         Delete
                                     </button>
                                 </form>
